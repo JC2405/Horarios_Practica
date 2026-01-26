@@ -32,6 +32,9 @@
 
     
     <script src="vista/js/cl_area.js"></script>
+    <script src="vista/js/cl_instructor.js"></script>
+    <script src="vista/js/cl_tipoContrato.js"></script>
+      <script src="vista/js/cl_sede.js"></script>
 </head>
 
 <body>

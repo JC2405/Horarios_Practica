@@ -6,7 +6,7 @@ class Conexion {
 
         $nombreServidor = "localhost";
         $usuarioServidor = "root";
-        $baseDatos = "horarios";
+        $baseDatos = "sena_formacion";
         $password = "";
 
 

@@ -5,8 +5,8 @@
 
 
  function listarInstructor(){
-    let objData = {listarInstructor : 1};
-    let objListarInstructor = new listarInstructor(objData);
+    let objData = {listarInstructor : "ok"};
+    let objListarInstructor = new instructor(objData);
     objListarInstructor.listarInstructor();
  }
 

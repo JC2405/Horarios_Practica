@@ -11,7 +11,7 @@ if(isset($_GET["ruta"])){
         include_once "vista/modulos/404.php";
      }
 } else {
-    include_once "vista/modulos/pagina.php";
+    include_once "vista/modulos/login.php";
 }
 
 include_once "vista/modulos/pie.php";

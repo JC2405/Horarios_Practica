@@ -18,10 +18,3 @@ if(isset($_GET["ruta"])){
 }
 
 include_once "vista/modulos/pie.php";
-
-if (isset($_SESSION['user_id'])) {
-    header("Location: vista/modulos/prueba");
-    exit();
-} else {
-    require_once 'vista/modulos/login.php';
-}

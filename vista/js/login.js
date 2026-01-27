@@ -10,8 +10,8 @@
 
       const redirectByRole = {
         aprendiz: 'vista/modulos/pagina.php',
-        instructor: 'vista/modulos/pagina.php',
-        coordinador: 'vista/modulos/pagina.php'
+        coordinador: 'vista/modulos/prueba.php',
+        instructor: 'vista/modulos/pagina.php'
       };
 
       $('#loginForm').on('submit', function (e) {
@@ -31,7 +31,7 @@
           },
           success: function (response) {
             if (response.success) {
-              window.location.href = redirectByRole[rol] || '../modulos/pagina.php';
+              window.location.href = redirectByRole[response.rol] || '../modulos/pagina.php';
             } else {
               $('#message').addClass('text-danger').text(response.message || 'Credenciales invalidas.');
             }

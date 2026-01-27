@@ -246,17 +246,10 @@
                 <label class="form-label-custom mb-2">Selecciona tu rol</label>
                 <div class="role-selector">
                   <div class="form-check">
-                    <input class="form-check-input" type="radio" name="rol" id="rolCoordinador" value="coordinador" checked>
-                    <label class="form-check-label" for="rolCoordinador">
+                    <input class="form-check-input" type="radio" name="rol" id="rolFuncionario" value="funcionario" checked>
+                    <label class="form-check-label" for="rolFuncionario">
                       <i class="bi bi-person-gear"></i>
-                      Coordinador
-                    </label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="rol" id="rolInstructor" value="instructor">
-                    <label class="form-check-label" for="rolInstructor">
-                      <i class="bi bi-person-video3"></i>
-                      Instructor
+                      Funcionario
                     </label>
                   </div>
                   <div class="form-check">

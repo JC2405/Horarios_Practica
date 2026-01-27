@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
-$rol = $_POST['rol'] ?? ''; // coordinador | instructor | aprendiz
+$rol = $_POST['rol'] ?? ''; 
 
 if (empty($email) || empty($password) || empty($rol)) {
     echo json_encode(['success' => false, 'message' => 'Por favor, complete todos los campos']);
@@ -22,7 +22,7 @@ try {
     $usuario = new login();
     $result = false;
 
-    // Según el rol, decide qué tabla validar
+    
     if ($rol === 'aprendiz') {
         $result = $usuario->loginAprendiz($email, $password);
 
@@ -30,27 +30,33 @@ try {
             $_SESSION['user_id'] = $result['idAprendiz'];
             $_SESSION['user_name'] = $result['nombre'];
             $_SESSION['rol'] = 'aprendiz';
+            echo json_encode(['success' => true, 'message' => 'Login exitoso', 'rol' => 'aprendiz']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Correo o contraseña incorrectos']);
         }
 
-    } elseif ($rol === 'coordinador' || $rol === 'instructor') {
-        // ambos vienen de "funcionario" en tu modelo (si es tu caso)
-        $result = $usuario->loginFuncionarios($email, $password, $rol);
+    } elseif ($rol === 'funcionario') {
+        $result = $usuario->loginFuncionarios($email, $password, 'coordinador');
+        $actualRol = 'coordinador';
+        if (!$result) {
+            $result = $usuario->loginFuncionarios($email, $password, 'instructor');
+            $actualRol = 'instructor';
+        }
+
+                
 
         if ($result) {
             $_SESSION['user_id'] = $result['idFuncionario'];
             $_SESSION['user_name'] = $result['nombre'];
-            $_SESSION['rol'] = $rol; // coordinador o instructor
+            $_SESSION['rol'] = $actualRol;
+            echo json_encode(['success' => true, 'message' => 'Login exitoso', 'rol' => $actualRol]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Correo o contraseña incorrectos']);
         }
 
     } else {
         echo json_encode(['success' => false, 'message' => 'Rol inválido']);
         exit;
-    }
-
-    if ($result) {
-        echo json_encode(['success' => true, 'message' => 'Login exitoso']);
-    } else {
-        echo json_encode(['success' => false, 'message' => 'Correo o contraseña incorrectos']);
     }
 
 } catch (Exception $e) {

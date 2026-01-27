@@ -1,0 +1,126 @@
+
+/* ===== Sidebar look (similar a tu captura) ===== */
+#menuOpciones{
+  list-style: none;
+  padding: 10px;
+  margin: 0;
+  width: 320px;
+  background: #fff;
+  border-radius: 18px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+/* item base */
+#menuOpciones .menu-item{ margin: 6px 0; }
+
+/* links */
+#menuOpciones .menu-link{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #5a6472;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+
+/* icono */
+#menuOpciones .menu-icon{
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #778196;
+}
+
+/* hover */
+#menuOpciones .menu-link:hover{
+  background: #f5f7ff;
+  color: #354055;
+}
+
+/* estado activo (como "Inicio" moradito) */
+#menuOpciones .menu-item.active > .menu-link{
+  background: #eef0ff;
+  color: #5b5ce2;
+  font-weight: 600;
+}
+
+/* icono activo */
+#menuOpciones .menu-item.active > .menu-link .menu-icon{
+  color: #5b5ce2;
+}
+
+/* ===== Submenu ===== */
+#menuOpciones .menu-sub{
+  list-style: none;
+  padding: 6px 0 2px 42px;
+  margin: 0;
+  display: none;
+}
+
+/* cuando el item padre está abierto, muestra sub */
+#menuOpciones .menu-item.open > .menu-sub{
+  display: block;
+}
+
+#menuOpciones .menu-sub .menu-link{
+  padding: 9px 12px;
+  border-radius: 10px;
+}
+
+/* Separador / header si tu función los imprime */
+#menuOpciones .menu-header{
+  margin: 12px 0 6px;
+  padding: 0 12px;
+  font-size: 12px;
+  letter-spacing: .06em;
+  color: #a0a8b5;
+  text-transform: uppercase;
+}
+
+/* si tu template mete el texto en .menu-header-text */
+#menuOpciones .menu-header-text{ color: inherit; }
+
+/* divisor */
+#menuOpciones .menu-divider{
+  height: 1px;
+  background: #edf0f6;
+  margin: 10px 12px;
+}
+
+/* flechita a la derecha (si existe .menu-toggle) */
+#menuOpciones .menu-toggle{
+  position: relative;
+}
+#menuOpciones .menu-toggle::after{
+  content: "›";
+  margin-left: auto;
+  font-size: 18px;
+  color: #9aa3b2;
+  transform: rotate(0deg);
+  transition: transform .18s ease;
+}
+#menuOpciones .menu-item.open > .menu-link.menu-toggle::after{
+  transform: rotate(90deg);
+}
+
+.app-layout{
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar{
+  width: 320px;
+  background: #fff;
+  border-right: 1px solid #e6e9f0;
+  padding: 12px;
+}
+
+.content{
+  flex: 1;
+  padding: 24px;
+  background: #f5f6fa;
+}

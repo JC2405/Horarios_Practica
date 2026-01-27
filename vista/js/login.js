@@ -4,14 +4,14 @@
         const input = $('#password');
         const isPass = input.attr('type') === 'password';
         input.attr('type', isPass ? 'text' : 'password');
-        // Cambiar icono de Bootstrap Icons
+     
         $(this).find('i').toggleClass('bi-eye bi-eye-slash');
       });
 
       const redirectByRole = {
-        aprendiz: 'vista/modulos/pagina.php',
-        coordinador: 'vista/modulos/prueba.php',
-        instructor: 'vista/modulos/pagina.php'
+        aprendiz: 'index.php',
+        coordinador: 'index.php',
+        instructor: 'index.php'
       };
 
       $('#loginForm').on('submit', function (e) {

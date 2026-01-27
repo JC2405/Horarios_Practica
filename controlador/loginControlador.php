@@ -34,16 +34,9 @@ try {
 
     } elseif ($rol === 'coordinador' || $rol === 'instructor') {
         // ambos vienen de "funcionario" en tu modelo (si es tu caso)
-        $result = $usuario->loginFuncionarios($email, $password);
+        $result = $usuario->loginFuncionarios($email, $password, $rol);
 
-        // Opcional: validar que en BD tenga el rol correcto (si existe un campo rol/cargo)
-        // Ej: si en funcionario tienes columna "rol" con 'coordinador' o 'instructor'
         if ($result) {
-            if (isset($result['rol']) && $result['rol'] !== $rol) {
-                echo json_encode(['success' => false, 'message' => 'Este usuario no tiene el rol seleccionado']);
-                exit;
-            }
-
             $_SESSION['user_id'] = $result['idFuncionario'];
             $_SESSION['user_name'] = $result['nombre'];
             $_SESSION['rol'] = $rol; // coordinador o instructor

@@ -37,3 +37,34 @@ document.addEventListener('DOMContentLoaded', () => {
     if (parentItem) parentItem.classList.add('open');
   }
 });
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const userBtn = document.getElementById('userBtn');
+    const dropdown = document.getElementById('userDropdown');
+    
+    if (userBtn && dropdown) {
+        userBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !isExpanded);
+            dropdown.classList.toggle('show');
+        });
+        
+        document.addEventListener('click', function(e) {
+            if (!dropdown.contains(e.target) && e.target !== userBtn) {
+                userBtn.setAttribute('aria-expanded', 'false');
+                dropdown.classList.remove('show');
+            }
+        });
+    }
+    
+    // Toggle submenus
+    document.querySelectorAll('.menu-inner li.has-submenu > a, .menu-inner li.has-submenu > .menu-link').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            this.parentElement.classList.toggle('open');
+        });
+    });
+});

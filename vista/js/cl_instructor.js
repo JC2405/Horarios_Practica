@@ -4,7 +4,6 @@ class instructor {
         this._objData = objData;
     }
 
-
     listarInstructor(){
         let objData = new FormData();
         objData.append("listarInstructor",this._objData.listarInstructor);

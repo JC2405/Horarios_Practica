@@ -35,6 +35,8 @@
     <script src="vista/js/cl_instructor.js"></script>
     <script src="vista/js/cl_tipoContrato.js"></script>
       <script src="vista/js/cl_sede.js"></script>
+      <script src="vista/js/cl_ficha.js"></script>  
+      <script src="vista/js/cl_tipoContratoFormacion.js"></script>
 </head>
 
 <body>

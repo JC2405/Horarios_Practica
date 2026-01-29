@@ -5,7 +5,8 @@ include_once "vista/modulos/cabecera.php";
 
 if(isset($_GET["ruta"])){
     if(
-        $_GET["ruta"] == "area"
+        $_GET["ruta"] == "area" ||
+        $_GET["ruta"] == "listarFichas"
     ) {
         include_once "vista/modulos/" . $_GET["ruta"] . ".php";
     } else {

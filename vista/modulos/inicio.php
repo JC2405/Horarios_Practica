@@ -25,7 +25,7 @@ $baseUrl = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
     </ul>
 </aside>
 
-<!-- HEADER / TOPBAR -->
+<!--TOPBAR -->
 <header class="topbar">
     <div class="topbar-left">
         <span class="hello">Hola!</span>
@@ -53,7 +53,7 @@ $baseUrl = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
 <!-- LAYOUT PRINCIPAL -->
 <div class="app-layout">
     <main class="content">
-        <?php require_once "vista/modulos/prueba.php"; ?>
+        <?php require_once "vista/modulos/fichaModuloVista.php"; ?>
     </main>
 </div>
 

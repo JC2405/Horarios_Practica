@@ -1,3 +1,6 @@
+  </main>
+</div>
+
 
 <script src="vista/js/ficha.js"></script>
 <script src="vista/js/area.js"></script>

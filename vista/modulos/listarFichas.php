@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . "/inicio.php"; ?>
+
 <div class="table-responsive" id="panelTablaFicha">
                 
                 <table id="tablaProgramaFicha" class="table table-hover m-top">

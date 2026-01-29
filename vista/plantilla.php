@@ -1,27 +1,31 @@
-<?php
-session_start();
+<?php 
 
+session_start();
 include_once "vista/modulos/cabecera.php";
 
-if(isset($_GET["ruta"])){
+if (isset($_SESSION['rol'])) {
 
-    if(
+  // Abre sidebar+topbar+<main>
+  include_once "vista/modulos/inicio.php";
+
+  // Carga módulo dentro del <main>
+  if (isset($_GET["ruta"])) {
+    if (
         $_GET["ruta"] == "area" ||
-        $_GET["ruta"] == "listarFichas"
+         $_GET["ruta"] == "listarFichas"
     ) {
-        include_once "vista/modulos/" . $_GET["ruta"] . ".php";
+      include_once "vista/modulos/" . $_GET["ruta"] . ".php";
     } else {
-        include_once "vista/modulos/404.php";
+      include_once "vista/modulos/404.php";
     }
+  } else {
+    include_once "vista/modulos/pagina.php"; // o inicio dashboard real
+  }
 
-} elseif(isset($_SESSION['rol'])) {
-
-    include_once "vista/modulos/inicio.php";
+  // pie.php ahora Cierra </main></div> + scripts
+  include_once "vista/modulos/pie.php";
 
 } else {
-
-    include_once "vista/modulos/login.php";
-
+  include_once "vista/modulos/login.php";
+  include_once "vista/modulos/pie.php";
 }
-
-include_once "vista/modulos/pie.php";

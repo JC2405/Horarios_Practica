@@ -54,8 +54,7 @@ $baseUrl = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
 <div class="app-layout">
     <main class="content">
 
-    </main>
-</div>
+  
 
 <script src="../js/nav.js" defer></script>
 

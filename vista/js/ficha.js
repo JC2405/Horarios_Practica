@@ -1,12 +1,11 @@
 (function(){
 
-listarFicha();
+listarTecnologos();
 
-function listarFicha(){
-    let objData = { listarFicha : "ok"};
-    let objListarFicha = new ficha(objData);
-    objListarFicha.listarFicha();
+function listarTecnologos(){
+    let objData = { listarTecnologos : "ok"};
+    let objListarTecnologos = new ficha(objData);
+    objListarTecnologos.listarTecnologos();
 }
-
 
 })();

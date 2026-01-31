@@ -45,7 +45,7 @@ $menus = [
         ['label' => 'Crear ficha', 'href' => 'crearFicha'],
         ['label' => 'Listar fichas', 'href' => 'listarFichas'],
         ['label' => 'Carga aprendices', 'href' => 'aprendicesCarga'],
-        
+        ['label' => 'Horarios', 'href' => 'listarHorarios'],
       ]
     ],
     [
@@ -61,7 +61,7 @@ $menus = [
       'label' => 'Horario',
       'icon' => 'bx bx-time',
       'items' => [
-        ['label' => 'Crear horario', 'href' => 'crearHorario'],
+        ['label' => 'Horarios', 'href' => 'moduloHorarios'],
       ]
     ],
   ],

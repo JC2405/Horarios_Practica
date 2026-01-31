@@ -5,18 +5,29 @@ include_once "vista/modulos/cabecera.php";
 
 if (isset($_SESSION['rol'])) {
 
-  // Abre sidebar+topbar+<main>
+ 
   include_once "vista/modulos/inicio.php";
 
-  // Carga módulo dentro del <main>
+  
   if (isset($_GET["ruta"])) {
     if (
         $_GET["ruta"] == "area" ||
-         $_GET["ruta"] == "listarFichas"
+        $_GET["ruta"] == "listarFichas" ||
+        $_GET["ruta"] == "listarHorarios" ||
+        $_GET["ruta"] == "horarios" ||
+        $_GET["ruta"] == "fichasInstructor" ||
+        $_GET["ruta"] == "crearFicha" ||
+        $_GET["ruta"] == "aprendicesCarga" ||
+        $_GET["ruta"] == "areas" ||
+        $_GET["ruta"] == "crearHorario" ||
+        $_GET["ruta"] == "miHorario" ||
+        $_GET["ruta"] == "moduloHorarios"||
+        $_GET["ruta"] == "tipoFormacionCrearHorario" ||
+        $_GET["ruta"] == "listarFichaHorarios"
     ) {
       include_once "vista/modulos/" . $_GET["ruta"] . ".php";
     } else {
-      include_once "vista/modulos/404.php";
+      include_once "vista/modulos/pagina.php"; // fallback to default page
     }
   } else {
     include_once "vista/modulos/pagina.php"; // o inicio dashboard real

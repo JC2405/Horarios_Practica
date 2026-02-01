@@ -23,7 +23,8 @@ if (isset($_SESSION['rol'])) {
         $_GET["ruta"] == "miHorario" ||
         $_GET["ruta"] == "moduloHorarios"||
         $_GET["ruta"] == "tipoFormacionCrearHorario" ||
-        $_GET["ruta"] == "listarFichaHorarios"
+        $_GET["ruta"] == "listarFichaHorarios" 
+  
     ) {
       include_once "vista/modulos/" . $_GET["ruta"] . ".php";
     } else {

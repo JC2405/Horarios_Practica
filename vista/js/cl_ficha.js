@@ -134,7 +134,7 @@ class ficha {
                 
                 response["listarTecnologos"].forEach(item => {
                     let objBotones = '<div class="btn-group" role="group">';
-                    objBotones += '<button href="" id="btnCrearHorario" type="button" class="btn btn-primary" codigoficha="' + item.codigoFicha + '"><i class="bi bi-clock"></i></button>';
+                    objBotones += '<button id="btnCrearHorario" type="button" class="btn btn-primary btn-crear-horario" data-codigoficha="' + item.codigoFicha + '"><i class="bi bi-clock"></i></button>';
                     objBotones += '</div>';
                     
                     dataSet.push([

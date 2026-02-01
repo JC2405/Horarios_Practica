@@ -73,10 +73,26 @@
 .instructor-item[data-color="4"] { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
 .instructor-item[data-color="5"] { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
 </style>
+<!-- ✅ AGREGAR CSS PRIMERO -->
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
 
-<!-- Scripts de FullCalendar -->
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.20/index.global.min.js"></script>
+<!-- ✅ SCRIPTS EN ORDEN CORRECTO -->
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.10/index.global.min.js'></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Iniciando sistema de calendario...'); // ✅ Debugging
+    
+    // ✅ Validación
+    if (typeof FullCalendar === 'undefined') {
+        console.error('FullCalendar no está cargado');
+        return;
+    }
+    
+    // ... resto del código
+});
+</script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

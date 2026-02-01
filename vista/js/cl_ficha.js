@@ -80,10 +80,13 @@ class ficha {
                 let dataSet = [];
                 
                 response["listarFichaHorario"].forEach(item => {
-                    let objBotones = '<div class="btn-group" role="group">';
-                    objBotones += '<button id="btnVerHorario" type="button" class="btn btn-primary" codigoficha="' + item.codigoFicha + '"><i class="bi bi-clock"></i></button>';
-                    objBotones += '<button id="btnAsignarInstructor" type="button" class="btn btn-success" codigoficha="' + item.codigoFicha + '"><i class="bi bi-person-plus"></i></button>';
-                    objBotones += '</div>';
+                   // ✅ CÓDIGO CORRECTO (DESPUÉS)
+                        let objBotones = '<div class="btn-group" role="group">';
+                        objBotones += '<button type="button" class="btn btn-primary btn-crear-horario" ';
+                        objBotones += 'data-codigoficha="' + item.codigoFicha + '">';
+                        objBotones += '<i class="bi bi-clock-fill me-1"></i>Crear Horario';
+                        objBotones += '</button>';
+                        objBotones += '</div>';
                     
                     dataSet.push([
                         item.codigoFicha,
@@ -133,18 +136,26 @@ class ficha {
                 let dataSet = [];
                 
                 response["listarTecnologos"].forEach(item => {
-                    let objBotones = '<div class="btn-group" role="group">';
-                    objBotones += '<button id="btnCrearHorario" type="button" class="btn btn-primary btn-crear-horario" data-codigoficha="' + item.codigoFicha + '"><i class="bi bi-clock"></i></button>';
-                    objBotones += '</div>';
-                    
-                    dataSet.push([
-                        item.codigoFicha,
-                        item.programa,
-                        item.duracion,
-                        item.jornada,
-                        item.municipio,
-                        objBotones
-                    ]);
+                  let objBotones = '<div class="btn-group" role="group">';
+
+                  objBotones += `
+                    <a class="btn btn-primary btn-crear-horario"
+                       href="crearHorario"
+                       data-codigoficha="${item.codigoFicha}">
+                       <i class="bi bi-clock"></i>
+                    </a>
+                  `;
+
+                  objBotones += '</div>';
+
+                  dataSet.push([
+                    item.codigoFicha,
+                    item.programa,
+                    item.duracion,
+                    item.jornada,
+                    item.municipio,
+                    objBotones
+                  ]);
                 });
                 
                 $("#tablaTecnologos").DataTable({
@@ -168,3 +179,4 @@ class ficha {
 
     }
 }
+

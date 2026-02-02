@@ -134,6 +134,15 @@
 .ambiente-item {
     background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
     color: #1a1a2e;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.ambiente-item.selected {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: 3px solid #1a1a2e;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
 }
 
 .instructor-item:hover, .ambiente-item:hover {
@@ -217,6 +226,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let instructores = [];
     let ambientes = [];
     let fichaSeleccionada = null;
+    let ambienteSeleccionado = null;
     const colores = ['#667eea', '#f5576c', '#4facfe', '#43e97b', '#fa709a', '#ff6b6b', '#4ecdc4', '#45b7d1'];
     const coloresAmbiente = ['#43e97b', '#38f9d7', '#4facfe', '#667eea', '#f093fb'];
     
@@ -391,19 +401,31 @@ document.addEventListener('DOMContentLoaded', function() {
         
         lista.forEach((ambiente, index) => {
             const div = document.createElement('div');
-            div.className = 'ambiente-item fc-event';
+            div.className = 'ambiente-item';
             div.setAttribute('data-type', 'ambiente');
             div.setAttribute('data-id', ambiente.idAmbiente);
             div.setAttribute('data-nombre', `Ambiente ${ambiente.codigo}`);
             div.setAttribute('data-sede', ambiente.sedeNombre || 'General');
             div.setAttribute('data-sede-code', ambiente.sedeMunicipio || 'GEN');
-            div.setAttribute('data-color', coloresAmbiente[index % coloresAmbiente.length]);
             div.innerHTML = `
                 <i class="fas fa-door-open me-2"></i>
                 <strong>${ambiente.codigo}</strong>
                 <br><small>${ambiente.descripcion || ''}</small>
                 <br><small class="text-dark"><i class="fas fa-map-marker-alt me-1"></i>${ambiente.sedeNombre || ''}</small>
             `;
+            // Click para seleccionar ambiente
+            div.addEventListener('click', function() {
+                // Remover selección anterior
+                document.querySelectorAll('.ambiente-item').forEach(item => item.classList.remove('selected'));
+                // Seleccionar este ambiente
+                div.classList.add('selected');
+                ambienteSeleccionado = {
+                    idAmbiente: ambiente.idAmbiente,
+                    codigo: ambiente.codigo,
+                    nombre: `Ambiente ${ambiente.codigo}`
+                };
+                console.log('Ambiente seleccionado:', ambienteSeleccionado);
+            });
             contenedor.appendChild(div);
         });
         
@@ -413,9 +435,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====== INICIALIZAR DRAGGABLE ======
     function inicializarDraggable() {
         const contenedorInstructores = document.getElementById('listaInstructores');
-        const contenedorAmbientes = document.getElementById('listaAmbientes');
         
-        // Drag para instructores
+        // Drag SOLO para instructores (ambientes son seleccionables con clic)
         new FullCalendar.Draggable(contenedorInstructores, {
             itemSelector: '.instructor-item',
             eventData: function(eventEl) {
@@ -426,27 +447,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     extendedProps: {
                         type: 'instructor',
                         idInstructor: eventEl.getAttribute('data-id'),
-                        idAmbiente: null,
+                        idAmbiente: ambienteSeleccionado?.idAmbiente || null,
                         idFicha: fichaSeleccionada?.codigo || null
-                    }
-                };
-            }
-        });
-        
-        // Drag para ambientes
-        new FullCalendar.Draggable(contenedorAmbientes, {
-            itemSelector: '.ambiente-item',
-            eventData: function(eventEl) {
-                return {
-                    title: eventEl.getAttribute('data-nombre'),
-                    backgroundColor: eventEl.getAttribute('data-color'),
-                    borderColor: eventEl.getAttribute('data-color'),
-                    extendedProps: {
-                        type: 'ambiente',
-                        idInstructor: null,
-                        idAmbiente: eventEl.getAttribute('data-id'),
-                        idFicha: fichaSeleccionada?.codigo || null,
-                        sede: eventEl.getAttribute('data-sede')
                     }
                 };
             }

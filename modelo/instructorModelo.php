@@ -9,7 +9,15 @@ class instructorModelo {
         try {
 
             $mensaje = array();
-            $objRespuesta = Conexion::Conectar()->prepare("SELECT * FROM instructor");
+            $objRespuesta = Conexion::Conectar()->prepare("SELECT f.nombre,
+                   a.nombreArea,
+                   fu.idRol
+            FROM funcionario f
+            INNER JOIN funcionariorol fu 
+                ON fu.idFuncionario = f.idFuncionario
+            INNER JOIN area a 
+                ON a.idArea = f.idArea
+            WHERE fu.idRol = 2;");
             $objRespuesta->execute();
             $listarInstructor = $objRespuesta->fetchAll();
             $objRespuesta = null;

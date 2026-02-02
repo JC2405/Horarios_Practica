@@ -52,11 +52,13 @@ class fichaModelo{
     public static function mdlListarTecnologos(){
         try {
             $mensaje = array();
-            $objRespuesta = Conexion::Conectar()->prepare("SELECT f.codigoFicha,
+            $objRespuesta = Conexion::Conectar()->prepare("SELECT 
+       f.codigoFicha,
        p.nombre AS programa,
        p.duracion,
        p.jornada,
-       s.municipio
+       s.municipio,
+       s.nombre AS sede
         FROM ficha f
         INNER JOIN programa p 
             ON p.idPrograma = f.idPrograma

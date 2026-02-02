@@ -19,7 +19,7 @@ class instructorControlador{
 }
 
 
-    if(isset($_POST["listarInstructor"])== "ok"){
+    if(isset($_POST["listarInstructor"])){
         $objRespuesta = new instructorControlador();
         $objRespuesta ->ctrListarInstructor();
     }

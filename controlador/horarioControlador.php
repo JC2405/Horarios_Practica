@@ -36,7 +36,9 @@ if (isset($_POST["listarHorarios"])) {
 if (isset($_POST["crearHorario"])) {
     $datos = array(
         'titulo' => $_POST['titulo'],
-        'idInstructor' => $_POST['idInstructor'],
+        'idInstructor' => $_POST['idInstructor'] ?: null,
+        'idAmbiente' => $_POST['idAmbiente'] ?: null,
+        'idFicha' => $_POST['idFicha'] ?: null,
         'fechaInicio' => $_POST['fechaInicio'],
         'fechaFin' => $_POST['fechaFin'],
         'color' => $_POST['color'] ?? '#3788d8'
@@ -48,6 +50,7 @@ if (isset($_POST["crearHorario"])) {
 if (isset($_POST["actualizarHorario"])) {
     $datos = array(
         'idHorario' => $_POST['idHorario'],
+        'idAmbiente' => $_POST['idAmbiente'] ?: null,
         'fechaInicio' => $_POST['fechaInicio'],
         'fechaFin' => $_POST['fechaFin']
     );

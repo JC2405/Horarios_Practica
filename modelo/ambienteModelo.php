@@ -28,7 +28,7 @@ class ambienteModelo {
                  FROM ambiente a
                  INNER JOIN sede s ON a.idSede = s.idSede
                  WHERE a.idSede = :idSede
-                 ORDER BY a.numero"
+                 ORDER BY a.codigo"
             );
             $objRespuesta->execute([':idSede' => $idSede]);
             $listarAmbientes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
@@ -49,7 +49,7 @@ class ambienteModelo {
                  FROM ambiente a
                  INNER JOIN sede s ON a.idSede = s.idSede
                  WHERE s.municipio = :municipio
-                 ORDER BY s.nombre, a.numero"
+                 ORDER BY a.codigo"
             );
             $objRespuesta->execute([':municipio' => $municipio]);
             $listarAmbientes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);

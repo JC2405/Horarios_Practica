@@ -54,6 +54,7 @@ class fichaModelo{
             $mensaje = array();
             $objRespuesta = Conexion::Conectar()->prepare("SELECT 
        f.codigoFicha,
+       f.idSede,
        p.nombre AS programa,
        p.duracion,
        p.jornada,

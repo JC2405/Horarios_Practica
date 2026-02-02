@@ -8,18 +8,11 @@
                 </div>
                 <div class="card-body">
                     <div class="row align-items-end">
-                        <!-- Selector de Ficha Tecnólogo -->
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Seleccionar Ficha Tecnólogo:</label>
-                            <select id="selectFicha" class="form-select">
-                                <option value="">-- Seleccionar Ficha --</option>
-                            </select>
-                        </div>
-                        
                         <!-- Información de la ficha -->
-                        <div class="col-md-8">
-                            <div id="infoFicha" class="alert alert-info mb-0 py-2" style="display: none;">
+                        <div class="col-md-12">
+                            <div id="infoFicha" class="alert alert-info mb-0 py-2">
                                 <div class="row">
+                                    <div class="col-md-3"><small><strong>Código:</strong> <span id="fichaCodigo"></span></small></div>
                                     <div class="col-md-3"><small><strong>Ciudad:</strong> <span id="fichaCiudad"></span></small></div>
                                     <div class="col-md-3"><small><strong>Sede:</strong> <span id="fichaSede"></span></small></div>
                                     <div class="col-md-3"><small><strong>Programa:</strong> <span id="fichaPrograma"></span></small></div>
@@ -227,9 +220,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const colores = ['#667eea', '#f5576c', '#4facfe', '#43e97b', '#fa709a', '#ff6b6b', '#4ecdc4', '#45b7d1'];
     const coloresAmbiente = ['#43e97b', '#38f9d7', '#4facfe', '#667eea', '#f093fb'];
     
-    // ====== CARGAR FICHAS DE TECNÓLOGOS ======
-    function cargarFichas() {
+    // ====== CARGAR FICHA DESDE URL Y MOSTRAR INFORMACIÓN ======
+    function cargarFichaDesdeUrl() {
+        const fichaParam = obtenerParametroUrl('ficha');
+        if (!fichaParam) {
+            console.log('No hay ficha en la URL');
+            return Promise.resolve();
+        }
+        
         return new Promise((resolve, reject) => {
+            console.log('Buscando ficha:', fichaParam);
             fetch('controlador/fichaControlador.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -238,95 +238,49 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.codigo === "200") {
-                    renderizarFichas(data.listarTecnologos);
-                    resolve();
+                    // Buscar la ficha que coincida con el código
+                    const fichaEncontrada = data.listarTecnologos.find(f => f.codigoFicha === fichaParam);
+                    if (fichaEncontrada) {
+                        fichaSeleccionada = {
+                            codigo: fichaEncontrada.codigoFicha,
+                            programa: fichaEncontrada.programa,
+                            jornada: fichaEncontrada.jornada,
+                            municipio: fichaEncontrada.municipio,
+                            sede: fichaEncontrada.sede,
+                            idSede: fichaEncontrada.idSede
+                        };
+                        
+                        // Mostrar información de la ficha
+                        document.getElementById('infoFicha').style.display = 'block';
+                        document.getElementById('fichaCodigo').textContent = fichaSeleccionada.codigo;
+                        document.getElementById('fichaCiudad').textContent = fichaSeleccionada.municipio;
+                        document.getElementById('fichaSede').textContent = fichaSeleccionada.sede || 'No especificada';
+                        document.getElementById('fichaPrograma').textContent = fichaSeleccionada.programa;
+                        document.getElementById('fichaJornada').textContent = fichaSeleccionada.jornada;
+                        
+                        console.log('Ficha cargada:', fichaSeleccionada);
+                        
+                        // Cargar ambientes de la sede de la ficha
+                        cargarAmbientesPorSede(fichaSeleccionada.idSede);
+                        
+                        // Filtrar eventos del calendario por ficha
+                        filtrarEventosPorFicha(fichaSeleccionada.codigo);
+                        
+                        resolve();
+                    } else {
+                        console.error('No se encontró la ficha:', fichaParam);
+                        reject('Ficha no encontrada');
+                    }
                 } else {
                     reject('Error al cargar fichas');
                 }
             })
             .catch(error => {
-                console.error('Error al cargar fichas:', error);
+                console.error('Error al cargar ficha:', error);
                 reject(error);
             });
         });
     }
-    
-    // ====== RENDERIZAR SELECT DE FICHAS ======
-    function renderizarFichas(fichas) {
-        const select = document.getElementById('selectFicha');
-        select.innerHTML = '<option value="">-- Seleccionar Ficha --</option>';
-        
-        fichas.forEach(ficha => {
-            const option = document.createElement('option');
-            option.value = JSON.stringify({
-                codigo: ficha.codigoFicha,
-                programa: ficha.programa,
-                jornada: ficha.jornada,
-                municipio: ficha.municipio,
-                sede: ficha.sede
-            });
-            option.textContent = `${ficha.codigoFicha} - ${ficha.programa}`;
-            option.setAttribute('data-programa', ficha.programa || '');
-            option.setAttribute('data-jornada', ficha.jornada || '');
-            select.appendChild(option);
-        });
-        
-        // Verificar si hay una ficha seleccionada por URL
-        const fichaParam = obtenerParametroUrl('ficha');
-        if (fichaParam) {
-            // Buscar la ficha que coincida con el código
-            for (let i = 0; i < select.options.length; i++) {
-                const option = select.options[i];
-                if (option.value) {
-                    const fichaData = JSON.parse(option.value);
-                    if (fichaData.codigo === fichaParam) {
-                        select.selectedIndex = i;
-                        // Trigger del evento change para cargar ambientes
-                        select.dispatchEvent(new Event('change'));
-                        console.log('Ficha seleccionada automáticamente:', fichaData);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    
-    // ====== SELECCIONAR FICHA ======
-    document.getElementById('selectFicha').addEventListener('change', function(e) {
-        const selectedValue = e.target.value;
-        
-        if (selectedValue) {
-            fichaSeleccionada = JSON.parse(selectedValue);
-            
-            // Obtener información adicional del option seleccionado
-            const selectedOption = e.target.options[e.target.selectedIndex];
-            fichaSeleccionada.programa = selectedOption.getAttribute('data-programa') || '';
-            fichaSeleccionada.jornada = selectedOption.getAttribute('data-jornada') || '';
-            
-            document.getElementById('infoFicha').style.display = 'block';
-            document.getElementById('fichaCiudad').textContent = fichaSeleccionada.municipio;
-            document.getElementById('fichaSede').textContent = fichaSeleccionada.sede || 'No especificada';
-            document.getElementById('fichaPrograma').textContent = fichaSeleccionada.programa;
-            document.getElementById('fichaJornada').textContent = fichaSeleccionada.jornada;
-            
-            // Cargar ambientes de la ciudad de la ficha
-            cargarAmbientesPorCiudad(fichaSeleccionada.municipio);
-            
-            // Filtrar eventos del calendario por ficha
-            filtrarEventosPorFicha(fichaSeleccionada.codigo);
-        } else {
-            fichaSeleccionada = null;
-            document.getElementById('infoFicha').style.display = 'none';
-            document.getElementById('listaAmbientes').innerHTML = `
-                <div class="text-muted text-center py-3">
-                    <i class="fas fa-info-circle me-2"></i>
-                    Selecciona una ficha para ver los ambientes disponibles
-                </div>
-            `;
-            // Mostrar todos los eventos
-            calendario.refetchEvents();
-        }
-    });
     
     // ====== CARGAR INSTRUCTORES ======
     function cargarInstructores() {
@@ -359,13 +313,13 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // ====== CARGAR AMBIENTES POR CIUDAD ======
-    function cargarAmbientesPorCiudad(ciudad) {
-        console.log('Cargando ambientes para ciudad:', ciudad);
+    // ====== CARGAR AMBIENTES POR SEDE ======
+    function cargarAmbientesPorSede(idSede) {
+        console.log('Cargando ambientes para sede:', idSede);
         fetch('controlador/ambienteControlador.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'listarAmbientesPorCiudad=' + encodeURIComponent(ciudad)
+            body: 'listarAmbientesPorSede=ok&idSede=' + encodeURIComponent(idSede)
         })
         .then(response => {
             console.log('Respuesta ambientes:', response);
@@ -383,12 +337,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('listaAmbientes').innerHTML = `
                     <div class="text-muted text-center py-3">
                         <i class="fas fa-exclamation-circle me-2"></i>
-                        No hay ambientes disponibles en ${ciudad}
+                        Error: ${data.mensaje || 'No hay ambientes disponibles en esta sede'}
                     </div>
                 `;
             }
         })
-        .catch(error => console.error('Error al cargar ambientes:', error));
+        .catch(error => {
+            console.error('Error al cargar ambientes:', error);
+            document.getElementById('listaAmbientes').innerHTML = `
+                <div class="text-muted text-center py-3">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    Error al cargar ambientes: ${error.message}
+                </div>
+            `;
+        });
     }
     
     // ====== RENDERIZAR LISTA DE INSTRUCTORES ======
@@ -432,13 +394,13 @@ document.addEventListener('DOMContentLoaded', function() {
             div.className = 'ambiente-item fc-event';
             div.setAttribute('data-type', 'ambiente');
             div.setAttribute('data-id', ambiente.idAmbiente);
-            div.setAttribute('data-nombre', `Ambiente ${ambiente.numero}`);
+            div.setAttribute('data-nombre', `Ambiente ${ambiente.codigo}`);
             div.setAttribute('data-sede', ambiente.sedeNombre || 'General');
             div.setAttribute('data-sede-code', ambiente.sedeMunicipio || 'GEN');
             div.setAttribute('data-color', coloresAmbiente[index % coloresAmbiente.length]);
             div.innerHTML = `
                 <i class="fas fa-door-open me-2"></i>
-                <strong>${ambiente.numero}</strong>
+                <strong>${ambiente.codigo}</strong>
                 <br><small>${ambiente.descripcion || ''}</small>
                 <br><small class="text-dark"><i class="fas fa-map-marker-alt me-1"></i>${ambiente.sedeNombre || ''}</small>
             `;
@@ -872,8 +834,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Primero cargar instructores (se necesitan para draggable)
     cargarInstructores().then(() => {
-        // Luego cargar fichas (esto puede会自动 seleccionar una por URL)
-        cargarFichas();
+        // Luego cargar ficha desde URL
+        cargarFichaDesdeUrl();
     });
     
     // Exponer función para eliminar eventos globalmente

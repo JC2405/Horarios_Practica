@@ -252,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const fichaEncontrada = data.listarTecnologos.find(f => f.codigoFicha === fichaParam);
                     if (fichaEncontrada) {
                         fichaSeleccionada = {
+                            id: fichaEncontrada.id || null, // Agregar el ID de la ficha
                             codigo: fichaEncontrada.codigoFicha,
                             programa: fichaEncontrada.programa,
                             jornada: fichaEncontrada.jornada,
@@ -373,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const div = document.createElement('div');
             div.className = 'instructor-item fc-event';
             div.setAttribute('data-type', 'instructor');
-            div.setAttribute('data-id', instructor.idInstructor);
+            div.setAttribute('data-id', instructor.idFuncionario);
             div.setAttribute('data-nombre', instructor.nombre);
             div.setAttribute('data-color', colores[index % colores.length]);
             div.setAttribute('data-color-index', colorIndex);
@@ -446,9 +447,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     borderColor: eventEl.getAttribute('data-color'),
                     extendedProps: {
                         type: 'instructor',
-                        idInstructor: eventEl.getAttribute('data-id'),
+                        idFuncionario: eventEl.getAttribute('data-id'),
                         idAmbiente: ambienteSeleccionado?.idAmbiente || null,
-                        idFicha: fichaSeleccionada?.codigo || null
+                        idFicha: fichaSeleccionada?.codigo || null,
+                        nombreInstructor: eventEl.getAttribute('data-nombre')
                     }
                 };
             }
@@ -593,19 +595,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     const eventos = data.horarios.map(h => ({
                         id: h.idHorario,
                         title: h.instructorNombre || `Ambiente ${h.ambienteNumero || ''}` || 'Evento',
-                        start: h.fechaInicio,
-                        end: h.fechaFin,
-                        backgroundColor: h.color,
-                        borderColor: h.color,
+                        start: h.fecha_inicioClase,
+                        end: h.hora_finClase,
+                        backgroundColor: '#3788d8',
+                        borderColor: '#3788d8',
                         extendedProps: {
-                            idInstructor: h.idInstructor,
+                            idFuncionario: h.idFuncionario,
                             idAmbiente: h.idAmbiente,
                             idFicha: h.idFicha,
                             tipo: h.instructorNombre ? 'instructor' : 'ambiente',
                             instructor: h.instructorNombre,
                             ambiente: h.ambienteNumero,
                             ambienteDescripcion: h.ambienteDescripcion,
-                            codigoFicha: h.codigoFicha
+                            codigoFicha: h.codigoFicha,
+                            hora_inicioClase: h.fecha_inicioClase,
+                            hora_finClase: h.hora_finClase,
+                            fecha_inicioHorario: h.fecha_inicioHorario,
+                            fecha_finHorario: h.fecha_finHorario
                         }
                     }));
                     successCallback(eventos);
@@ -641,15 +647,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     .map(h => ({
                         id: h.idHorario,
                         title: h.instructorNombre || `Ambiente ${h.ambienteNumero || ''}` || 'Evento',
-                        start: h.fechaInicio,
-                        end: h.fechaFin,
+                        start: h.fecha_inicioClase,
+                        end: h.hora_finClase,
                         backgroundColor: h.color,
                         borderColor: h.color,
                         extendedProps: {
-                            idInstructor: h.idInstructor,
+                            idFuncionario: h.idFuncionario,
                             idAmbiente: h.idAmbiente,
                             idFicha: h.idFicha,
-                            tipo: h.instructorNombre ? 'instructor' : 'ambiente'
+                            tipo: h.instructorNombre ? 'instructor' : 'ambiente',
+                            instructor: h.instructorNombre,
+                            ambiente: h.ambienteNumero,
+                            hora_inicioClase: h.fecha_inicioClase,
+                            hora_finClase: h.hora_finClase
                         }
                     }));
                 calendario.removeAllEvents();
@@ -667,15 +677,32 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
+        // Extraer hora_inicioClase y hora_finClase del evento
+        const horaInicio = evento.start.toISOString();
+        const horaFin = evento.end ? evento.end.toISOString() : new Date(evento.start.getTime() + 60*60*1000).toISOString();
+        
+        // Obtener fechas del rango del horario
+        const fechaInicioRange = document.getElementById('fechaInicio').value || null;
+        const fechaFinRange = document.getElementById('fechaFin').value || null;
+        
+        console.log('Guardando horario:');
+        console.log('- Instructor:', evento.extendedProps.idFuncionario);
+        console.log('- Ambiente:', evento.extendedProps.idAmbiente);
+        console.log('- Ficha ID:', fichaSeleccionada.id);
+        console.log('- Hora inicio clase:', horaInicio);
+        console.log('- Hora fin clase:', horaFin);
+        console.log('- Fecha inicio rango:', fechaInicioRange);
+        console.log('- Fecha fin rango:', fechaFinRange);
+        
         const datos = new URLSearchParams({
             crearHorario: 'ok',
-            titulo: evento.title,
-            idInstructor: evento.extendedProps.idInstructor || '',
+            idFuncionario: evento.extendedProps.idFuncionario || '',
             idAmbiente: evento.extendedProps.idAmbiente || '',
-            idFicha: fichaSeleccionada.codigo,
-            fechaInicio: evento.start.toISOString(),
-            fechaFin: evento.end ? evento.end.toISOString() : new Date(evento.start.getTime() + 60*60*1000).toISOString(),
-            color: evento.backgroundColor
+            idFicha: fichaSeleccionada.codigo || '',
+            hora_inicioClase: horaInicio,
+            hora_finClase: horaFin,
+            fecha_inicioHorario: fechaInicioRange,
+            fecha_finHorario: fechaFinRange
         });
 
         fetch('controlador/horarioControlador.php', {
@@ -688,9 +715,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.codigo === "200") {
                 evento.setProp('id', data.idHorario);
                 // Actualizar extendedProps
-                evento.extendedProps.idInstructor = datos.get('idInstructor');
+                evento.extendedProps.idFuncionario = datos.get('idFuncionario');
                 evento.extendedProps.idAmbiente = datos.get('idAmbiente');
                 evento.extendedProps.idFicha = datos.get('idFicha');
+                evento.extendedProps.hora_inicioClase = horaInicio;
+                evento.extendedProps.hora_finClase = horaFin;
+                evento.extendedProps.fecha_inicioHorario = fechaInicioRange;
+                evento.extendedProps.fecha_finHorario = fechaFinRange;
                 mostrarNotificacion('Horario creado correctamente', 'success');
             } else {
                 evento.remove();
@@ -706,12 +737,26 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // ====== ACTUALIZAR HORARIO ======
     function actualizarHorario(evento) {
+        // Extraer hora_inicioClase y hora_finClase del evento
+        const horaInicio = evento.start.toISOString();
+        const horaFin = evento.end ? evento.end.toISOString() : new Date(evento.start.getTime() + 60*60*1000).toISOString();
+        
+        // Obtener fechas del rango del horario
+        const fechaInicioRange = document.getElementById('fechaInicio').value || null;
+        const fechaFinRange = document.getElementById('fechaFin').value || null;
+        
+        console.log('Actualizando horario:', evento.id);
+        console.log('- Hora inicio clase:', horaInicio);
+        console.log('- Hora fin clase:', horaFin);
+        
         const datos = new URLSearchParams({
             actualizarHorario: 'ok',
             idHorario: evento.id,
             idAmbiente: evento.extendedProps.idAmbiente || '',
-            fechaInicio: evento.start.toISOString(),
-            fechaFin: evento.end ? evento.end.toISOString() : new Date(evento.start.getTime() + 60*60*1000).toISOString()
+            hora_inicioClase: horaInicio,
+            hora_finClase: horaFin,
+            fecha_inicioHorario: fechaInicioRange,
+            fecha_finHorario: fechaFinRange
         });
 
         fetch('controlador/horarioControlador.php', {
@@ -722,6 +767,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.codigo === "200") {
+                // Actualizar extendedProps
+                evento.extendedProps.hora_inicioClase = horaInicio;
+                evento.extendedProps.hora_finClase = horaFin;
+                evento.extendedProps.fecha_inicioHorario = fechaInicioRange;
+                evento.extendedProps.fecha_finHorario = fechaFinRange;
                 mostrarNotificacion('Horario actualizado', 'success');
             } else {
                 calendario.refetchEvents();

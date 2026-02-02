@@ -29,7 +29,6 @@ class fichaModelo{
 
 
 
-
     public static function mdlListarFichaHorario(){
         try {
             $mensaje = array();
@@ -48,7 +47,6 @@ class fichaModelo{
 
 
 
-
     public static function mdlListarTecnologos(){
         try {
             $mensaje = array();
@@ -60,14 +58,14 @@ class fichaModelo{
        p.jornada,
        s.municipio,
        s.nombre AS sede
-        FROM ficha f
-        INNER JOIN programa p 
-            ON p.idPrograma = f.idPrograma
-        INNER JOIN sede s 
-            ON s.idSede = f.idSede
-        INNER JOIN tipoformacion tf 
-            ON tf.idTipoFormacion = p.idTipoFormacion
-        WHERE tf.`tipoFormacion` = 'Tecnólogo';");
+         FROM ficha f
+         INNER JOIN programa p 
+             ON p.idPrograma = f.idPrograma
+         INNER JOIN sede s 
+             ON s.idSede = f.idSede
+         INNER JOIN tipoformacion tf 
+             ON tf.idTipoFormacion = p.idTipoFormacion
+         WHERE tf.`tipoFormacion` = 'Tecnólogo';");
             $objRespuesta->execute();
             $listarTecnologos = $objRespuesta->fetchAll();
             $objRespuesta = null;

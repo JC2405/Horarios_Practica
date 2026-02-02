@@ -35,13 +35,13 @@ if (isset($_POST["listarHorarios"])) {
 
 if (isset($_POST["crearHorario"])) {
     $datos = array(
-        'titulo' => $_POST['titulo'],
-        'idInstructor' => $_POST['idInstructor'] ?: null,
+        'idFuncionario' => $_POST['idFuncionario'] ?: null,
         'idAmbiente' => $_POST['idAmbiente'] ?: null,
         'idFicha' => $_POST['idFicha'] ?: null,
-        'fechaInicio' => $_POST['fechaInicio'],
-        'fechaFin' => $_POST['fechaFin'],
-        'color' => $_POST['color'] ?? '#3788d8'
+        'hora_inicioClase' => $_POST['hora_inicioClase'],
+        'hora_finClase' => $_POST['hora_finClase'],
+        'fecha_inicioHorario' => $_POST['fecha_inicioHorario'] ?: null,
+        'fecha_finHorario' => $_POST['fecha_finHorario'] ?: null
     );
     $objControlador = new horarioControlador();
     $objControlador->ctrCrearHorario($datos);
@@ -51,8 +51,10 @@ if (isset($_POST["actualizarHorario"])) {
     $datos = array(
         'idHorario' => $_POST['idHorario'],
         'idAmbiente' => $_POST['idAmbiente'] ?: null,
-        'fechaInicio' => $_POST['fechaInicio'],
-        'fechaFin' => $_POST['fechaFin']
+        'hora_inicioClase' => $_POST['hora_inicioClase'],
+        'hora_finClase' => $_POST['hora_finClase'],
+        'fecha_inicioHorario' => $_POST['fecha_inicioHorario'] ?: null,
+        'fecha_finHorario' => $_POST['fecha_finHorario'] ?: null
     );
     $objControlador = new horarioControlador();
     $objControlador->ctrActualizarHorario($datos);

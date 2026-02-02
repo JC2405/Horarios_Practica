@@ -9,7 +9,8 @@ class instructorModelo {
         try {
 
             $mensaje = array();
-            $objRespuesta = Conexion::Conectar()->prepare("SELECT f.nombre,
+            $objRespuesta = Conexion::Conectar()->prepare("SELECT f.idFuncionario as idInstructor,
+                   f.nombre,
                    a.nombreArea,
                    fu.idRol
             FROM funcionario f

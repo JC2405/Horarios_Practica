@@ -10,7 +10,7 @@
                     <div class="row align-items-end">
                         <!-- Información de la ficha -->
                         <div class="col-md-12">
-                            <div id="infoFicha" class="alert alert-info mb-0 py-2">
+                            <div id="infoFicha" class="alert alert-info mb-3 py-2">
                                 <div class="row">
                                     <div class="col-md-3"><small><strong>Código:</strong> <span id="fichaCodigo"></span></small></div>
                                     <div class="col-md-3"><small><strong>Ciudad:</strong> <span id="fichaCiudad"></span></small></div>
@@ -22,13 +22,31 @@
                         </div>
                         
                         <!-- Rango de fechas -->
-                        <div class="col-md-4">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Rango del Horario:</label>
                             <div class="input-group">
                                 <input type="date" id="fechaInicio" class="form-control">
                                 <span class="input-group-text">hasta</span>
                                 <input type="date" id="fechaFin" class="form-control">
                             </div>
+                        </div>
+
+                        <!-- 🔥 NUEVO: Selector de días de la semana -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Días de la Semana:</label>
+                            <div id="selectorDias" class="dias-selector">
+                                <!-- Se llena dinámicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="col-md-4 text-end mb-3">
+                            <button type="button" class="btn btn-success btn-lg" id="btnGuardarHorario">
+                                <i class="fas fa-save me-2"></i>Guardar Horario
+                            </button>
+                            <button type="button" class="btn btn-danger btn-lg ms-2" id="btnLimpiarHorario">
+                                <i class="fas fa-trash me-2"></i>Limpiar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -46,15 +64,11 @@
                     <span class="badge bg-light text-primary" id="countInstructores">0</span>
                 </div>
                 <div class="card-body">
-                    <!-- Buscador -->
                     <div class="mb-3">
                         <input type="text" id="buscarInstructor" class="form-control" 
                                placeholder="Buscar instructor...">
                     </div>
-                    <!-- Lista de instructores arrastrables -->
-                    <div id="listaInstructores" class="element-list">
-                        <!-- Se llena con JavaScript -->
-                    </div>
+                    <div id="listaInstructores" class="element-list"></div>
                 </div>
             </div>
 
@@ -65,12 +79,10 @@
                     <span class="badge bg-light text-success" id="countAmbientes">0</span>
                 </div>
                 <div class="card-body">
-                    <!-- Buscador de ambientes -->
                     <div class="mb-3">
                         <input type="text" id="buscarAmbiente" class="form-control" 
                                placeholder="Buscar ambiente...">
                     </div>
-                    <!-- Lista de ambientes arrastrables -->
                     <div id="listaAmbientes" class="element-list">
                         <div class="text-muted text-center py-3">
                             <i class="fas fa-info-circle me-2"></i>
@@ -85,6 +97,11 @@
         <div class="col-md-9">
             <div class="card shadow-sm">
                 <div class="card-body">
+                    <!-- Contador de eventos pendientes -->
+                    <div class="alert alert-warning mb-3" id="alertEventosPendientes" style="display: none;">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Eventos pendientes:</strong> <span id="countEventosPendientes">0</span> horarios sin guardar
+                    </div>
                     <div id="calendario"></div>
                 </div>
             </div>
@@ -112,6 +129,53 @@
 
 <!-- Estilos -->
 <style>
+/* ========== SELECTOR DE DÍAS ========== */
+.dias-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dia-checkbox {
+    display: none;
+}
+
+.dia-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    background: white;
+    color: #6c757d;
+    user-select: none;
+}
+
+.dia-label:hover {
+    border-color: #0d6efd;
+    color: #0d6efd;
+    transform: scale(1.05);
+}
+
+.dia-checkbox:checked + .dia-label {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    border-color: #0d6efd;
+    color: white;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+}
+
+.dia-checkbox:disabled + .dia-label {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========== RESTO DE ESTILOS ========== */
 .element-list {
     max-height: 300px;
     overflow-y: auto;
@@ -158,7 +222,6 @@
     display: none;
 }
 
-/* Colores para diferentes instructores */
 .instructor-item[data-color-index="1"] { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
 .instructor-item[data-color-index="2"] { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
 .instructor-item[data-color-index="3"] { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
@@ -168,27 +231,18 @@
 .instructor-item[data-color-index="7"] { background: linear-gradient(135deg, #45b7d1 0%, #96c93d 100%); }
 .instructor-item[data-color-index="8"] { background: linear-gradient(135deg, #f7797d 0%, #fbd786 100%); }
 
-/* Colores para ambientes */
-.ambiente-item[data-sede="CAGE"] { border-left: 4px solid #667eea; }
-.ambiente-item[data-sede="CASD"] { border-left: 4px solid #43e97b; }
-.ambiente-item[data-sede="COMFAMA"] { border-left: 4px solid #f093fb; }
-
 #calendario {
     min-height: 600px;
 }
 
-/* Estilo para eventos del calendario */
 .fc-event {
     cursor: pointer;
     border-radius: 4px;
+    opacity: 0.9;
 }
 
-.fc-event.event-instructor {
-    border-left: 4px solid #667eea;
-}
-
-.fc-event.event-ambiente {
-    border-left: 4px solid #43e97b;
+.fc-event.pendiente {
+    border-left: 4px solid #ffc107 !important;
 }
 </style>
 
@@ -200,46 +254,116 @@
 <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.10/index.global.min.js'></script>
 
 <script>
-// ====== VERIFICAR SI HAY FICHA POR PARÁMETRO URL ======
 function obtenerParametroUrl(nombre) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(nombre);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Iniciando sistema de calendario avanzado...');
+    console.log('🚀 Iniciando sistema de horarios con días de la semana...');
     
-    // Verificar si hay una ficha seleccionada por URL
-    const fichaParam = obtenerParametroUrl('ficha');
-    if (fichaParam) {
-        console.log('Ficha recibida por URL:', fichaParam);
-    }
-    
-    // Validación de FullCalendar
     if (typeof FullCalendar === 'undefined') {
-        console.error('FullCalendar no está cargado');
+        console.error('❌ FullCalendar no está cargado');
         return;
     }
     
-    // Variables globales
+    // ========== VARIABLES GLOBALES ==========
     let calendario;
     let instructores = [];
     let ambientes = [];
+    let diasSemana = [];
     let fichaSeleccionada = null;
     let ambienteSeleccionado = null;
+    let diasSeleccionados = []; // 🔥 NUEVO: Días seleccionados
+    let eventosPendientes = [];
+    let draggableInstance = null;
     const colores = ['#667eea', '#f5576c', '#4facfe', '#43e97b', '#fa709a', '#ff6b6b', '#4ecdc4', '#45b7d1'];
-    const coloresAmbiente = ['#43e97b', '#38f9d7', '#4facfe', '#667eea', '#f093fb'];
     
-    // ====== CARGAR FICHA DESDE URL Y MOSTRAR INFORMACIÓN ======
+    // ========== CARGAR DÍAS DE LA SEMANA ==========
+    function cargarDiasSemana() {
+        return new Promise((resolve, reject) => {
+            fetch('controlador/horarioControlador.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: 'listarDias=ok'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.codigo === "200") {
+                    diasSemana = data.dias;
+                    renderizarSelectorDias(diasSemana);
+                    resolve();
+                } else {
+                    reject('Error al cargar días');
+                }
+            })
+            .catch(error => {
+                console.error('❌ Error al cargar días:', error);
+                reject(error);
+            });
+        });
+    }
+    
+    // ========== RENDERIZAR SELECTOR DE DÍAS ==========
+    function renderizarSelectorDias(dias) {
+        const contenedor = document.getElementById('selectorDias');
+        contenedor.innerHTML = '';
+        
+        // Mapeo de nombres cortos
+        const nombresCortos = {
+            'Lunes': 'L',
+            'Martes': 'M',
+            'Miércoles': 'X',
+            'Miercoles': 'X',
+            'Jueves': 'J',
+            'Viernes': 'V',
+            'Sábado': 'S',
+            'Sabado': 'S',
+            'Domingo': 'D'
+        };
+        
+        dias.forEach(dia => {
+            const nombreCorto = nombresCortos[dia.diasSemanales] || dia.diasSemanales.charAt(0);
+            
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = `
+                <input type="checkbox" 
+                       class="dia-checkbox" 
+                       id="dia-${dia.idDia}" 
+                       value="${dia.idDia}">
+                <label class="dia-label" 
+                       for="dia-${dia.idDia}" 
+                       title="${dia.diasSemanales}">
+                    ${nombreCorto}
+                </label>
+            `;
+            
+            contenedor.appendChild(wrapper);
+            
+            // Event listener para actualizar diasSeleccionados
+            const checkbox = wrapper.querySelector('.dia-checkbox');
+            checkbox.addEventListener('change', function() {
+                actualizarDiasSeleccionados();
+            });
+        });
+    }
+    
+    // ========== ACTUALIZAR DÍAS SELECCIONADOS ==========
+    function actualizarDiasSeleccionados() {
+        diasSeleccionados = Array.from(document.querySelectorAll('.dia-checkbox:checked'))
+            .map(cb => parseInt(cb.value));
+        
+        console.log('📅 Días seleccionados:', diasSeleccionados);
+    }
+    
+    // ========== CARGAR FICHA DESDE URL ==========
     function cargarFichaDesdeUrl() {
         const fichaParam = obtenerParametroUrl('ficha');
         if (!fichaParam) {
-            console.log('No hay ficha en la URL');
             return Promise.resolve();
         }
         
         return new Promise((resolve, reject) => {
-            console.log('Buscando ficha:', fichaParam);
             fetch('controlador/fichaControlador.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -247,15 +371,12 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Respuesta de fichas:', data);
                 if (data.codigo === "200") {
-                    // Buscar la ficha que coincida con el código
                     const fichaEncontrada = data.listarTecnologos.find(f => f.codigoFicha === fichaParam);
                     if (fichaEncontrada) {
-                        // 🔥 CORRECCIÓN: Guardar el ID correcto de la ficha
                         fichaSeleccionada = {
-                            id: fichaEncontrada.idFicha || null, // ID numérico de la tabla ficha
-                            codigo: fichaEncontrada.codigoFicha, // Código de texto
+                            id: fichaEncontrada.idFicha,
+                            codigo: fichaEncontrada.codigoFicha,
                             programa: fichaEncontrada.programa,
                             jornada: fichaEncontrada.jornada,
                             municipio: fichaEncontrada.municipio,
@@ -263,7 +384,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             idSede: fichaEncontrada.idSede
                         };
                         
-                        // Mostrar información de la ficha
                         document.getElementById('infoFicha').style.display = 'block';
                         document.getElementById('fichaCodigo').textContent = fichaSeleccionada.codigo;
                         document.getElementById('fichaCiudad').textContent = fichaSeleccionada.municipio;
@@ -271,31 +391,22 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('fichaPrograma').textContent = fichaSeleccionada.programa;
                         document.getElementById('fichaJornada').textContent = fichaSeleccionada.jornada;
                         
-                        console.log('✅ Ficha cargada correctamente:', fichaSeleccionada);
-                        
-                        // Cargar ambientes de la sede de la ficha
                         cargarAmbientesPorSede(fichaSeleccionada.idSede);
-                        
                         resolve();
                     } else {
-                        console.error('❌ No se encontró la ficha:', fichaParam);
                         reject('Ficha no encontrada');
                     }
                 } else {
                     reject('Error al cargar fichas');
                 }
             })
-            .catch(error => {
-                console.error('Error al cargar ficha:', error);
-                reject(error);
-            });
+            .catch(reject);
         });
     }
     
-    // ====== CARGAR INSTRUCTORES ======
+    // ========== CARGAR INSTRUCTORES ==========
     function cargarInstructores() {
         return new Promise((resolve, reject) => {
-            console.log('Cargando instructores...');
             fetch('controlador/instructorControlador.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -303,26 +414,21 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
-                console.log('Datos instructores:', data);
                 if (data.codigo === "200") {
                     instructores = data.listarInstructor;
                     renderizarInstructores(instructores);
                     inicializarDraggable();
                     resolve();
                 } else {
-                    reject('Error al cargar instructores: ' + data.mensaje);
+                    reject('Error al cargar instructores');
                 }
             })
-            .catch(error => {
-                console.error('Error al cargar instructores:', error);
-                reject(error);
-            });
+            .catch(reject);
         });
     }
     
-    // ====== CARGAR AMBIENTES POR SEDE ======
+    // ========== CARGAR AMBIENTES POR SEDE ==========
     function cargarAmbientesPorSede(idSede) {
-        console.log('Cargando ambientes para sede:', idSede);
         fetch('controlador/ambienteControlador.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -330,33 +436,15 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            console.log('Datos ambientes:', data);
             if (data.codigo === "200") {
                 ambientes = data.ambientes;
                 renderizarAmbientes(ambientes);
-                inicializarDraggable();
-            } else {
-                ambientes = [];
-                document.getElementById('listaAmbientes').innerHTML = `
-                    <div class="text-muted text-center py-3">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        Error: ${data.mensaje || 'No hay ambientes disponibles en esta sede'}
-                    </div>
-                `;
             }
         })
-        .catch(error => {
-            console.error('Error al cargar ambientes:', error);
-            document.getElementById('listaAmbientes').innerHTML = `
-                <div class="text-muted text-center py-3">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    Error al cargar ambientes: ${error.message}
-                </div>
-            `;
-        });
+        .catch(error => console.error('Error:', error));
     }
     
-    // ====== RENDERIZAR LISTA DE INSTRUCTORES ======
+    // ========== RENDERIZAR INSTRUCTORES ==========
     function renderizarInstructores(lista) {
         const contenedor = document.getElementById('listaInstructores');
         contenedor.innerHTML = '';
@@ -377,47 +465,34 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('countInstructores').textContent = lista.length;
     }
     
-    // ====== RENDERIZAR LISTA DE AMBIENTES ======
+    // ========== RENDERIZAR AMBIENTES ==========
     function renderizarAmbientes(lista) {
         const contenedor = document.getElementById('listaAmbientes');
         contenedor.innerHTML = '';
         
         if (lista.length === 0) {
-            contenedor.innerHTML = `
-                <div class="text-muted text-center py-3">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    No hay ambientes disponibles
-                </div>
-            `;
+            contenedor.innerHTML = '<div class="text-muted text-center py-3">No hay ambientes disponibles</div>';
             return;
         }
         
         lista.forEach((ambiente, index) => {
             const div = document.createElement('div');
             div.className = 'ambiente-item';
-            div.setAttribute('data-type', 'ambiente');
             div.setAttribute('data-id', ambiente.idAmbiente);
             div.setAttribute('data-nombre', `Ambiente ${ambiente.codigo}`);
-            div.setAttribute('data-sede', ambiente.sedeNombre || 'General');
-            div.setAttribute('data-sede-code', ambiente.sedeMunicipio || 'GEN');
             div.innerHTML = `
                 <i class="fas fa-door-open me-2"></i>
                 <strong>${ambiente.codigo}</strong>
                 <br><small>${ambiente.descripcion || ''}</small>
-                <br><small class="text-dark"><i class="fas fa-map-marker-alt me-1"></i>${ambiente.sedeNombre || ''}</small>
             `;
-            // Click para seleccionar ambiente
+            
             div.addEventListener('click', function() {
-                // Remover selección anterior
                 document.querySelectorAll('.ambiente-item').forEach(item => item.classList.remove('selected'));
-                // Seleccionar este ambiente
                 div.classList.add('selected');
                 ambienteSeleccionado = {
                     idAmbiente: ambiente.idAmbiente,
-                    codigo: ambiente.codigo,
-                    nombre: `Ambiente ${ambiente.codigo}`
+                    codigo: ambiente.codigo
                 };
-                console.log('✅ Ambiente seleccionado:', ambienteSeleccionado);
             });
             contenedor.appendChild(div);
         });
@@ -425,53 +500,63 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('countAmbientes').textContent = lista.length;
     }
     
-    // ====== INICIALIZAR DRAGGABLE ======
+    // ========== INICIALIZAR DRAGGABLE ==========
     function inicializarDraggable() {
+        if (draggableInstance) {
+            draggableInstance.destroy();
+            draggableInstance = null;
+        }
+        
         const contenedorInstructores = document.getElementById('listaInstructores');
         
-        // Drag SOLO para instructores (ambientes son seleccionables con clic)
-        new FullCalendar.Draggable(contenedorInstructores, {
+        draggableInstance = new FullCalendar.Draggable(contenedorInstructores, {
             itemSelector: '.instructor-item',
             eventData: function(eventEl) {
                 return {
                     title: eventEl.getAttribute('data-nombre'),
                     backgroundColor: eventEl.getAttribute('data-color'),
                     borderColor: eventEl.getAttribute('data-color'),
+                    duration: '01:00',
                     extendedProps: {
                         type: 'instructor',
                         idFuncionario: eventEl.getAttribute('data-id'),
                         idAmbiente: ambienteSeleccionado?.idAmbiente || null,
-                        idFicha: fichaSeleccionada?.id || null, // 🔥 USAR EL ID NUMÉRICO
-                        nombreInstructor: eventEl.getAttribute('data-nombre')
+                        idFicha: fichaSeleccionada?.id || null,
+                        nombreInstructor: eventEl.getAttribute('data-nombre'),
+                        dias: [...diasSeleccionados], // 🔥 Copiar días seleccionados
+                        pendiente: true
                     }
                 };
             }
         });
     }
     
-    // ====== BUSCAR INSTRUCTOR ======
+    // ========== BUSCAR INSTRUCTOR ==========
     document.getElementById('buscarInstructor').addEventListener('input', function(e) {
         const termino = e.target.value.toLowerCase();
-        const items = document.querySelectorAll('.instructor-item');
-        
-        items.forEach(item => {
+        document.querySelectorAll('.instructor-item').forEach(item => {
             const nombre = item.getAttribute('data-nombre').toLowerCase();
             item.classList.toggle('oculto', !nombre.includes(termino));
         });
     });
     
-    // ====== BUSCAR AMBIENTE ======
+    // ========== BUSCAR AMBIENTE ==========
     document.getElementById('buscarAmbiente').addEventListener('input', function(e) {
         const termino = e.target.value.toLowerCase();
-        const items = document.querySelectorAll('.ambiente-item');
-        
-        items.forEach(item => {
+        document.querySelectorAll('.ambiente-item').forEach(item => {
             const nombre = item.getAttribute('data-nombre').toLowerCase();
             item.classList.toggle('oculto', !nombre.includes(termino));
         });
     });
     
-    // ====== INICIALIZAR CALENDARIO ======
+    // ========== ACTUALIZAR CONTADOR PENDIENTES ==========
+    function actualizarContadorPendientes() {
+        const contador = eventosPendientes.length;
+        document.getElementById('countEventosPendientes').textContent = contador;
+        document.getElementById('alertEventosPendientes').style.display = contador > 0 ? 'block' : 'none';
+    }
+    
+    // ========== INICIALIZAR CALENDARIO ==========
     const calendarEl = document.getElementById('calendario');
     calendario = new FullCalendar.Calendar(calendarEl, {
         initialView: 'timeGridWeek',
@@ -498,34 +583,61 @@ document.addEventListener('DOMContentLoaded', function() {
         slotDuration: '00:30:00',
         weekends: true,
         
-        // Cuando se suelta un instructor/ambiente en el calendario
         eventReceive: function(info) {
-            console.log('📅 Evento recibido en el calendario:', info.event);
-            // Verificar que haya una ficha seleccionada
             if (!fichaSeleccionada) {
                 info.event.remove();
-                mostrarNotificacion('Por favor selecciona una ficha primero', 'warning');
+                mostrarNotificacion('Selecciona una ficha primero', 'warning');
                 return;
             }
-            guardarHorario(info.event);
+            
+            // 🔥 Validar que haya días seleccionados
+            if (!info.event.extendedProps.dias || info.event.extendedProps.dias.length === 0) {
+                info.event.remove();
+                mostrarNotificacion('Debes seleccionar al menos un día de la semana', 'warning');
+                return;
+            }
+            
+            const eventData = {
+                tempId: 'temp_' + Date.now(),
+                title: info.event.title,
+                start: info.event.start,
+                end: info.event.end,
+                extendedProps: info.event.extendedProps,
+                backgroundColor: info.event.backgroundColor,
+                borderColor: info.event.borderColor
+            };
+            
+            eventosPendientes.push(eventData);
+            info.event.setProp('classNames', ['pendiente']);
+            info.event.setExtendedProp('tempId', eventData.tempId);
+            actualizarContadorPendientes();
+            
+            console.log('✅ Evento agregado. Días:', info.event.extendedProps.dias);
         },
         
-        // Cuando se arrastra un evento existente
         eventDrop: function(info) {
-            actualizarHorario(info.event);
+            if (info.event.extendedProps.pendiente) {
+                const index = eventosPendientes.findIndex(e => e.tempId === info.event.extendedProps.tempId);
+                if (index !== -1) {
+                    eventosPendientes[index].start = info.event.start;
+                    eventosPendientes[index].end = info.event.end;
+                }
+            }
         },
         
-        // Cuando se redimensiona un evento
         eventResize: function(info) {
-            actualizarHorario(info.event);
+            if (info.event.extendedProps.pendiente) {
+                const index = eventosPendientes.findIndex(e => e.tempId === info.event.extendedProps.tempId);
+                if (index !== -1) {
+                    eventosPendientes[index].end = info.event.end;
+                }
+            }
         },
         
-        // Click en un evento para ver detalles
         eventClick: function(info) {
             mostrarDetalleHorario(info.event);
         },
         
-        // Cargar eventos existentes
         events: function(fetchInfo, successCallback, failureCallback) {
             fetch('controlador/horarioControlador.php', {
                 method: 'POST',
@@ -535,169 +647,154 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.codigo === "200") {
-                    const eventos = data.horarios.map(h => ({
-                        id: h.idHorario,
-                        title: h.instructorNombre || `Ambiente ${h.ambienteNumero || ''}` || 'Evento',
-                        start: h.fecha_inicioClase,
-                        end: h.hora_finClase,
-                        backgroundColor: '#3788d8',
-                        borderColor: '#3788d8',
-                        extendedProps: {
-                            idFuncionario: h.idFuncionario,
-                            idAmbiente: h.idAmbiente,
-                            idFicha: h.idFicha,
-                            tipo: h.instructorNombre ? 'instructor' : 'ambiente',
-                            instructor: h.instructorNombre,
-                            ambiente: h.ambienteNumero,
-                            ambienteDescripcion: h.ambienteDescripcion,
-                            codigoFicha: h.codigoFicha
-                        }
-                    }));
+                    const eventos = data.horarios.map(h => {
+                        // Convertir string de IDs a array
+                        const diasArray = h.dias ? h.dias.split(',').map(d => parseInt(d)) : [];
+                        
+                        return {
+                            id: h.idHorario,
+                            title: h.instructorNombre || `Ambiente ${h.ambienteNumero}` || 'Evento',
+                            start: h.fecha_inicioClase || h.hora_inicioClase,
+                            end: h.hora_finClase,
+                            backgroundColor: '#3788d8',
+                            borderColor: '#3788d8',
+                            extendedProps: {
+                                idFuncionario: h.idFuncionario,
+                                idAmbiente: h.idAmbiente,
+                                idFicha: h.idFicha,
+                                instructor: h.instructorNombre,
+                                ambiente: h.ambienteNumero,
+                                codigoFicha: h.codigoFicha,
+                                dias: diasArray,
+                                diasNombres: h.diasNombres,
+                                pendiente: false
+                            }
+                        };
+                    });
                     successCallback(eventos);
                 } else {
                     successCallback([]);
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('❌ Error:', error);
                 failureCallback(error);
             });
         }
     });
     
-    // ====== GUARDAR HORARIO ======
-    function guardarHorario(evento) {
-        // Verificar que haya una ficha seleccionada
-        if (!fichaSeleccionada || !fichaSeleccionada.id) {
-            evento.remove();
-            mostrarNotificacion('Por favor selecciona una ficha primero', 'warning');
+    // ========== BOTÓN GUARDAR HORARIO ==========
+    document.getElementById('btnGuardarHorario').addEventListener('click', function() {
+        if (eventosPendientes.length === 0) {
+            mostrarNotificacion('No hay eventos para guardar', 'warning');
             return;
         }
         
-        // 🔥 CORRECCIÓN: Usar formato correcto para MySQL datetime
-        const horaInicio = formatearFechaMySQL(evento.start);
-        const horaFin = evento.end ? formatearFechaMySQL(evento.end) : formatearFechaMySQL(new Date(evento.start.getTime() + 60*60*1000));
+        if (!confirm(`¿Guardar ${eventosPendientes.length} horarios?`)) {
+            return;
+        }
         
-        // Obtener fechas del rango del horario
-        const fechaInicioRange = document.getElementById('fechaInicio').value || null;
-        const fechaFinRange = document.getElementById('fechaFin').value || null;
+        const fechaInicio = document.getElementById('fechaInicio').value || null;
+        const fechaFin = document.getElementById('fechaFin').value || null;
         
-        console.log('💾 Guardando horario:');
-        console.log('- Instructor ID:', evento.extendedProps.idFuncionario);
-        console.log('- Ambiente ID:', evento.extendedProps.idAmbiente);
-        console.log('- Ficha ID (numérico):', fichaSeleccionada.id);
-        console.log('- Hora inicio clase:', horaInicio);
-        console.log('- Hora fin clase:', horaFin);
-        console.log('- Fecha inicio rango:', fechaInicioRange);
-        console.log('- Fecha fin rango:', fechaFinRange);
+        let guardados = 0;
+        let errores = 0;
         
-        const datos = new URLSearchParams({
-            crearHorario: 'ok',
-            idFuncionario: evento.extendedProps.idFuncionario || '',
-            idAmbiente: evento.extendedProps.idAmbiente || '',
-            idFicha: fichaSeleccionada.id, // 🔥 USAR ID NUMÉRICO
-            hora_inicioClase: horaInicio, // 🔥 NOMBRE CORRECTO
-            hora_finClase: horaFin,
-            fecha_inicioHorario: fechaInicioRange || '',
-            fecha_finHorario: fechaFinRange || ''
-        });
+        const promesas = eventosPendientes.map(eventData => {
+            const horaInicio = formatearHoraMySQL(new Date(eventData.start));
+            const horaFin = eventData.end ? formatearHoraMySQL(new Date(eventData.end)) : null;
+            
+            // 🔥 IMPORTANTE: Enviar días como JSON
+            const datos = new URLSearchParams({
+                crearHorario: 'ok',
+                idFuncionario: eventData.extendedProps.idFuncionario || '',
+                idAmbiente: eventData.extendedProps.idAmbiente || '',
+                idFicha: fichaSeleccionada.id,
+                hora_inicioClase: horaInicio,
+                hora_finClase: horaFin,
+                fecha_inicioHorario: fechaInicio || '',
+                fecha_finHorario: fechaFin || '',
+                dias: JSON.stringify(eventData.extendedProps.dias) // 🔥 Array de días
+            });
 
-        fetch('controlador/horarioControlador.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: datos
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('📬 Respuesta del servidor:', data);
-            if (data.codigo === "200") {
-                evento.setProp('id', data.idHorario);
-                mostrarNotificacion('✅ Horario creado correctamente', 'success');
-            } else {
-                evento.remove();
-                mostrarNotificacion('❌ Error al crear horario: ' + (data.mensaje || 'Error desconocido'), 'error');
-                console.error('Error del servidor:', data);
-            }
-        })
-        .catch(error => {
-            console.error('❌ Error de red:', error);
-            evento.remove();
-            mostrarNotificacion('Error de conexión al crear horario', 'error');
+            return fetch('controlador/horarioControlador.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: datos
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.codigo === "200") {
+                    guardados++;
+                    const eventoCalendario = calendario.getEvents().find(e => 
+                        e.extendedProps.tempId === eventData.tempId
+                    );
+                    if (eventoCalendario) {
+                        eventoCalendario.setProp('id', data.idHorario);
+                        eventoCalendario.setExtendedProp('pendiente', false);
+                        eventoCalendario.setProp('classNames', []);
+                    }
+                    return { success: true };
+                } else {
+                    errores++;
+                    console.error('❌ Error:', data.mensaje);
+                    return { success: false };
+                }
+            })
+            .catch(error => {
+                errores++;
+                console.error('❌ Error de red:', error);
+                return { success: false };
+            });
         });
-    }
+        
+        Promise.all(promesas).then(() => {
+            eventosPendientes = [];
+            actualizarContadorPendientes();
+            
+            if (errores === 0) {
+                mostrarNotificacion(`✅ ${guardados} horarios guardados`, 'success');
+            } else {
+                mostrarNotificacion(`⚠️ ${guardados} guardados, ${errores} errores`, 'warning');
+            }
+            
+            calendario.refetchEvents();
+        });
+    });
     
-    // ====== FUNCIÓN AUXILIAR PARA FORMATEAR FECHAS ======
-    function formatearFechaMySQL(fecha) {
-        const year = fecha.getFullYear();
-        const month = String(fecha.getMonth() + 1).padStart(2, '0');
-        const day = String(fecha.getDate()).padStart(2, '0');
+    // ========== BOTÓN LIMPIAR ==========
+    document.getElementById('btnLimpiarHorario').addEventListener('click', function() {
+        if (eventosPendientes.length === 0) {
+            mostrarNotificacion('No hay eventos para limpiar', 'warning');
+            return;
+        }
+        
+        if (!confirm(`¿Eliminar ${eventosPendientes.length} eventos pendientes?`)) {
+            return;
+        }
+        
+        eventosPendientes.forEach(eventData => {
+            const eventoCalendario = calendario.getEvents().find(e => 
+                e.extendedProps.tempId === eventData.tempId
+            );
+            if (eventoCalendario) {
+                eventoCalendario.remove();
+            }
+        });
+        
+        eventosPendientes = [];
+        actualizarContadorPendientes();
+        mostrarNotificacion('🗑️ Eventos eliminados', 'success');
+    });
+    
+    // ========== FORMATEAR HORA MYSQL ==========
+    function formatearHoraMySQL(fecha) {
         const hours = String(fecha.getHours()).padStart(2, '0');
         const minutes = String(fecha.getMinutes()).padStart(2, '0');
-        const seconds = String(fecha.getSeconds()).padStart(2, '0');
-        
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        return `${hours}:${minutes}:00`;
     }
     
-    // ====== ACTUALIZAR HORARIO ======
-    function actualizarHorario(evento) {
-        const horaInicio = formatearFechaMySQL(evento.start);
-        const horaFin = evento.end ? formatearFechaMySQL(evento.end) : formatearFechaMySQL(new Date(evento.start.getTime() + 60*60*1000));
-        
-        const fechaInicioRange = document.getElementById('fechaInicio').value || null;
-        const fechaFinRange = document.getElementById('fechaFin').value || null;
-        
-        console.log('🔄 Actualizando horario:', evento.id);
-        
-        const datos = new URLSearchParams({
-            actualizarHorario: 'ok',
-            idHorario: evento.id,
-            idAmbiente: evento.extendedProps.idAmbiente || '',
-            hora_inicioClase: horaInicio,
-            hora_finClase: horaFin,
-            fecha_inicioHorario: fechaInicioRange || '',
-            fecha_finHorario: fechaFinRange || ''
-        });
-
-        fetch('controlador/horarioControlador.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: datos
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.codigo === "200") {
-                mostrarNotificacion('✅ Horario actualizado', 'success');
-            } else {
-                calendario.refetchEvents();
-                mostrarNotificacion('❌ Error al actualizar: ' + data.mensaje, 'error');
-            }
-        });
-    }
-    
-    // ====== ELIMINAR HORARIO ======
-    function eliminarHorario(evento) {
-        const datos = new URLSearchParams({
-            eliminarHorario: 'ok',
-            idHorario: evento.id
-        });
-
-        fetch('controlador/horarioControlador.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: datos
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.codigo === "200") {
-                evento.remove();
-                mostrarNotificacion('✅ Horario eliminado', 'success');
-            } else {
-                mostrarNotificacion('❌ Error al eliminar: ' + data.mensaje, 'error');
-            }
-        });
-    }
-    
-    // ====== MOSTRAR DETALLE DEL HORARIO ======
+    // ========== MOSTRAR DETALLE HORARIO ==========
     function mostrarDetalleHorario(evento) {
         const props = evento.extendedProps;
         let contenido = `
@@ -705,53 +802,52 @@ document.addEventListener('DOMContentLoaded', function() {
                 <strong><i class="fas fa-heading me-2"></i>Evento:</strong> ${evento.title}
             </div>
             <div class="mb-3">
-                <strong><i class="fas fa-clock me-2"></i>Fecha Inicio:</strong> ${evento.start.toLocaleString('es-CO')}
-            </div>
-            <div class="mb-3">
-                <strong><i class="fas fa-clock me-2"></i>Fecha Fin:</strong> ${evento.end ? evento.end.toLocaleString('es-CO') : 'No definida'}
+                <strong><i class="fas fa-clock me-2"></i>Hora:</strong> 
+                ${evento.start.toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit'})} - 
+                ${evento.end ? evento.end.toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit'}) : 'N/A'}
             </div>
         `;
         
-        if (props.tipo === 'instructor') {
+        // 🔥 MOSTRAR DÍAS DE LA SEMANA
+        if (props.diasNombres) {
             contenido += `
                 <div class="mb-3">
-                    <strong><i class="fas fa-user me-2"></i>Instructor:</strong> ${props.instructor || 'No asignado'}
+                    <strong><i class="fas fa-calendar-week me-2"></i>Días:</strong> 
+                    ${props.diasNombres}
                 </div>
             `;
         }
         
-        if (props.tipo === 'ambiente' || props.ambiente) {
+        if (props.pendiente) {
             contenido += `
-                <div class="mb-3">
-                    <strong><i class="fas fa-door-open me-2"></i>Ambiente:</strong> ${props.ambiente || 'No asignado'}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Este evento está <strong>pendiente de guardar</strong>
                 </div>
             `;
         }
         
-        if (props.codigoFicha) {
+        if (props.instructor) {
             contenido += `
                 <div class="mb-3">
-                    <strong><i class="fas fa-id-card me-2"></i>Ficha:</strong> ${props.codigoFicha}
+                    <strong><i class="fas fa-user me-2"></i>Instructor:</strong> ${props.instructor}
+                </div>
+            `;
+        }
+        
+        if (props.ambiente) {
+            contenido += `
+                <div class="mb-3">
+                    <strong><i class="fas fa-door-open me-2"></i>Ambiente:</strong> ${props.ambiente}
                 </div>
             `;
         }
         
         document.getElementById('detalleHorarioContent').innerHTML = contenido;
-        
-        const footer = document.querySelector('#modalDetalleHorario .modal-footer');
-        footer.innerHTML = `
-            <button type="button" class="btn btn-danger" onclick="eliminarEvento('${evento.id}')">
-                <i class="fas fa-trash me-2"></i>Eliminar
-            </button>
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        `;
-        
-        window.eventoActual = evento;
-        
         new bootstrap.Modal(document.getElementById('modalDetalleHorario')).show();
     }
     
-    // ====== NOTIFICACIONES ======
+    // ========== NOTIFICACIONES ==========
     function mostrarNotificacion(mensaje, tipo) {
         const toast = document.createElement('div');
         toast.className = `alert alert-${tipo === 'success' ? 'success' : tipo === 'warning' ? 'warning' : 'danger'} position-fixed`;
@@ -764,34 +860,23 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => toast.remove(), 4000);
     }
     
-    // ====== INICIALIZACIÓN ======
+    // ========== INICIALIZACIÓN ==========
     calendario.render();
     
-    cargarInstructores().then(() => {
-        cargarFichaDesdeUrl();
+    // 🔥 CARGAR DÍAS PRIMERO
+    cargarDiasSemana().then(() => {
+        return cargarInstructores();
+    }).then(() => {
+        return cargarFichaDesdeUrl();
+    }).catch(error => {
+        console.error('❌ Error en inicialización:', error);
     });
-    
-    window.eliminarEvento = function(eventId) {
-        const evento = calendario.getEventById(eventId);
-        if (evento) {
-            if (confirm('¿Desea eliminar este horario?')) {
-                eliminarHorario(evento);
-                bootstrap.Modal.getInstance(document.getElementById('modalDetalleHorario')).hide();
-            }
-        }
-    };
 });
 </script>
 
 <style>
 @keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
 }
 </style>

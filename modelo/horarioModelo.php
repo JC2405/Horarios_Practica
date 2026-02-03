@@ -4,7 +4,7 @@ include_once "conexion.php";
 
 class horarioModelo {
 
-    // Listar todos los horarios para el calendario
+    // ========== LISTAR TODOS LOS HORARIOS ==========
     public static function mdlListarHorarios() {
         $mensaje = array();
         try {
@@ -13,21 +13,21 @@ class horarioModelo {
                         f.nombre as instructorNombre, h.idFuncionario, h.idAmbiente, h.idFicha,
                         h.fecha_inicioHorario, h.fecha_finHorario,
                         a.codigo as ambienteNumero, a.ubicacion as ambienteDescripcion,
-                        fi.codigoFicha
+                        fi.codigoFicha,
+                        GROUP_CONCAT(d.idDia) as dias,
+                        GROUP_CONCAT(d.diasSemanales) as diasNombres
                  FROM horario h
                  LEFT JOIN funcionario f ON h.idFuncionario = f.idFuncionario
                  LEFT JOIN ambiente a ON h.idAmbiente = a.idAmbiente
-                 LEFT JOIN ficha fi ON h.idFicha = fi.idFicha"
+                 LEFT JOIN ficha fi ON h.idFicha = fi.idFicha
+                 LEFT JOIN horariodia hd ON h.idHorario = hd.id_horarios
+                 LEFT JOIN dia d ON hd.id_dias = d.idDia
+                 GROUP BY h.idHorario"
             );
             $objRespuesta->execute();
             $listarHorarios = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
             $objRespuesta = null;
             
-            // Renombrar campos para compatibilidad con el frontend
-            foreach ($listarHorarios as &$horario) {
-                $horario['fecha_inicioClase'] = $horario['hora_inicioClase'];
-            }
-            
             $mensaje = array("codigo" => "200", "horarios" => $listarHorarios);
         } catch (Exception $e) {
             $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
@@ -35,53 +35,30 @@ class horarioModelo {
         return $mensaje;
     }
 
-    // Listar horarios por ficha
-    public static function mdlListarHorariosPorFicha($idFicha) {
-        $mensaje = array();
-        try {
-            $objRespuesta = Conexion::Conectar()->prepare(
-                "SELECT h.idHorario, h.hora_inicioClase, h.hora_finClase,
-                        f.nombre as instructorNombre, h.idFuncionario, h.idAmbiente, h.idFicha,
-                        h.fecha_inicioHorario, h.fecha_finHorario,
-                        a.codigo as ambienteNumero, a.ubicacion as ambienteDescripcion,
-                        fi.codigoFicha
-                 FROM horario h
-                 LEFT JOIN funcionario f ON h.idFuncionario = f.idFuncionario
-                 LEFT JOIN ambiente a ON h.idAmbiente = a.idAmbiente
-                 LEFT JOIN ficha fi ON h.idFicha = fi.idFicha
-                 WHERE h.idFicha = :idFicha"
-            );
-            $objRespuesta->execute([':idFicha' => $idFicha]);
-            $listarHorarios = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
-            $objRespuesta = null;
-            
-            // Renombrar campos para compatibilidad con el frontend
-            foreach ($listarHorarios as &$horario) {
-                $horario['fecha_inicioClase'] = $horario['hora_inicioClase'];
-            }
-            
-            $mensaje = array("codigo" => "200", "horarios" => $listarHorarios);
-        } catch (Exception $e) {
-            $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
-        }
-        return $mensaje;
-    }
-
-    // Crear un nuevo horario
+    // ========== CREAR HORARIO CON DÍAS DE LA SEMANA ==========
     public static function mdlCrearHorario($datos) {
         $mensaje = array();
+        $conn = Conexion::Conectar();
+        
         try {
-            // Validar que idFicha no esté vacío
+            // Validaciones
             if (empty($datos['idFicha'])) {
                 return array("codigo" => "400", "mensaje" => "El ID de la ficha es obligatorio");
             }
             
-            // Validar que idFicha sea numérico
             if (!is_numeric($datos['idFicha'])) {
                 return array("codigo" => "400", "mensaje" => "El ID de la ficha debe ser numérico");
             }
             
-            $objRespuesta = Conexion::Conectar()->prepare(
+            if (empty($datos['dias']) || !is_array($datos['dias'])) {
+                return array("codigo" => "400", "mensaje" => "Debe seleccionar al menos un día de la semana");
+            }
+            
+            // Iniciar transacción
+            $conn->beginTransaction();
+            
+            // 1. Insertar horario base
+            $objRespuesta = $conn->prepare(
                 "INSERT INTO horario (idFuncionario, idAmbiente, idFicha, 
                         hora_inicioClase, hora_finClase, fecha_inicioHorario, fecha_finHorario)
                  VALUES (:idFuncionario, :idAmbiente, :idFicha, 
@@ -99,20 +76,51 @@ class horarioModelo {
             ];
             
             $objRespuesta->execute($parametros);
-            $idInsertado = Conexion::Conectar()->lastInsertId();
-            $objRespuesta = null;
-            $mensaje = array("codigo" => "200", "mensaje" => "Horario creado exitosamente", "idHorario" => $idInsertado);
+            $idHorario = $conn->lastInsertId();
+            
+            // 2. Insertar días de la semana en horariodia
+            $stmtDias = $conn->prepare(
+                "INSERT INTO horariodia (id_horarios, id_dias) VALUES (:idHorario, :idDia)"
+            );
+            
+            foreach ($datos['dias'] as $idDia) {
+                $stmtDias->execute([
+                    ':idHorario' => $idHorario,
+                    ':idDia' => $idDia
+                ]);
+            }
+            
+            // Confirmar transacción
+            $conn->commit();
+            
+            $mensaje = array(
+                "codigo" => "200", 
+                "mensaje" => "Horario creado exitosamente", 
+                "idHorario" => $idHorario,
+                "dias" => $datos['dias']
+            );
+            
         } catch (Exception $e) {
+            // Revertir transacción en caso de error
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
             $mensaje = array("codigo" => "400", "mensaje" => "Error al crear horario: " . $e->getMessage());
         }
+        
         return $mensaje;
     }
 
-    // Actualizar horario (cuando se arrastra en el calendario)
+    // ========== ACTUALIZAR HORARIO ==========
     public static function mdlActualizarHorario($datos) {
         $mensaje = array();
+        $conn = Conexion::Conectar();
+        
         try {
-            $objRespuesta = Conexion::Conectar()->prepare(
+            $conn->beginTransaction();
+            
+            // 1. Actualizar horario base
+            $objRespuesta = $conn->prepare(
                 "UPDATE horario SET idAmbiente = :idAmbiente, 
                         hora_inicioClase = :hora_inicioClase, hora_finClase = :hora_finClase,
                         fecha_inicioHorario = :fecha_inicioHorario, fecha_finHorario = :fecha_finHorario
@@ -126,24 +134,101 @@ class horarioModelo {
                 ':fecha_finHorario' => !empty($datos['fecha_finHorario']) ? $datos['fecha_finHorario'] : null,
                 ':idHorario' => $datos['idHorario']
             ]);
-            $objRespuesta = null;
+            
+            // 2. Si se enviaron días, actualizar
+            if (isset($datos['dias']) && is_array($datos['dias'])) {
+                // Eliminar días anteriores
+                $stmtDelete = $conn->prepare("DELETE FROM horariodia WHERE id_horarios = :idHorario");
+                $stmtDelete->execute([':idHorario' => $datos['idHorario']]);
+                
+                // Insertar nuevos días
+                $stmtInsert = $conn->prepare(
+                    "INSERT INTO horariodia (id_horarios, id_dias) VALUES (:idHorario, :idDia)"
+                );
+                
+                foreach ($datos['dias'] as $idDia) {
+                    $stmtInsert->execute([
+                        ':idHorario' => $datos['idHorario'],
+                        ':idDia' => $idDia
+                    ]);
+                }
+            }
+            
+            $conn->commit();
             $mensaje = array("codigo" => "200", "mensaje" => "Horario actualizado");
+            
+        } catch (Exception $e) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+            $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
+        }
+        
+        return $mensaje;
+    }
+
+    // ========== ELIMINAR HORARIO ==========
+    public static function mdlEliminarHorario($idHorario) {
+        $mensaje = array();
+        $conn = Conexion::Conectar();
+        
+        try {
+            $conn->beginTransaction();
+            
+            // 1. Eliminar registros de horariodia (por integridad referencial)
+            $stmtDias = $conn->prepare("DELETE FROM horariodia WHERE id_horarios = :idHorario");
+            $stmtDias->execute([':idHorario' => $idHorario]);
+            
+            // 2. Eliminar horario
+            $objRespuesta = $conn->prepare("DELETE FROM horario WHERE idHorario = :idHorario");
+            $objRespuesta->execute([':idHorario' => $idHorario]);
+            
+            $conn->commit();
+            $mensaje = array("codigo" => "200", "mensaje" => "Horario eliminado");
+            
+        } catch (Exception $e) {
+            if ($conn->inTransaction()) {
+                $conn->rollBack();
+            }
+            $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
+        }
+        
+        return $mensaje;
+    }
+    
+    // ========== LISTAR DÍAS DE LA SEMANA ==========
+    public static function mdlListarDias() {
+        $mensaje = array();
+        try {
+            $objRespuesta = Conexion::Conectar()->prepare(
+                "SELECT idDia, diasSemanales FROM dia ORDER BY idDia"
+            );
+            $objRespuesta->execute();
+            $dias = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
+            $objRespuesta = null;
+            
+            $mensaje = array("codigo" => "200", "dias" => $dias);
         } catch (Exception $e) {
             $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
         }
         return $mensaje;
     }
-
-    // Eliminar horario
-    public static function mdlEliminarHorario($idHorario) {
+    
+    // ========== OBTENER DÍAS DE UN HORARIO ==========
+    public static function mdlObtenerDiasHorario($idHorario) {
         $mensaje = array();
         try {
             $objRespuesta = Conexion::Conectar()->prepare(
-                "DELETE FROM horario WHERE idHorario = :idHorario"
+                "SELECT d.idDia, d.diasSemanales 
+                 FROM horariodia hd
+                 INNER JOIN dia d ON hd.id_dias = d.idDia
+                 WHERE hd.id_horarios = :idHorario"
             );
             $objRespuesta->execute([':idHorario' => $idHorario]);
+            $dias = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
             $objRespuesta = null;
-            $mensaje = array("codigo" => "200", "mensaje" => "Horario eliminado");
+            
+            $mensaje = array("codigo" => "200", "dias" => $dias);
         } catch (Exception $e) {
             $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
         }

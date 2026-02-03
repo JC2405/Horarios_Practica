@@ -247,13 +247,15 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .then(response => response.json())
             .then(data => {
+                console.log('Respuesta de fichas:', data);
                 if (data.codigo === "200") {
                     // Buscar la ficha que coincida con el código
                     const fichaEncontrada = data.listarTecnologos.find(f => f.codigoFicha === fichaParam);
                     if (fichaEncontrada) {
+                        // 🔥 CORRECCIÓN: Guardar el ID correcto de la ficha
                         fichaSeleccionada = {
-                            id: fichaEncontrada.id || null, // Agregar el ID de la ficha
-                            codigo: fichaEncontrada.codigoFicha,
+                            id: fichaEncontrada.idFicha || null, // ID numérico de la tabla ficha
+                            codigo: fichaEncontrada.codigoFicha, // Código de texto
                             programa: fichaEncontrada.programa,
                             jornada: fichaEncontrada.jornada,
                             municipio: fichaEncontrada.municipio,
@@ -269,17 +271,14 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('fichaPrograma').textContent = fichaSeleccionada.programa;
                         document.getElementById('fichaJornada').textContent = fichaSeleccionada.jornada;
                         
-                        console.log('Ficha cargada:', fichaSeleccionada);
+                        console.log('✅ Ficha cargada correctamente:', fichaSeleccionada);
                         
                         // Cargar ambientes de la sede de la ficha
                         cargarAmbientesPorSede(fichaSeleccionada.idSede);
                         
-                        // Filtrar eventos del calendario por ficha
-                        filtrarEventosPorFicha(fichaSeleccionada.codigo);
-                        
                         resolve();
                     } else {
-                        console.error('No se encontró la ficha:', fichaParam);
+                        console.error('❌ No se encontró la ficha:', fichaParam);
                         reject('Ficha no encontrada');
                     }
                 } else {
@@ -302,10 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'listarInstructor=ok'
             })
-            .then(response => {
-                console.log('Respuesta instructores:', response);
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 console.log('Datos instructores:', data);
                 if (data.codigo === "200") {
@@ -332,16 +328,12 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: 'listarAmbientesPorSede=ok&idSede=' + encodeURIComponent(idSede)
         })
-        .then(response => {
-            console.log('Respuesta ambientes:', response);
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
             console.log('Datos ambientes:', data);
             if (data.codigo === "200") {
                 ambientes = data.ambientes;
                 renderizarAmbientes(ambientes);
-                // Inicializar draggable para ambientes
                 inicializarDraggable();
             } else {
                 ambientes = [];
@@ -374,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const div = document.createElement('div');
             div.className = 'instructor-item fc-event';
             div.setAttribute('data-type', 'instructor');
-            div.setAttribute('data-id', instructor.idFuncionario);
+            div.setAttribute('data-id', instructor.idFuncionario || instructor.idInstructor);
             div.setAttribute('data-nombre', instructor.nombre);
             div.setAttribute('data-color', colores[index % colores.length]);
             div.setAttribute('data-color-index', colorIndex);
@@ -425,7 +417,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     codigo: ambiente.codigo,
                     nombre: `Ambiente ${ambiente.codigo}`
                 };
-                console.log('Ambiente seleccionado:', ambienteSeleccionado);
+                console.log('✅ Ambiente seleccionado:', ambienteSeleccionado);
             });
             contenedor.appendChild(div);
         });
@@ -449,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         type: 'instructor',
                         idFuncionario: eventEl.getAttribute('data-id'),
                         idAmbiente: ambienteSeleccionado?.idAmbiente || null,
-                        idFicha: fichaSeleccionada?.codigo || null,
+                        idFicha: fichaSeleccionada?.id || null, // 🔥 USAR EL ID NUMÉRICO
                         nombreInstructor: eventEl.getAttribute('data-nombre')
                     }
                 };
@@ -506,20 +498,10 @@ document.addEventListener('DOMContentLoaded', function() {
         slotDuration: '00:30:00',
         weekends: true,
         
-        // Configurar rango de fechas
-        validRange: function(nowDate) {
-            const fechaInicio = document.getElementById('fechaInicio').value;
-            const fechaFin = document.getElementById('fechaFin').value;
-            
-            return {
-                start: fechaInicio || nowDate,
-                end: fechaFin ? new Date(fechaFin) : null
-            };
-        },
-        
         // Cuando se suelta un instructor/ambiente en el calendario
         eventReceive: function(info) {
-            // Verificar si hay una ficha seleccionada
+            console.log('📅 Evento recibido en el calendario:', info.event);
+            // Verificar que haya una ficha seleccionada
             if (!fichaSeleccionada) {
                 info.event.remove();
                 mostrarNotificacion('Por favor selecciona una ficha primero', 'warning');
@@ -543,51 +525,12 @@ document.addEventListener('DOMContentLoaded', function() {
             mostrarDetalleHorario(info.event);
         },
         
-        // Seleccionar rango de tiempo en el calendario
-        select: function(info) {
-            if (!fichaSeleccionada) {
-                mostrarNotificacion('Por favor selecciona una ficha primero', 'warning');
-                calendario.unselect();
-                return;
-            }
-            
-            // Crear evento rápido
-            const nombre = prompt('Nombre del evento:');
-            if (nombre) {
-                const nuevoEvento = {
-                    title: nombre,
-                    start: info.start,
-                    end: info.end,
-                    backgroundColor: '#667eea',
-                    borderColor: '#667eea',
-                    extendedProps: {
-                        type: 'evento',
-                        idInstructor: null,
-                        idAmbiente: null,
-                        idFicha: fichaSeleccionada.codigo
-                    }
-                };
-                
-                const evento = calendario.addEvent(nuevoEvento);
-                guardarHorario(evento);
-            }
-            calendario.unselect();
-        },
-        
         // Cargar eventos existentes
         events: function(fetchInfo, successCallback, failureCallback) {
-            let body = 'listarHorarios=ok';
-            
-            // Si hay una ficha seleccionada, filtrar por ella
-            if (fichaSeleccionada && fichaSeleccionada.codigo) {
-                // Usar el método de listar horarios por ficha
-                body = 'listarHorarios=ok';
-            }
-            
             fetch('controlador/horarioControlador.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: body
+                body: 'listarHorarios=ok'
             })
             .then(response => response.json())
             .then(data => {
@@ -607,11 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             instructor: h.instructorNombre,
                             ambiente: h.ambienteNumero,
                             ambienteDescripcion: h.ambienteDescripcion,
-                            codigoFicha: h.codigoFicha,
-                            hora_inicioClase: h.fecha_inicioClase,
-                            hora_finClase: h.hora_finClase,
-                            fecha_inicioHorario: h.fecha_inicioHorario,
-                            fecha_finHorario: h.fecha_finHorario
+                            codigoFicha: h.codigoFicha
                         }
                     }));
                     successCallback(eventos);
@@ -626,69 +565,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // ====== FILTRAR EVENTOS POR FICHA ======
-    function filtrarEventosPorFicha(idFicha) {
-        if (!idFicha) {
-            calendario.refetchEvents();
-            return;
-        }
-        
-        // Refetch con filtro
-        fetch('controlador/horarioControlador.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'listarHorarios=ok'
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.codigo === "200") {
-                const eventos = data.horarios
-                    .filter(h => h.idFicha == fichaSeleccionada.codigo)
-                    .map(h => ({
-                        id: h.idHorario,
-                        title: h.instructorNombre || `Ambiente ${h.ambienteNumero || ''}` || 'Evento',
-                        start: h.fecha_inicioClase,
-                        end: h.hora_finClase,
-                        backgroundColor: h.color,
-                        borderColor: h.color,
-                        extendedProps: {
-                            idFuncionario: h.idFuncionario,
-                            idAmbiente: h.idAmbiente,
-                            idFicha: h.idFicha,
-                            tipo: h.instructorNombre ? 'instructor' : 'ambiente',
-                            instructor: h.instructorNombre,
-                            ambiente: h.ambienteNumero,
-                            hora_inicioClase: h.fecha_inicioClase,
-                            hora_finClase: h.hora_finClase
-                        }
-                    }));
-                calendario.removeAllEvents();
-                eventos.forEach(e => calendario.addEvent(e));
-            }
-        });
-    }
-    
     // ====== GUARDAR HORARIO ======
     function guardarHorario(evento) {
         // Verificar que haya una ficha seleccionada
-        if (!fichaSeleccionada) {
+        if (!fichaSeleccionada || !fichaSeleccionada.id) {
             evento.remove();
             mostrarNotificacion('Por favor selecciona una ficha primero', 'warning');
             return;
         }
         
-        // Extraer hora_inicioClase y hora_finClase del evento
-        const horaInicio = evento.start.toISOString();
-        const horaFin = evento.end ? evento.end.toISOString() : new Date(evento.start.getTime() + 60*60*1000).toISOString();
+        // 🔥 CORRECCIÓN: Usar formato correcto para MySQL datetime
+        const horaInicio = formatearFechaMySQL(evento.start);
+        const horaFin = evento.end ? formatearFechaMySQL(evento.end) : formatearFechaMySQL(new Date(evento.start.getTime() + 60*60*1000));
         
         // Obtener fechas del rango del horario
         const fechaInicioRange = document.getElementById('fechaInicio').value || null;
         const fechaFinRange = document.getElementById('fechaFin').value || null;
         
-        console.log('Guardando horario:');
-        console.log('- Instructor:', evento.extendedProps.idFuncionario);
-        console.log('- Ambiente:', evento.extendedProps.idAmbiente);
-        console.log('- Ficha ID:', fichaSeleccionada.id);
+        console.log('💾 Guardando horario:');
+        console.log('- Instructor ID:', evento.extendedProps.idFuncionario);
+        console.log('- Ambiente ID:', evento.extendedProps.idAmbiente);
+        console.log('- Ficha ID (numérico):', fichaSeleccionada.id);
         console.log('- Hora inicio clase:', horaInicio);
         console.log('- Hora fin clase:', horaFin);
         console.log('- Fecha inicio rango:', fechaInicioRange);
@@ -698,11 +595,11 @@ document.addEventListener('DOMContentLoaded', function() {
             crearHorario: 'ok',
             idFuncionario: evento.extendedProps.idFuncionario || '',
             idAmbiente: evento.extendedProps.idAmbiente || '',
-            idFicha: fichaSeleccionada.codigo || '',
-            hora_inicioClase: horaInicio,
+            idFicha: fichaSeleccionada.id, // 🔥 USAR ID NUMÉRICO
+            hora_inicioClase: horaInicio, // 🔥 NOMBRE CORRECTO
             hora_finClase: horaFin,
-            fecha_inicioHorario: fechaInicioRange,
-            fecha_finHorario: fechaFinRange
+            fecha_inicioHorario: fechaInicioRange || '',
+            fecha_finHorario: fechaFinRange || ''
         });
 
         fetch('controlador/horarioControlador.php', {
@@ -712,42 +609,44 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
+            console.log('📬 Respuesta del servidor:', data);
             if (data.codigo === "200") {
                 evento.setProp('id', data.idHorario);
-                // Actualizar extendedProps
-                evento.extendedProps.idFuncionario = datos.get('idFuncionario');
-                evento.extendedProps.idAmbiente = datos.get('idAmbiente');
-                evento.extendedProps.idFicha = datos.get('idFicha');
-                evento.extendedProps.hora_inicioClase = horaInicio;
-                evento.extendedProps.hora_finClase = horaFin;
-                evento.extendedProps.fecha_inicioHorario = fechaInicioRange;
-                evento.extendedProps.fecha_finHorario = fechaFinRange;
-                mostrarNotificacion('Horario creado correctamente', 'success');
+                mostrarNotificacion('✅ Horario creado correctamente', 'success');
             } else {
                 evento.remove();
-                mostrarNotificacion('Error al crear horario: ' + data.mensaje, 'error');
+                mostrarNotificacion('❌ Error al crear horario: ' + (data.mensaje || 'Error desconocido'), 'error');
+                console.error('Error del servidor:', data);
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('❌ Error de red:', error);
             evento.remove();
-            mostrarNotificacion('Error al crear horario', 'error');
+            mostrarNotificacion('Error de conexión al crear horario', 'error');
         });
+    }
+    
+    // ====== FUNCIÓN AUXILIAR PARA FORMATEAR FECHAS ======
+    function formatearFechaMySQL(fecha) {
+        const year = fecha.getFullYear();
+        const month = String(fecha.getMonth() + 1).padStart(2, '0');
+        const day = String(fecha.getDate()).padStart(2, '0');
+        const hours = String(fecha.getHours()).padStart(2, '0');
+        const minutes = String(fecha.getMinutes()).padStart(2, '0');
+        const seconds = String(fecha.getSeconds()).padStart(2, '0');
+        
+        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     }
     
     // ====== ACTUALIZAR HORARIO ======
     function actualizarHorario(evento) {
-        // Extraer hora_inicioClase y hora_finClase del evento
-        const horaInicio = evento.start.toISOString();
-        const horaFin = evento.end ? evento.end.toISOString() : new Date(evento.start.getTime() + 60*60*1000).toISOString();
+        const horaInicio = formatearFechaMySQL(evento.start);
+        const horaFin = evento.end ? formatearFechaMySQL(evento.end) : formatearFechaMySQL(new Date(evento.start.getTime() + 60*60*1000));
         
-        // Obtener fechas del rango del horario
         const fechaInicioRange = document.getElementById('fechaInicio').value || null;
         const fechaFinRange = document.getElementById('fechaFin').value || null;
         
-        console.log('Actualizando horario:', evento.id);
-        console.log('- Hora inicio clase:', horaInicio);
-        console.log('- Hora fin clase:', horaFin);
+        console.log('🔄 Actualizando horario:', evento.id);
         
         const datos = new URLSearchParams({
             actualizarHorario: 'ok',
@@ -755,8 +654,8 @@ document.addEventListener('DOMContentLoaded', function() {
             idAmbiente: evento.extendedProps.idAmbiente || '',
             hora_inicioClase: horaInicio,
             hora_finClase: horaFin,
-            fecha_inicioHorario: fechaInicioRange,
-            fecha_finHorario: fechaFinRange
+            fecha_inicioHorario: fechaInicioRange || '',
+            fecha_finHorario: fechaFinRange || ''
         });
 
         fetch('controlador/horarioControlador.php', {
@@ -767,15 +666,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.codigo === "200") {
-                // Actualizar extendedProps
-                evento.extendedProps.hora_inicioClase = horaInicio;
-                evento.extendedProps.hora_finClase = horaFin;
-                evento.extendedProps.fecha_inicioHorario = fechaInicioRange;
-                evento.extendedProps.fecha_finHorario = fechaFinRange;
-                mostrarNotificacion('Horario actualizado', 'success');
+                mostrarNotificacion('✅ Horario actualizado', 'success');
             } else {
                 calendario.refetchEvents();
-                mostrarNotificacion('Error al actualizar: ' + data.mensaje, 'error');
+                mostrarNotificacion('❌ Error al actualizar: ' + data.mensaje, 'error');
             }
         });
     }
@@ -796,9 +690,9 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.codigo === "200") {
                 evento.remove();
-                mostrarNotificacion('Horario eliminado', 'success');
+                mostrarNotificacion('✅ Horario eliminado', 'success');
             } else {
-                mostrarNotificacion('Error al eliminar: ' + data.mensaje, 'error');
+                mostrarNotificacion('❌ Error al eliminar: ' + data.mensaje, 'error');
             }
         });
     }
@@ -844,7 +738,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         document.getElementById('detalleHorarioContent').innerHTML = contenido;
         
-        // Agregar botón de eliminar
         const footer = document.querySelector('#modalDetalleHorario .modal-footer');
         footer.innerHTML = `
             <button type="button" class="btn btn-danger" onclick="eliminarEvento('${evento.id}')">
@@ -853,7 +746,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         `;
         
-        // Guardar referencia al evento para eliminar
         window.eventoActual = evento;
         
         new bootstrap.Modal(document.getElementById('modalDetalleHorario')).show();
@@ -872,25 +764,13 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => toast.remove(), 4000);
     }
     
-    // ====== EVENT LISTENERS PARA FECHAS ======
-    document.getElementById('fechaInicio').addEventListener('change', function() {
-        calendario.refetchEvents();
-    });
-    
-    document.getElementById('fechaFin').addEventListener('change', function() {
-        calendario.refetchEvents();
-    });
-    
     // ====== INICIALIZACIÓN ======
     calendario.render();
     
-    // Primero cargar instructores (se necesitan para draggable)
     cargarInstructores().then(() => {
-        // Luego cargar ficha desde URL
         cargarFichaDesdeUrl();
     });
     
-    // Exponer función para eliminar eventos globalmente
     window.eliminarEvento = function(eventId) {
         const evento = calendario.getEventById(eventId);
         if (evento) {
@@ -903,7 +783,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 
-<!-- Animation styles -->
 <style>
 @keyframes slideIn {
     from {

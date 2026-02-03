@@ -9,7 +9,7 @@ class horarioModelo {
         $mensaje = array();
         try {
             $objRespuesta = Conexion::Conectar()->prepare(
-                "SELECT h.idHorario, h.fecha_inicioClase, h.hora_finClase,
+                "SELECT h.idHorario, h.hora_inicioClase, h.hora_finClase,
                         f.nombre as instructorNombre, h.idFuncionario, h.idAmbiente, h.idFicha,
                         h.fecha_inicioHorario, h.fecha_finHorario,
                         a.codigo as ambienteNumero, a.ubicacion as ambienteDescripcion,
@@ -17,11 +17,17 @@ class horarioModelo {
                  FROM horario h
                  LEFT JOIN funcionario f ON h.idFuncionario = f.idFuncionario
                  LEFT JOIN ambiente a ON h.idAmbiente = a.idAmbiente
-                 LEFT JOIN ficha fi ON h.idFicha = fi.id"
+                 LEFT JOIN ficha fi ON h.idFicha = fi.idFicha"
             );
             $objRespuesta->execute();
             $listarHorarios = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
             $objRespuesta = null;
+            
+            // Renombrar campos para compatibilidad con el frontend
+            foreach ($listarHorarios as &$horario) {
+                $horario['fecha_inicioClase'] = $horario['hora_inicioClase'];
+            }
+            
             $mensaje = array("codigo" => "200", "horarios" => $listarHorarios);
         } catch (Exception $e) {
             $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
@@ -34,7 +40,7 @@ class horarioModelo {
         $mensaje = array();
         try {
             $objRespuesta = Conexion::Conectar()->prepare(
-                "SELECT h.idHorario, h.fecha_inicioClase, h.hora_finClase,
+                "SELECT h.idHorario, h.hora_inicioClase, h.hora_finClase,
                         f.nombre as instructorNombre, h.idFuncionario, h.idAmbiente, h.idFicha,
                         h.fecha_inicioHorario, h.fecha_finHorario,
                         a.codigo as ambienteNumero, a.ubicacion as ambienteDescripcion,
@@ -42,12 +48,18 @@ class horarioModelo {
                  FROM horario h
                  LEFT JOIN funcionario f ON h.idFuncionario = f.idFuncionario
                  LEFT JOIN ambiente a ON h.idAmbiente = a.idAmbiente
-                 LEFT JOIN ficha fi ON h.idFicha = fi.id
+                 LEFT JOIN ficha fi ON h.idFicha = fi.idFicha
                  WHERE h.idFicha = :idFicha"
             );
             $objRespuesta->execute([':idFicha' => $idFicha]);
             $listarHorarios = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
             $objRespuesta = null;
+            
+            // Renombrar campos para compatibilidad con el frontend
+            foreach ($listarHorarios as &$horario) {
+                $horario['fecha_inicioClase'] = $horario['hora_inicioClase'];
+            }
+            
             $mensaje = array("codigo" => "200", "horarios" => $listarHorarios);
         } catch (Exception $e) {
             $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
@@ -59,26 +71,39 @@ class horarioModelo {
     public static function mdlCrearHorario($datos) {
         $mensaje = array();
         try {
+            // Validar que idFicha no esté vacío
+            if (empty($datos['idFicha'])) {
+                return array("codigo" => "400", "mensaje" => "El ID de la ficha es obligatorio");
+            }
+            
+            // Validar que idFicha sea numérico
+            if (!is_numeric($datos['idFicha'])) {
+                return array("codigo" => "400", "mensaje" => "El ID de la ficha debe ser numérico");
+            }
+            
             $objRespuesta = Conexion::Conectar()->prepare(
                 "INSERT INTO horario (idFuncionario, idAmbiente, idFicha, 
-                        fecha_inicioClase, hora_finClase, fecha_inicioHorario, fecha_finHorario)
+                        hora_inicioClase, hora_finClase, fecha_inicioHorario, fecha_finHorario)
                  VALUES (:idFuncionario, :idAmbiente, :idFicha, 
-                        :fecha_inicioClase, :hora_finClase, :fecha_inicioHorario, :fecha_finHorario)"
+                        :hora_inicioClase, :hora_finClase, :fecha_inicioHorario, :fecha_finHorario)"
             );
-            $objRespuesta->execute([
-                ':idFuncionario' => $datos['idFuncionario'] ?? null,
-                ':idAmbiente' => $datos['idAmbiente'] ?? null,
-                ':idFicha' => $datos['idFicha'] ?? null,
-                ':fecha_inicioClase' => $datos['hora_inicioClase'],
+            
+            $parametros = [
+                ':idFuncionario' => !empty($datos['idFuncionario']) ? $datos['idFuncionario'] : null,
+                ':idAmbiente' => !empty($datos['idAmbiente']) ? $datos['idAmbiente'] : null,
+                ':idFicha' => $datos['idFicha'],
+                ':hora_inicioClase' => $datos['hora_inicioClase'],
                 ':hora_finClase' => $datos['hora_finClase'],
-                ':fecha_inicioHorario' => $datos['fecha_inicioHorario'] ?? null,
-                ':fecha_finHorario' => $datos['fecha_finHorario'] ?? null
-            ]);
+                ':fecha_inicioHorario' => !empty($datos['fecha_inicioHorario']) ? $datos['fecha_inicioHorario'] : null,
+                ':fecha_finHorario' => !empty($datos['fecha_finHorario']) ? $datos['fecha_finHorario'] : null
+            ];
+            
+            $objRespuesta->execute($parametros);
             $idInsertado = Conexion::Conectar()->lastInsertId();
             $objRespuesta = null;
-            $mensaje = array("codigo" => "200", "mensaje" => "Horario creado", "idHorario" => $idInsertado);
+            $mensaje = array("codigo" => "200", "mensaje" => "Horario creado exitosamente", "idHorario" => $idInsertado);
         } catch (Exception $e) {
-            $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
+            $mensaje = array("codigo" => "400", "mensaje" => "Error al crear horario: " . $e->getMessage());
         }
         return $mensaje;
     }
@@ -89,16 +114,16 @@ class horarioModelo {
         try {
             $objRespuesta = Conexion::Conectar()->prepare(
                 "UPDATE horario SET idAmbiente = :idAmbiente, 
-                        fecha_inicioClase = :fecha_inicioClase, hora_finClase = :hora_finClase,
+                        hora_inicioClase = :hora_inicioClase, hora_finClase = :hora_finClase,
                         fecha_inicioHorario = :fecha_inicioHorario, fecha_finHorario = :fecha_finHorario
                  WHERE idHorario = :idHorario"
             );
             $objRespuesta->execute([
-                ':idAmbiente' => $datos['idAmbiente'] ?? null,
-                ':fecha_inicioClase' => $datos['hora_inicioClase'],
+                ':idAmbiente' => !empty($datos['idAmbiente']) ? $datos['idAmbiente'] : null,
+                ':hora_inicioClase' => $datos['hora_inicioClase'],
                 ':hora_finClase' => $datos['hora_finClase'],
-                ':fecha_inicioHorario' => $datos['fecha_inicioHorario'] ?? null,
-                ':fecha_finHorario' => $datos['fecha_finHorario'] ?? null,
+                ':fecha_inicioHorario' => !empty($datos['fecha_inicioHorario']) ? $datos['fecha_inicioHorario'] : null,
+                ':fecha_finHorario' => !empty($datos['fecha_finHorario']) ? $datos['fecha_finHorario'] : null,
                 ':idHorario' => $datos['idHorario']
             ]);
             $objRespuesta = null;

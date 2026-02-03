@@ -12,7 +12,6 @@ class fichaControlador {
         echo json_encode($objRespuesta);
     }
 
-
     public function ctrListarFichaHorario(){
         $objRespuesta = fichaModelo::mdlListarFichaHorario();
         echo json_encode($objRespuesta);
@@ -24,12 +23,13 @@ class fichaControlador {
     }
 }
 
+// Establecer el header de respuesta JSON
+header('Content-Type: application/json');
 
 if(isset($_POST["listarFichas"])){
     $objRespuesta = new fichaControlador();
     $objRespuesta->ctrListarFichas();
 }
-
 
 if (isset($_POST["listarFichaHorario"])){
     $objRespuesta = new fichaControlador();

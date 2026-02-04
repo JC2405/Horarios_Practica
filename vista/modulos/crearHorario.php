@@ -31,7 +31,7 @@
                             </div>
                         </div>
 
-                        <!-- 🔥 NUEVO: Selector de días de la semana -->
+                        <!-- Selector de días de la semana -->
                         <div class="col-md-4 mb-3">
                             <label class="form-label fw-bold">Días de la Semana:</label>
                             <div id="selectorDias" class="dias-selector">
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let diasSemana = [];
     let fichaSeleccionada = null;
     let ambienteSeleccionado = null;
-    let diasSeleccionados = []; // 🔥 NUEVO: Días seleccionados
+    let diasSeleccionados = [];
     let eventosPendientes = [];
     let draggableInstance = null;
     const colores = ['#667eea', '#f5576c', '#4facfe', '#43e97b', '#fa709a', '#ff6b6b', '#4ecdc4', '#45b7d1'];
@@ -309,7 +309,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const contenedor = document.getElementById('selectorDias');
         contenedor.innerHTML = '';
         
-        // Mapeo de nombres cortos
         const nombresCortos = {
             'Lunes': 'L',
             'Martes': 'M',
@@ -340,7 +339,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             contenedor.appendChild(wrapper);
             
-            // Event listener para actualizar diasSeleccionados
             const checkbox = wrapper.querySelector('.dia-checkbox');
             checkbox.addEventListener('change', function() {
                 actualizarDiasSeleccionados();
@@ -523,7 +521,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         idAmbiente: ambienteSeleccionado?.idAmbiente || null,
                         idFicha: fichaSeleccionada?.id || null,
                         nombreInstructor: eventEl.getAttribute('data-nombre'),
-                        dias: [...diasSeleccionados], // 🔥 Copiar días seleccionados
+                        dias: [...diasSeleccionados],
                         pendiente: true
                     }
                 };
@@ -597,6 +595,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            // 🔥 Validar que haya ambiente seleccionado
+            if (!info.event.extendedProps.idAmbiente) {
+                info.event.remove();
+                mostrarNotificacion('Debes seleccionar un ambiente antes de arrastrar el instructor', 'warning');
+                return;
+            }
+            
             const eventData = {
                 tempId: 'temp_' + Date.now(),
                 title: info.event.title,
@@ -648,7 +653,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.codigo === "200") {
                     const eventos = data.horarios.map(h => {
-                        // Convertir string de IDs a array
                         const diasArray = h.dias ? h.dias.split(',').map(d => parseInt(d)) : [];
                         
                         return {
@@ -683,10 +687,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // ========== BOTÓN GUARDAR HORARIO ==========
-    document.getElementById('btnGuardarHorario').addEventListener('click', function() {
+    // ========== BOTÓN GUARDAR HORARIO (CORREGIDO) ==========
+    document.getElementById('btnGuardarHorario').addEventListener('click', async function() {
         if (eventosPendientes.length === 0) {
             mostrarNotificacion('No hay eventos para guardar', 'warning');
+            return;
+        }
+        
+        // 🔥 VALIDAR QUE TODOS LOS EVENTOS TENGAN AMBIENTE SELECCIONADO
+        const eventosSinAmbiente = eventosPendientes.filter(e => !e.extendedProps.idAmbiente);
+        if (eventosSinAmbiente.length > 0) {
+            mostrarNotificacion(`⚠️ Hay ${eventosSinAmbiente.length} eventos sin ambiente asignado. Selecciona un ambiente antes de arrastrar el instructor.`, 'warning');
+            return;
+        }
+        
+        // 🔥 VALIDAR QUE TODOS LOS EVENTOS TENGAN DÍAS SELECCIONADOS
+        const eventosSinDias = eventosPendientes.filter(e => !e.extendedProps.dias || e.extendedProps.dias.length === 0);
+        if (eventosSinDias.length > 0) {
+            mostrarNotificacion(`⚠️ Hay ${eventosSinDias.length} eventos sin días seleccionados. Selecciona al menos un día antes de arrastrar.`, 'warning');
             return;
         }
         
@@ -699,12 +717,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         let guardados = 0;
         let errores = 0;
+        const erroresDetallados = [];
         
-        const promesas = eventosPendientes.map(eventData => {
+        // 🔥 GUARDAR UNO POR UNO EN SECUENCIA (no en paralelo)
+        // Esto evita problemas de validación de conflictos
+        for (const eventData of eventosPendientes) {
             const horaInicio = formatearHoraMySQL(new Date(eventData.start));
             const horaFin = eventData.end ? formatearHoraMySQL(new Date(eventData.end)) : null;
             
-            // 🔥 IMPORTANTE: Enviar días como JSON
             const datos = new URLSearchParams({
                 crearHorario: 'ok',
                 idFuncionario: eventData.extendedProps.idFuncionario || '',
@@ -714,16 +734,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 hora_finClase: horaFin,
                 fecha_inicioHorario: fechaInicio || '',
                 fecha_finHorario: fechaFin || '',
-                dias: JSON.stringify(eventData.extendedProps.dias) // 🔥 Array de días
+                dias: JSON.stringify(eventData.extendedProps.dias)
             });
 
-            return fetch('controlador/horarioControlador.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: datos
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch('controlador/horarioControlador.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: datos
+                });
+                
+                const data = await response.json();
+                
                 if (data.codigo === "200") {
                     guardados++;
                     const eventoCalendario = calendario.getEvents().find(e => 
@@ -734,32 +756,50 @@ document.addEventListener('DOMContentLoaded', function() {
                         eventoCalendario.setExtendedProp('pendiente', false);
                         eventoCalendario.setProp('classNames', []);
                     }
-                    return { success: true };
                 } else {
                     errores++;
-                    console.error('❌ Error:', data.mensaje);
-                    return { success: false };
+                    erroresDetallados.push({
+                        instructor: eventData.extendedProps.nombreInstructor,
+                        mensaje: data.mensaje
+                    });
+                    console.error('❌ Error al guardar:', data.mensaje);
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 errores++;
+                erroresDetallados.push({
+                    instructor: eventData.extendedProps.nombreInstructor,
+                    mensaje: 'Error de conexión'
+                });
                 console.error('❌ Error de red:', error);
-                return { success: false };
-            });
-        });
+            }
+        }
         
-        Promise.all(promesas).then(() => {
-            eventosPendientes = [];
-            actualizarContadorPendientes();
-            
-            if (errores === 0) {
-                mostrarNotificacion(`✅ ${guardados} horarios guardados`, 'success');
-            } else {
-                mostrarNotificacion(`⚠️ ${guardados} guardados, ${errores} errores`, 'warning');
+        // Limpiar eventos pendientes
+        eventosPendientes = [];
+        actualizarContadorPendientes();
+        
+        // Mostrar resultados
+        if (errores === 0) {
+            mostrarNotificacion(`✅ ${guardados} horarios guardados exitosamente`, 'success');
+        } else {
+            let mensajeError = `⚠️ ${guardados} guardados, ${errores} con errores:\n\n`;
+            erroresDetallados.slice(0, 3).forEach(e => {
+                mensajeError += `• ${e.instructor}: ${e.mensaje}\n`;
+            });
+            if (erroresDetallados.length > 3) {
+                mensajeError += `\n... y ${erroresDetallados.length - 3} más`;
             }
             
-            calendario.refetchEvents();
-        });
+            Swal.fire({
+                icon: 'warning',
+                title: 'Algunos horarios no se guardaron',
+                html: `<pre style="text-align: left; font-size: 12px; max-height: 300px; overflow-y: auto;">${mensajeError}</pre>`,
+                confirmButtonText: 'Entendido'
+            });
+        }
+        
+        // Recargar calendario
+        calendario.refetchEvents();
     });
     
     // ========== BOTÓN LIMPIAR ==========
@@ -808,7 +848,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         `;
         
-        // 🔥 MOSTRAR DÍAS DE LA SEMANA
         if (props.diasNombres) {
             contenido += `
                 <div class="mb-3">
@@ -863,7 +902,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== INICIALIZACIÓN ==========
     calendario.render();
     
-    // 🔥 CARGAR DÍAS PRIMERO
     cargarDiasSemana().then(() => {
         return cargarInstructores();
     }).then(() => {

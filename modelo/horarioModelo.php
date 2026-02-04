@@ -2,23 +2,42 @@
 
 include_once "conexion.php";
 
+/**
+ * VERSIÓN: Validación Inteligente por Ficha
+ * 
+ * PERMITE:
+ * - Múltiples instructores en el mismo ambiente (misma ficha)
+ * - Duplicados dentro de la misma ficha
+ * 
+ * VALIDA:
+ * - Un instructor NO puede estar en dos FICHAS diferentes al mismo tiempo
+ * - Evita conflictos de horario de instructores entre fichas
+ */
+
 class horarioModelo {
 
-    // ========== VALIDAR CONFLICTOS DE HORARIO ==========
+    // ========== VALIDAR CONFLICTOS ENTRE FICHAS ==========
     private static function validarConflictosHorario($datos, $idHorarioExcluir = null) {
         $conn = Conexion::Conectar();
         
-        // 🔥 1. VALIDAR CONFLICTO DE INSTRUCTOR (mismo instructor, mismo horario, mismo día)
-        if (!empty($datos['idFuncionario'])) {
+        // 🔥 SOLO VALIDAR CONFLICTOS DE INSTRUCTOR ENTRE FICHAS DIFERENTES
+        if (!empty($datos['idFuncionario']) && !empty($datos['idFicha'])) {
             $sqlInstructor = "
-                SELECT h.idHorario, h.hora_inicioClase, h.hora_finClase, 
-                       GROUP_CONCAT(d.diasSemanales) as dias,
-                       f.codigoFicha
+                SELECT 
+                    h.idHorario, 
+                    h.hora_inicioClase, 
+                    h.hora_finClase, 
+                    h.idFicha,
+                    GROUP_CONCAT(DISTINCT d.diasSemanales ORDER BY d.idDia) as dias,
+                    f.codigoFicha,
+                    a.codigo as ambiente
                 FROM horario h
                 INNER JOIN horariodia hd ON h.idHorario = hd.id_horarios
                 INNER JOIN dia d ON hd.id_dias = d.idDia
                 LEFT JOIN ficha f ON h.idFicha = f.idFicha
+                LEFT JOIN ambiente a ON h.idAmbiente = a.idAmbiente
                 WHERE h.idFuncionario = :idFuncionario
+                AND h.idFicha != :idFicha
             ";
             
             if ($idHorarioExcluir) {
@@ -36,7 +55,10 @@ class horarioModelo {
             $sqlInstructor .= " GROUP BY h.idHorario";
             
             $stmt = $conn->prepare($sqlInstructor);
-            $params = [':idFuncionario' => $datos['idFuncionario']];
+            $params = [
+                ':idFuncionario' => $datos['idFuncionario'],
+                ':idFicha' => $datos['idFicha']
+            ];
             
             if ($idHorarioExcluir) {
                 $params[':idHorarioExcluir'] = $idHorarioExcluir;
@@ -70,79 +92,15 @@ class horarioModelo {
                     if (($horaInicioNueva < $horaFinExistente) && ($horaFinNueva > $horaInicioExistente)) {
                         return array(
                             "codigo" => "409",
-                            "mensaje" => "⚠️ CONFLICTO: El instructor ya tiene clase de {$horaInicioExistente} a {$horaFinExistente} en la ficha {$horario['codigoFicha']} los días: {$horario['dias']}"
+                            "mensaje" => "⚠️ CONFLICTO ENTRE FICHAS: El instructor ya tiene clase de {$horaInicioExistente} a {$horaFinExistente} en la ficha {$horario['codigoFicha']} (Ambiente {$horario['ambiente']}) los días: {$horario['dias']}"
                         );
                     }
                 }
             }
         }
         
-        // 🔥 2. VALIDAR CONFLICTO DE AMBIENTE (mismo ambiente, mismo horario, mismo día)
-        if (!empty($datos['idAmbiente'])) {
-            $sqlAmbiente = "
-                SELECT h.idHorario, h.hora_inicioClase, h.hora_finClase,
-                       GROUP_CONCAT(d.diasSemanales) as dias,
-                       f.codigoFicha,
-                       func.nombre as instructor
-                FROM horario h
-                INNER JOIN horariodia hd ON h.idHorario = hd.id_horarios
-                INNER JOIN dia d ON hd.id_dias = d.idDia
-                LEFT JOIN ficha f ON h.idFicha = f.idFicha
-                LEFT JOIN funcionario func ON h.idFuncionario = func.idFuncionario
-                WHERE h.idAmbiente = :idAmbiente
-            ";
-            
-            if ($idHorarioExcluir) {
-                $sqlAmbiente .= " AND h.idHorario != :idHorarioExcluir";
-            }
-            
-            if (!empty($datos['fecha_inicioHorario']) && !empty($datos['fecha_finHorario'])) {
-                $sqlAmbiente .= " AND (
-                    (h.fecha_inicioHorario IS NULL OR h.fecha_finHorario IS NULL) OR
-                    (h.fecha_inicioHorario <= :fechaFin AND h.fecha_finHorario >= :fechaInicio)
-                )";
-            }
-            
-            $sqlAmbiente .= " GROUP BY h.idHorario";
-            
-            $stmt = $conn->prepare($sqlAmbiente);
-            $params = [':idAmbiente' => $datos['idAmbiente']];
-            
-            if ($idHorarioExcluir) {
-                $params[':idHorarioExcluir'] = $idHorarioExcluir;
-            }
-            
-            if (!empty($datos['fecha_inicioHorario']) && !empty($datos['fecha_finHorario'])) {
-                $params[':fechaInicio'] = $datos['fecha_inicioHorario'];
-                $params[':fechaFin'] = $datos['fecha_finHorario'];
-            }
-            
-            $stmt->execute($params);
-            $horariosExistentes = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            foreach ($horariosExistentes as $horario) {
-                $stmtDias = $conn->prepare("SELECT id_dias FROM horariodia WHERE id_horarios = :idHorario");
-                $stmtDias->execute([':idHorario' => $horario['idHorario']]);
-                $diasExistentes = $stmtDias->fetchAll(PDO::FETCH_COLUMN);
-                
-                $diasComunes = array_intersect($datos['dias'], $diasExistentes);
-                
-                if (!empty($diasComunes)) {
-                    $horaInicioNueva = $datos['hora_inicioClase'];
-                    $horaFinNueva = $datos['hora_finClase'];
-                    $horaInicioExistente = $horario['hora_inicioClase'];
-                    $horaFinExistente = $horario['hora_finClase'];
-                    
-                    if (($horaInicioNueva < $horaFinExistente) && ($horaFinNueva > $horaInicioExistente)) {
-                        $instructor = $horario['instructor'] ?: 'Sin instructor';
-                        return array(
-                            "codigo" => "409",
-                            "mensaje" => "⚠️ CONFLICTO: El ambiente ya está ocupado de {$horaInicioExistente} a {$horaFinExistente} por {$instructor} (Ficha {$horario['codigoFicha']}) los días: {$horario['dias']}"
-                        );
-                    }
-                }
-            }
-        }
+        // ✅ NO VALIDAR dentro de la misma ficha
+        // Permite duplicados y múltiples instructores en el mismo ambiente
         
         return array("codigo" => "200", "mensaje" => "Sin conflictos");
     }
@@ -165,7 +123,8 @@ class horarioModelo {
                  LEFT JOIN ficha fi ON h.idFicha = fi.idFicha
                  LEFT JOIN horariodia hd ON h.idHorario = hd.id_horarios
                  LEFT JOIN dia d ON hd.id_dias = d.idDia
-                 GROUP BY h.idHorario"
+                 GROUP BY h.idHorario
+                 ORDER BY h.hora_inicioClase, f.nombre"
             );
             $objRespuesta->execute();
             $listarHorarios = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
@@ -178,7 +137,7 @@ class horarioModelo {
         return $mensaje;
     }
 
-    // ========== CREAR HORARIO CON VALIDACIÓN ==========
+    // ========== CREAR HORARIO CON VALIDACIÓN INTELIGENTE ==========
     public static function mdlCrearHorario($datos) {
         $mensaje = array();
         $conn = Conexion::Conectar();
@@ -197,7 +156,7 @@ class horarioModelo {
                 return array("codigo" => "400", "mensaje" => "Debe seleccionar al menos un día de la semana");
             }
             
-            // 🔥 VALIDAR CONFLICTOS ANTES DE INSERTAR
+            // 🔥 VALIDAR CONFLICTOS ENTRE FICHAS DIFERENTES
             $resultadoValidacion = self::validarConflictosHorario($datos);
             if ($resultadoValidacion['codigo'] !== "200") {
                 return $resultadoValidacion;
@@ -330,7 +289,7 @@ class horarioModelo {
         try {
             $conn->beginTransaction();
             
-            // 1. Eliminar registros de horariodia (por integridad referencial)
+            // 1. Eliminar registros de horariodia
             $stmtDias = $conn->prepare("DELETE FROM horariodia WHERE id_horarios = :idHorario");
             $stmtDias->execute([':idHorario' => $idHorario]);
             

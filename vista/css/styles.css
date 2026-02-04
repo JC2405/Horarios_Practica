@@ -1,131 +1,7 @@
-
-/* ===== Sidebar look (similar a tu captura) ===== */
-#menuOpciones{
-  list-style: none;
-  padding: 2px;
-  margin: 0;
-  width: 320px;
-  background: #fff;
-  border-radius: 18px;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-}
-
-/* item base */
-#menuOpciones .menu-item{ margin: 6px 0; }
-
-/* links */
-#menuOpciones .menu-link{
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 10px 25px 10px 0px;
-  border-radius: 12px;
-  text-decoration: none;
-  color: #5a6472;
-  transition: background .18s ease, color .18s ease, transform .18s ease;
-}
-
-/* icono */
-#menuOpciones .menu-icon{
-  width: 20px;
-  height: 20px;
-  display: grid;
-  place-items: center;
-  border-radius: 10px;
-  color: #778196;
-}
-
-/* hover */
-#menuOpciones .menu-link:hover{
-  background: #f5f7ff;
-  color: #354055;
-}
-
-/* estado activo (como "Inicio" moradito) */
-#menuOpciones .menu-item.active > .menu-link{
-  background: #f0f2ff;
-  color: #7c6bff;
-  font-weight: 600;
-}
-
-/* icono activo */
-#menuOpciones .menu-item.active > .menu-link .menu-icon{
-  color: #7c6bff;
-}
-
-/* ===== Submenu ===== */
-#menuOpciones .menu-sub{
-  list-style: none;
-  padding: 6px 0 2px 32px;
-  margin: 0;
-  display: none;
-}
-
-/* cuando el item padre está abierto, muestra sub */
-#menuOpciones .menu-item.open > .menu-sub{
-  display: block;
-}
-
-#menuOpciones .menu-sub .menu-link{
-  padding: 9px 12px;
-  border-radius: 10px;
-}
-
-/* Separador / header si tu función los imprime */
-#menuOpciones .menu-header{
-  margin: 12px 0 6px;
-  padding: 0 12px;
-  font-size: 12px;
-  letter-spacing: .06em;
-  color: #a0a8b5;
-  text-transform: uppercase;
-}
-
-/* si tu template mete el texto en .menu-header-text */
-#menuOpciones .menu-header-text{ color: inherit; }
-
-/* divisor */
-#menuOpciones .menu-divider{
-  height: 1px;
-  background: #edf0f6;
-  margin: 10px 12px;
-}
-
-/* flechita a la izquierda (si existe .menu-toggle) */
-#menuOpciones .menu-toggle{
-  position: relative;
-}
-#menuOpciones .menu-toggle::after{
-  content: ">";
-  position: absolute;
-  left: 10px;
-  font-size: 24px;
-  color: #000;
-  transform: rotate(0deg);
-  transition: transform .18s ease;
-}
-#menuOpciones .menu-item.open > .menu-link.menu-toggle::after{
-  transform: rotate(90deg);
-}
-
-.app-layout{
-  display: flex;
-  min-height: 100vh;
-}
-
-.sidebar{
-  width: 320px;
-  background: #fff;
-  border-right: 1px solid #e6e9f0;
-  padding: 12px;
-}
-
-.content{
-  flex: 1;
-  padding: 24px;
-  background: #f5f6fa;
-}
-
+/* 
+ * CONSOLIDATED STYLES - LOGIN COLOR PALETTE
+ * Primary: #7c6bff, Primary Hover: #6b5ce7, Light: #f0f2ff
+ */
 
 /* ===== VARIABLES DE COLOR ===== */
 :root {
@@ -152,6 +28,124 @@ body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: var(--bg-light);
     color: var(--text-dark);
+}
+
+/* ===== SIDEBAR NAVIGATION ===== */
+#menuOpciones{
+  list-style: none;
+  padding: 2px;
+  margin: 0;
+  width: 320px;
+  background: #fff;
+  border-radius: 18px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+}
+
+#menuOpciones .menu-item{ margin: 6px 0; }
+
+#menuOpciones .menu-link{
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 25px 10px 0px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #5a6472;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+
+#menuOpciones .menu-icon{
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: #778196;
+}
+
+#menuOpciones .menu-link:hover{
+  background: #f5f7ff;
+  color: #354055;
+}
+
+#menuOpciones .menu-item.active > .menu-link{
+  background: #f0f2ff;
+  color: #7c6bff;
+  font-weight: 600;
+}
+
+#menuOpciones .menu-item.active > .menu-link .menu-icon{
+  color: #7c6bff;
+}
+
+#menuOpciones .menu-sub{
+  list-style: none;
+  padding: 6px 0 2px 32px;
+  margin: 0;
+  display: none;
+}
+
+#menuOpciones .menu-item.open > .menu-sub{
+  display: block;
+}
+
+#menuOpciones .menu-sub .menu-link{
+  padding: 9px 12px;
+  border-radius: 10px;
+}
+
+#menuOpciones .menu-header{
+  margin: 12px 0 6px;
+  padding: 0 12px;
+  font-size: 12px;
+  letter-spacing: .06em;
+  color: #a0a8b5;
+  text-transform: uppercase;
+}
+
+#menuOpciones .menu-header-text{ color: inherit; }
+
+#menuOpciones .menu-divider{
+  height: 1px;
+  background: #edf0f6;
+  margin: 10px 12px;
+}
+
+#menuOpciones .menu-toggle{
+  position: relative;
+}
+
+#menuOpciones .menu-toggle::after{
+  content: ">";
+  position: absolute;
+  left: 10px;
+  font-size: 24px;
+  color: #000;
+  transform: rotate(0deg);
+  transition: transform .18s ease;
+}
+
+#menuOpciones .menu-item.open > .menu-link.menu-toggle::after{
+  transform: rotate(90deg);
+}
+
+/* ===== LAYOUT ===== */
+.app-layout{
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar{
+  width: 320px;
+  background: #fff;
+  border-right: 1px solid #e6e9f0;
+  padding: 12px;
+}
+
+.content{
+  flex: 1;
+  padding: 24px;
+  background: #f5f6fa;
 }
 
 /* ===== TOPBAR ===== */
@@ -232,7 +226,6 @@ body {
     display: none;
 }
 
-/* Dropdown */
 .dropdown {
     position: absolute;
     top: calc(100% + 8px);
@@ -305,7 +298,6 @@ body {
     z-index: 200;
 }
 
-/* Logo del sidebar */
 .sidebar-logo {
     display: flex;
     align-items: center;
@@ -334,7 +326,6 @@ body {
     color: var(--text-dark);
 }
 
-/* Menu del sidebar */
 .menu-inner {
     list-style: none;
     padding: 8px 12px;
@@ -375,7 +366,6 @@ body {
     margin-left: -3px;
 }
 
-/* Iconos del menu */
 .menu-inner li a::before,
 .menu-inner li .menu-link::before {
     content: '';
@@ -387,7 +377,6 @@ body {
     opacity: 0.6;
 }
 
-/* Seccion del menu */
 .menu-section {
     padding: 16px 16px 8px;
     font-size: 11px;
@@ -397,7 +386,6 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Submenu */
 .menu-inner .submenu {
     list-style: none;
     padding-left: 20px;
@@ -414,7 +402,6 @@ body {
     font-size: 13px;
 }
 
-/* Flecha para submenus */
 .menu-inner li.has-submenu > a::after,
 .menu-inner li.has-submenu > .menu-link::after {
     content: '';
@@ -438,7 +425,6 @@ body {
     min-height: 100vh;
 }
 
-/* ===== CONTENIDO PRINCIPAL ===== */
 .content {
     flex: 1;
     margin-left: var(--sidebar-width);
@@ -446,6 +432,233 @@ body {
     padding: 24px 32px;
     background: var(--bg-light);
     min-height: calc(100vh - 64px);
+}
+
+/* ===== CARD CUSTOM STYLES ===== */
+.card-custom {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(124, 107, 255, 0.1);
+}
+
+.card-custom:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(124, 107, 255, 0.2);
+}
+
+.card-custom .card-img-top {
+    border-radius: 16px 16px 0 0;
+}
+
+.card-custom .card-body {
+    background: white;
+    border-radius: 0 0 16px 16px;
+}
+
+.card-title-custom {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.img-uniform {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* ===== BUTTONS ===== */
+.btn-primary-custom {
+    background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(124, 107, 255, 0.35);
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 107, 255, 0.45);
+    background: linear-gradient(135deg, var(--primary-hover) 0%, #8a7aee 100%);
+    color: white;
+}
+
+.btn-secondary-custom {
+    background: linear-gradient(135deg, #f0f2ff 0%, #e0e4ff 100%);
+    border: 2px solid var(--primary);
+    border-radius: 10px;
+    padding: 14px 24px;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--primary);
+    transition: all 0.3s ease;
+}
+
+.btn-secondary-custom:hover {
+    background: var(--primary-light);
+    color: var(--primary-hover);
+}
+
+/* ===== CARD HEADERS ===== */
+.card-header-custom {
+    background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%) !important;
+    color: white !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.card-header-success-custom {
+    background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%) !important;
+    color: white !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+
+/* ===== TABLE STYLES ===== */
+.table-custom-header {
+    background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%) !important;
+    color: white !important;
+}
+
+.table-custom-header th {
+    background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%) !important;
+    color: white !important;
+    font-weight: 600;
+    border: none !important;
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--primary-light);
+}
+
+.table thead th {
+    border: none !important;
+}
+
+.table tbody td {
+    vertical-align: middle;
+}
+
+/* ===== CALENDAR STYLES ===== */
+.element-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.instructor-item, .ambiente-item {
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    cursor: grab;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: 500;
+    color: white;
+}
+
+.instructor-item {
+    background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%);
+    box-shadow: 0 4px 15px rgba(124, 107, 255, 0.35);
+}
+
+.ambiente-item {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(124, 107, 255, 0.25);
+}
+
+.ambiente-item.selected {
+    background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
+    border: 3px solid #f0f2ff;
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(124, 107, 255, 0.4);
+}
+
+.instructor-item:hover, .ambiente-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 107, 255, 0.35);
+}
+
+.instructor-item:active, .ambiente-item:active {
+    cursor: grabbing;
+}
+
+.instructor-item.oculto, .ambiente-item.oculto {
+    display: none;
+}
+
+.instructor-item[data-color-index="1"] { background: linear-gradient(135deg, #7c6bff 0%, #9d8fff 100%); }
+.instructor-item[data-color-index="2"] { background: linear-gradient(135deg, #8b7bff 0%, #a99fff 100%); }
+.instructor-item[data-color-index="3"] { background: linear-gradient(135deg, #6b5ce7 0%, #8a7aee 100%); }
+.instructor-item[data-color-index="4"] { background: linear-gradient(135deg, #5a4cd7 0%, #7a6bcc 100%); }
+.instructor-item[data-color-index="5"] { background: linear-gradient(135deg, #9d8fff 0%, #b8aeff 100%); }
+.instructor-item[data-color-index="6"] { background: linear-gradient(135deg, #4f3dc7 0%, #6f5cdd 100%); }
+.instructor-item[data-color-index="7"] { background: linear-gradient(135deg, #7c6bff 0%, #6b5ce7 100%); }
+.instructor-item[data-color-index="8"] { background: linear-gradient(135deg, #8a7aee 0%, #9d8fff 100%); }
+
+#calendario {
+    min-height: 600px;
+}
+
+.fc-event {
+    cursor: pointer;
+    border-radius: 6px;
+    opacity: 0.9;
+    border: none;
+}
+
+.fc-event.pendiente {
+    border-left: 4px solid #ffc107 !important;
+}
+
+/* ===== DAY SELECTOR ===== */
+.dias-selector {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.dia-checkbox {
+    display: none;
+}
+
+.dia-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.3s ease;
+    background: white;
+    color: #6c757d;
+    user-select: none;
+}
+
+.dia-label:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: scale(1.05);
+}
+
+.dia-checkbox:checked + .dia-label {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    border-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(124, 107, 255, 0.4);
+}
+
+.dia-checkbox:disabled + .dia-label {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* ===== RESPONSIVE ===== */

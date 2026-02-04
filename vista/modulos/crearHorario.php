@@ -3,7 +3,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header card-header-custom text-white">
                     <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Configuración del Horario</h5>
                 </div>
                 <div class="card-body">
@@ -41,10 +41,10 @@
 
                         <!-- Botones de acción -->
                         <div class="col-md-4 text-end mb-3">
-                            <button type="button" class="btn btn-success btn-lg" id="btnGuardarHorario">
+                            <button type="button" class="btn btn-primary-custom btn-lg" id="btnGuardarHorario">
                                 <i class="fas fa-save me-2"></i>Guardar Horario
                             </button>
-                            <button type="button" class="btn btn-danger btn-lg ms-2" id="btnLimpiarHorario">
+                            <button type="button" class="btn btn-secondary-custom btn-lg ms-2" id="btnLimpiarHorario">
                                 <i class="fas fa-trash me-2"></i>Limpiar
                             </button>
                         </div>
@@ -59,7 +59,7 @@
         <div class="col-md-3">
             <!-- Sección de Instructores -->
             <div class="card shadow-sm mb-3">
-                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div class="card-header card-header-custom text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-users me-2"></i>Instructores</h5>
                     <span class="badge bg-light text-primary" id="countInstructores">0</span>
                 </div>
@@ -74,7 +74,7 @@
 
             <!-- Sección de Ambientes -->
             <div class="card shadow-sm">
-                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <div class="card-header card-header-success-custom text-white d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-door-open me-2"></i>Ambientes</h5>
                     <span class="badge bg-light text-success" id="countAmbientes">0</span>
                 </div>
@@ -113,7 +113,7 @@
 <div class="modal fade" id="modalDetalleHorario" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-info text-white">
+            <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, #9d8fff 100%); color: white;">
                 <h5 class="modal-title">Detalle del Horario</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
@@ -127,123 +127,12 @@
     </div>
 </div>
 
-<!-- Estilos -->
+<!-- CSS Consolidado -->
+<link href="vista/css/styles.css" rel="stylesheet">
+
+<!-- Estilos adicionales -->
 <style>
-/* ========== SELECTOR DE DÍAS ========== */
-.dias-selector {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-}
-
-.dia-checkbox {
-    display: none;
-}
-
-.dia-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 45px;
-    height: 45px;
-    border: 2px solid #dee2e6;
-    border-radius: 50%;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 13px;
-    transition: all 0.3s ease;
-    background: white;
-    color: #6c757d;
-    user-select: none;
-}
-
-.dia-label:hover {
-    border-color: #0d6efd;
-    color: #0d6efd;
-    transform: scale(1.05);
-}
-
-.dia-checkbox:checked + .dia-label {
-    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-    border-color: #0d6efd;
-    color: white;
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
-}
-
-.dia-checkbox:disabled + .dia-label {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* ========== RESTO DE ESTILOS ========== */
-.element-list {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.instructor-item, .ambiente-item {
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    cursor: grab;
-    transition: transform 0.2s, box-shadow 0.2s;
-    font-weight: 500;
-}
-
-.instructor-item {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-}
-
-.ambiente-item {
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    color: #1a1a2e;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.ambiente-item.selected {
-    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-    border: 3px solid #1a1a2e;
-    transform: scale(1.02);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.instructor-item:hover, .ambiente-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.instructor-item:active, .ambiente-item:active {
-    cursor: grabbing;
-}
-
-.instructor-item.oculto, .ambiente-item.oculto {
-    display: none;
-}
-
-.instructor-item[data-color-index="1"] { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.instructor-item[data-color-index="2"] { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-.instructor-item[data-color-index="3"] { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-.instructor-item[data-color-index="4"] { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-.instructor-item[data-color-index="5"] { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-.instructor-item[data-color-index="6"] { background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%); }
-.instructor-item[data-color-index="7"] { background: linear-gradient(135deg, #45b7d1 0%, #96c93d 100%); }
-.instructor-item[data-color-index="8"] { background: linear-gradient(135deg, #f7797d 0%, #fbd786 100%); }
-
-#calendario {
-    min-height: 600px;
-}
-
-.fc-event {
-    cursor: pointer;
-    border-radius: 4px;
-    opacity: 0.9;
-}
-
-.fc-event.pendiente {
-    border-left: 4px solid #ffc107 !important;
-}
+    /* Solo estilos específicos que no están en styles.css */
 </style>
 
 <!-- CSS de FullCalendar -->

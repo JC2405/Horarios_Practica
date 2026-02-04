@@ -137,7 +137,7 @@ class horarioModelo {
         return $mensaje;
     }
 
-    // ========== CREAR HORARIO CON VALIDACIÓN INTELIGENTE ==========
+    //  crear horario
     public static function mdlCrearHorario($datos) {
         $mensaje = array();
         $conn = Conexion::Conectar();
@@ -156,7 +156,7 @@ class horarioModelo {
                 return array("codigo" => "400", "mensaje" => "Debe seleccionar al menos un día de la semana");
             }
             
-            // 🔥 VALIDAR CONFLICTOS ENTRE FICHAS DIFERENTES
+            // validacion para problemas entre fichas
             $resultadoValidacion = self::validarConflictosHorario($datos);
             if ($resultadoValidacion['codigo'] !== "200") {
                 return $resultadoValidacion;
@@ -225,7 +225,7 @@ class horarioModelo {
         $conn = Conexion::Conectar();
         
         try {
-            // 🔥 VALIDAR CONFLICTOS (excluyendo el horario actual)
+            //  valida conflictos excluyendo el horario actual
             $resultadoValidacion = self::validarConflictosHorario($datos, $datos['idHorario']);
             if ($resultadoValidacion['codigo'] !== "200") {
                 return $resultadoValidacion;

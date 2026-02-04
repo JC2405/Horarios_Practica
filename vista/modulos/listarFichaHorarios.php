@@ -1,14 +1,17 @@
+<!-- CSS Consolidado -->
+<link href="vista/css/styles.css" rel="stylesheet">
+
 <div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header text-white" style="background: linear-gradient(135deg, #7c6bff 0%, #9d8fff 100%);">
                     <h5 class="mb-0"><i class="bi bi-calendar-check me-2"></i>Fichas Disponibles para Crear Horarios</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table id="tablaTecnologos" class="table table-hover table-striped">
-                            <thead class="table-dark">
+                            <thead style="background: linear-gradient(135deg, #7c6bff 0%, #9d8fff 100%); color: white;">
                                 <tr>
                                     <th scope="col">Código Ficha</th>
                                     <th scope="col">Programa</th>
@@ -176,16 +179,22 @@
 </script>
 
 <style>
+/* Solo estilos específicos que no están en styles.css */
 .btn-crear-horario {
+    background: linear-gradient(135deg, #7c6bff 0%, #9d8fff 100%);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 500;
+    color: white;
     transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(124, 107, 255, 0.3);
 }
 
 .btn-crear-horario:hover {
+    background: linear-gradient(135deg, #6b5ce7 0%, #8a7aee 100%);
+    color: white;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.table-hover tbody tr:hover {
-    background-color: rgba(13, 110, 253, 0.05);
+    box-shadow: 0 4px 12px rgba(124, 107, 255, 0.4);
 }
 </style>

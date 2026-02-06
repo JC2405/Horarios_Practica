@@ -10,4 +10,12 @@ function listarAmbiente(){
 }
 
 
+listarAmbienteMedellin()
+
+function listarAmbienteMedellin(){
+    let objData = {"listarAmbienteMedellin" : "ok" };
+    let objListarAmbienteMedellin = new ambiente(objData)
+    objListarAmbienteMedellin.listarAmbienteMedellin();
+}
+
 })();

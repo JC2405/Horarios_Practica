@@ -10,6 +10,7 @@
 <script src="vista/js/login.js"></script>
 <script src="vista/js/nav.js"></script>
 <script src="vista/js/tipoFormacion.js"></script>
+<script src="vista/js/sede.js"></script>
 
 </body>
 </html>

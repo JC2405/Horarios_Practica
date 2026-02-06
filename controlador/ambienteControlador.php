@@ -29,6 +29,11 @@ class ambienteControlador{
         $objRespuesta = ambienteModelo::mdlListarAmbientesPorCiudad($this->municipio);
         echo json_encode($objRespuesta);
     }
+
+    public function ctrListarAmbienteMedellin(){
+        $objRespuesta = ambienteModelo ::mdlListarAmbienteMedellin();
+        echo json_encode($objRespuesta);
+    }
 }
 
 if(isset($_POST["listarAmbiente"])){
@@ -46,4 +51,9 @@ if(isset($_POST["listarAmbientesPorCiudad"])){
     $objRespuesta = new ambienteControlador();
     $objRespuesta->municipio = $_POST["municipio"];
     $objRespuesta->ctrListarAmbientesPorCiudad();
+}
+
+if(isset($_POST["listarAmbienteMedellin"])){
+   $objRespuesta = new ambienteControlador();  
+   $objRespuesta->ctrListarAmbienteMedellin();
 }

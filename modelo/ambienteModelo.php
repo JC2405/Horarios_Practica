@@ -60,4 +60,23 @@ class ambienteModelo {
         }
         return $mensaje;
     }
+
+
+
+     public static function mdlListarAmbienteMedellin(){
+        $mensaje = array();
+
+        try {
+            $objRespuesta = Conexion::Conectar()->prepare("SELECT * from ambiente
+            where idSede = 1;");
+            $objRespuesta->execute();
+            $listarAmbiente = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
+            $objRespuesta = null;
+            $mensaje = array("codigo"=>"200","mensaje"=>$listarAmbiente);
+        } catch (Exception $e) {
+            $mensaje = array("codigo"=>"400","mensaje"=>$e->getMessage());
+        }
+        return $mensaje;
+    }
+    
 }

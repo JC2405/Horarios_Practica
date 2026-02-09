@@ -1,0 +1,692 @@
+/* ========================================
+   ESTILOS GENERALES - Ambiente Sede Medellín
+   ======================================== */
+
+.page-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    color: #39A900;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 1.1em;
+}
+
+/* ========================================
+   PANEL DE CONTROL
+   ======================================== */
+
+.control-panel {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.control-group label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+.control-panel .btn {
+    margin-top: 22px;
+}
+
+/* ========================================
+   ESTADÍSTICAS
+   ======================================== */
+
+.stats-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.stat-card.stat-disponibles {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.stat-card.stat-ocupados {
+    background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+}
+
+.stat-card.stat-asignaciones {
+    background: linear-gradient(135deg, #F7971E 0%, #FFD200 100%);
+}
+
+.stat-value {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.95;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ========================================
+   LAYOUT PRINCIPAL
+   ======================================== */
+
+.main-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+/* ========================================
+   SIDEBAR - LISTAS DRAG
+   ======================================== */
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.drag-list-container {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 2px solid #e9ecef;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.drag-list-container h3 {
+    color: #495057;
+    margin-bottom: 18px;
+    font-size: 16px;
+    border-bottom: 3px solid #39A900;
+    padding-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.drag-list {
+    max-height: 500px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+.drag-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.drag-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.drag-list::-webkit-scrollbar-thumb {
+    background: #39A900;
+    border-radius: 10px;
+}
+
+.drag-item {
+    background: white;
+    padding: 14px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    cursor: grab;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.drag-item:hover {
+    border-color: #39A900;
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(57, 169, 0, 0.2);
+}
+
+.drag-item:active {
+    cursor: grabbing;
+    opacity: 0.7;
+}
+
+.drag-item.instructor {
+    border-left: 5px solid #007bff;
+}
+
+.drag-item.ficha {
+    border-left: 5px solid #28a745;
+}
+
+.instructor-info, .ficha-info {
+    font-size: 13px;
+}
+
+.instructor-name, .ficha-code {
+    font-weight: 700;
+    color: #212529;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.instructor-area, .ficha-program {
+    color: #6c757d;
+    font-size: 12px;
+}
+
+.loading {
+    text-align: center;
+    color: #6c757d;
+    padding: 20px;
+    font-style: italic;
+}
+
+/* ========================================
+   ÁREA DE AMBIENTES
+   ======================================== */
+
+.ambientes-area {
+    background: #fff;
+}
+
+.ambientes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 25px;
+}
+
+.ambiente-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    border: 3px solid #e9ecef;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    animation: fadeIn 0.4s ease-out;
+}
+
+.ambiente-card.disponible {
+    border-color: #28a745;
+    background: linear-gradient(135deg, #f5fff8 0%, #e8f5e9 100%);
+}
+
+.ambiente-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.ambiente-header {
+    background: linear-gradient(135deg, #39A900 0%, #2d8000 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.ambiente-nombre {
+    font-size: 19px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.ambiente-detalles {
+    font-size: 12px;
+    opacity: 0.95;
+}
+
+/* ========================================
+   FRANJAS HORARIAS
+   ======================================== */
+
+.franja-container {
+    margin-bottom: 18px;
+    background: white;
+    border-radius: 10px;
+    padding: 15px;
+    border: 2px solid #f1f3f5;
+}
+
+.franja-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 13px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.franja-manana .franja-header {
+    background: linear-gradient(135deg, #F7971E 0%, #FFD200 100%);
+    box-shadow: 0 2px 8px rgba(247, 151, 30, 0.3);
+}
+
+.franja-tarde .franja-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.franja-noche .franja-header {
+    background: linear-gradient(135deg, #2C3E50 0%, #34495e 100%);
+    box-shadow: 0 2px 8px rgba(44, 62, 80, 0.3);
+}
+
+/* ========================================
+   DROP ZONES
+   ======================================== */
+
+.drop-zone-label {
+    font-size: 11px;
+    color: #6c757d;
+    font-weight: 700;
+    margin-bottom: 6px;
+    margin-top: 8px;
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.drop-zone {
+    min-height: 70px;
+    background: #f8f9fa;
+    border: 2px dashed #ced4da;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-zone:empty::before {
+    content: 'Arrastra aquí';
+    color: #adb5bd;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.drop-zone.drag-over {
+    background: #e7f5ff;
+    border-color: #39A900;
+    border-style: solid;
+    border-width: 3px;
+    box-shadow: 0 0 20px rgba(57, 169, 0, 0.2);
+}
+
+.dropped-item {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 5px solid #007bff;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 100%;
+}
+
+.dropped-item.ficha-dropped {
+    border-left-color: #28a745;
+}
+
+.remove-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-btn:hover {
+    background: #c82333;
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+}
+
+/* ========================================
+   TRANSVERSALES
+   ======================================== */
+
+.transversales-info {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 10px;
+    font-size: 12px;
+    box-shadow: 0 2px 5px rgba(255, 193, 7, 0.1);
+}
+
+.transversales-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.transversales-header strong {
+    color: #856404;
+}
+
+.transversal-item {
+    background: white;
+    padding: 10px;
+    border-radius: 6px;
+    border-left: 4px solid #ffc107;
+    line-height: 1.6;
+}
+
+.transversal-list {
+    margin: 8px 0 0 0;
+    padding-left: 20px;
+}
+
+.transversal-list li {
+    margin-bottom: 3px;
+}
+
+/* ========================================
+   MENSAJES VACÍOS
+   ======================================== */
+
+.empty-message {
+    text-align: center;
+    color: #6c757d;
+    padding: 60px 20px;
+    font-size: 16px;
+    grid-column: 1 / -1;
+}
+
+.empty-message i {
+    color: #adb5bd;
+    margin-bottom: 15px;
+}
+
+/* ========================================
+   BADGES
+   ======================================== */
+
+.badge {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+/* ========================================
+   ANIMACIONES
+   ======================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.drag-item:active {
+    animation: pulse 0.3s ease-in-out;
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 1400px) {
+    .ambientes-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+}
+
+@media (max-width: 1200px) {
+    .main-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        flex-direction: row;
+        gap: 15px;
+    }
+    
+    .drag-list-container {
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .ambientes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sidebar {
+        flex-direction: column;
+    }
+    
+    .control-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .control-panel .btn {
+        margin-top: 10px;
+        width: 100%;
+    }
+    
+    .stats-panel {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .page-header h1 {
+        font-size: 2em;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-panel {
+        grid-template-columns: 1fr;
+    }
+    
+    .main-layout {
+        gap: 20px;
+    }
+}
+
+/* ========================================
+   UTILIDADES
+   ======================================== */
+
+.text-center {
+    text-align: center;
+}
+
+.mt-3 {
+    margin-top: 1rem;
+}
+
+.mb-3 {
+    margin-bottom: 1rem;
+}
+
+.p-3 {
+    padding: 1rem;
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+
+@media print {
+    .sidebar,
+    .control-panel,
+    .stats-panel,
+    .remove-btn,
+    .btn {
+        display: none !important;
+    }
+    
+    .ambiente-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+}
+
+/* ========================================
+   ESTILOS ADICIONALES ESPECÍFICOS
+   ======================================== */
+
+.buscar-instructor input,
+.buscar-ficha input {
+    border-radius: 20px;
+    padding-left: 15px;
+}
+
+.control-group.align-self-end {
+    display: flex;
+    gap: 10px;
+}
+
+.control-group.align-self-end .btn {
+    margin-top: 0;
+}
+
+.loading-ambientes {
+    text-align: center;
+    padding: 60px;
+    color: #6c757d;
+}
+
+.ambiente-card {
+    position: relative;
+}
+
+.ver-detalle-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.jornada-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.jornada-manana {
+    background: linear-gradient(135deg, #F7971E 0%, #FFD200 100%);
+    color: #000;
+}
+
+.jornada-tarde {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+}
+
+.jornada-noche {
+    background: linear-gradient(135deg, #2C3E50 0%, #34495e 100%);
+    color: #fff;
+}
+
+.jornada-sabado {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: #000;
+}
+
+.sin-transversales {
+    font-size: 12px;
+    color: #6c757d;
+    font-style: italic;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 5px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.btn-gestionar-transversales {
+    font-size: 11px;
+    padding: 4px 10px;
+    margin-top: 5px;
+}
+
+.competencia-tag {
+    display: inline-block;
+    background: #17a2b8;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    margin: 2px;
+}

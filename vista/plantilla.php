@@ -6,7 +6,7 @@ include_once "vista/modulos/cabecera.php";
 if (isset($_SESSION['rol'])) {
 
  
-  include_once "vista/modulos/inicio.php";
+  include_once "vista/modulos/eleccionSede.php";
 
   
   if (isset($_GET["ruta"])) {
@@ -24,7 +24,12 @@ if (isset($_SESSION['rol'])) {
         $_GET["ruta"] == "moduloHorarios"||
         $_GET["ruta"] == "tipoFormacionCrearHorario" ||
         $_GET["ruta"] == "listarFichaHorarios" ||
-        $_GET["ruta"] == "ambienteSedeMedellin"
+        $_GET["ruta"] == "ambienteSedeMedellin" || 
+        $_GET["ruta"] == "eleccionSede" ||
+        $_GET["ruta"] == "eleccionAmbiente" ||
+        $_GET["ruta"] == "asignacionJornada" ||
+        $_GET["ruta"] == "visualizacionFichas" ||
+        $_GET["ruta"] == "transversales"
   
     ) {
       include_once "vista/modulos/" . $_GET["ruta"] . ".php";

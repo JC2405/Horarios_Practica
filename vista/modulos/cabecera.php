@@ -28,7 +28,17 @@
     <!-- cdn  sweetalert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- cdn Toastify -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Nav CSS -->
+    <link rel="stylesheet" href="vista/css/nav.css">
+
+    <!-- Nav JS -->
+    <script src="vista/js/nav.js"></script>
 
     
     <script src="vista/js/cl_area.js"></script>
@@ -38,6 +48,10 @@
       <script src="vista/js/cl_ficha.js"></script>  
       <script src="vista/js/cl_tipoContratoFormacion.js"></script>
       <script src="vista/js/cl_ambiente.js"></script>
+    <script src="vista/js/ambienteMedellin.js"></script>
+
+    <!-- Custom CSS -->
+    <link href="vista/css/ambienteMedellin.css" rel="stylesheet">
 
 </head>
 

@@ -891,3 +891,258 @@ function showToast(type, message) {
 }
 
 console.log('✅ Sistema de gestión de horarios Medellín cargado');
+
+// ========================================
+// MÓDULO: SELECCIÓN DE AMBIENTES - SEDE MEDELLIN
+// ========================================
+
+/**
+ * Funcionalidad para la selección de ambientes en la sede Medellín
+ * Este módulo maneja la carga, filtrado y selección de ambientes
+ */
+
+(function() {
+    console.log('🏢 Módulo: Elección de Ambientes');
+    
+    // Variables del módulo
+    let idSede = null;
+    let nombreSede = null;
+    let ciudad = null;
+    let tablaAmbientes = null;
+    let ambientesData = [];
+    
+    // Inicializar con datos del PHP
+    function inicializarModulo(datosSede) {
+        idSede = datosSede.idSede;
+        nombreSede = datosSede.nombreSede;
+        ciudad = datosSede.ciudad;
+        
+        // Cargar ambientes al iniciar
+        if (idSede) {
+            cargarAmbientes();
+        } else {
+            mostrarError('No se especificó una sede válida');
+        }
+    }
+    
+    // Exponer función de inicialización globalmente
+    window.inicializarAmbienteSedeMedellin = inicializarModulo;
+    
+    function cargarAmbientes(){
+        fetch("controlador/ambienteControlador.php", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `listarAmbientesPorSede=ok&idSede=${idSede}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('📦 Ambientes recibidos:', data);
+            
+            if(data.codigo === "200"){
+                ambientesData = data.ambientes;
+                renderizarTabla(ambientesData);
+            } else {
+                mostrarError('Error al cargar ambientes: ' + (data.mensaje || 'Error desconocido'));
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error:', error);
+            mostrarError('Error de conexión al servidor');
+        });
+    }
+
+    function renderizarTabla(ambientes){
+        const dataSet = ambientes.map(amb => {
+            const capacidadBadge = getCapacidadBadge(amb.capacidad);
+            const estadoBadge = amb.estado === 'activo' ? 
+                '<span class="badge bg-success">Activo</span>' : 
+                '<span class="badge bg-secondary">Inactivo</span>';
+            
+            const botones = `
+                <div class="btn-group" role="group">
+                    <button class="btn btn-sm btn-info" onclick="verDetalleAmbiente(${amb.idAmbiente})" title="Ver detalles">
+                        <i class="bi bi-info-circle"></i>
+                    </button>
+                    <button class="btn btn-sm btn-primary-custom" 
+                            onclick="seleccionarAmbiente(${amb.idAmbiente}, '${amb.codigo}', '${amb.numero}')" 
+                            title="Asignar a este ambiente">
+                        <i class="bi bi-arrow-right-circle me-1"></i> Asignar
+                    </button>
+                </div>
+            `;
+
+            return [
+                amb.codigo || '-',
+                `${amb.numero || '-'} ${estadoBadge}`,
+                capacidadBadge,
+                amb.descripcion || '-',
+                amb.ubicacion || '-',
+                botones
+            ];
+        });
+
+        // Destruir tabla existente si existe
+        if($.fn.DataTable.isDataTable('#tablaAmbienteMedellin')){
+            $('#tablaAmbienteMedellin').DataTable().destroy();
+        }
+
+        // Crear DataTable
+        tablaAmbientes = $('#tablaAmbienteMedellin').DataTable({
+            data: dataSet,
+            responsive: true,
+            language: {
+                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/es-ES.json'
+            },
+            order: [[0, 'asc']],
+            pageLength: 10,
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excel',
+                    text: '<i class="bi bi-file-earmark-excel me-1"></i> Excel',
+                    className: 'btn btn-success btn-sm'
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="bi bi-file-earmark-pdf me-1"></i> PDF',
+                    className: 'btn btn-danger btn-sm'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="bi bi-printer me-1"></i> Imprimir',
+                    className: 'btn btn-secondary btn-sm'
+                }
+            ]
+        });
+
+        configurarFiltros();
+    }
+
+    function getCapacidadBadge(capacidad){
+        const cap = parseInt(capacidad) || 0;
+        let colorClass = 'bg-secondary';
+        let icon = '👥';
+        
+        if(cap <= 20) {
+            colorClass = 'bg-info';
+            icon = '👥';
+        } else if(cap <= 30) {
+            colorClass = 'bg-primary';
+            icon = '👥👥';
+        } else if(cap <= 40) {
+            colorClass = 'bg-warning';
+            icon = '👥👥👥';
+        } else {
+            colorClass = 'bg-danger';
+            icon = '👥👥👥👥';
+        }
+        
+        return `<span class="badge ${colorClass}">${icon} ${cap} personas</span>`;
+    }
+
+    function configurarFiltros(){
+        // Filtro de capacidad personalizado
+        $('#filtroCapacidad').on('change', function(){
+            const valor = $(this).val();
+            if(!valor){
+                tablaAmbientes.column(2).search('').draw();
+                return;
+            }
+            
+            const filtroAmbientes = ambientesData.filter(amb => {
+                const cap = parseInt(amb.capacidad) || 0;
+                if(valor === '1-20') return cap >= 1 && cap <= 20;
+                if(valor === '21-30') return cap >= 21 && cap <= 30;
+                if(valor === '31-40') return cap >= 31 && cap <= 40;
+                if(valor === '41+') return cap >= 41;
+                return true;
+            });
+            
+            renderizarTabla(filtroAmbientes);
+        });
+
+        // Búsqueda general
+        $('#buscarAmbiente').on('keyup', function(){
+            tablaAmbientes.search(this.value).draw();
+        });
+
+        // Filtro de estado
+        $('#filtroEstado').on('change', function(){
+            const valor = $(this).val();
+            tablaAmbientes.column(1).search(valor, true, false).draw();
+        });
+    }
+
+    // Función global: Seleccionar ambiente y avanzar
+    window.seleccionarAmbiente = function(idAmbiente, codigo, numero){
+        console.log('✅ Ambiente seleccionado:', idAmbiente, codigo, numero);
+        
+        // Redirigir a la siguiente pantalla con los parámetros necesarios
+        const params = new URLSearchParams({
+            idSede: idSede,
+            sede: nombreSede,
+            ciudad: ciudad,
+            idAmbiente: idAmbiente,
+            ambiente: `${codigo} - ${numero}`
+        });
+        
+        window.location.href = `asignacionJornada?${params.toString()}`;
+    };
+
+    // Función global: Ver detalle
+    window.verDetalleAmbiente = function(idAmbiente){
+        const ambiente = ambientesData.find(a => a.idAmbiente == idAmbiente);
+        if(!ambiente){
+            alert('Ambiente no encontrado');
+            return;
+        }
+
+        const contenido = `
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>Código:</strong> ${ambiente.codigo || '-'}</p>
+                    <p><strong>Número:</strong> ${ambiente.numero || '-'}</p>
+                    <p><strong>Capacidad:</strong> ${ambiente.capacidad || '-'} personas</p>
+                    <p><strong>Estado:</strong> 
+                        <span class="badge ${ambiente.estado === 'activo' ? 'bg-success' : 'bg-secondary'}">
+                            ${ambiente.estado || '-'}
+                        </span>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Descripción:</strong> ${ambiente.descripcion || '-'}</p>
+                    <p><strong>Ubicación:</strong> ${ambiente.ubicacion || '-'}</p>
+                    <p><strong>Sede:</strong> ${ambiente.sedeNombre || '-'}</p>
+                    <p><strong>Ciudad:</strong> ${ambiente.sedeMunicipio || '-'}</p>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('contenidoModalAmbiente').innerHTML = contenido;
+        new bootstrap.Modal(document.getElementById('modalInfoAmbiente')).show();
+    };
+
+    // Función global: Limpiar filtros
+    window.limpiarFiltros = function(){
+        $('#filtroCapacidad').val('');
+        $('#buscarAmbiente').val('');
+        $('#filtroEstado').val('');
+        renderizarTabla(ambientesData);
+    };
+
+    function mostrarError(mensaje){
+        const tbody = document.querySelector('#tablaAmbienteMedellin tbody');
+        if(tbody){
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-danger py-5">
+                        <i class="bi bi-exclamation-octagon me-2" style="font-size: 2rem;"></i>
+                        <br>${mensaje}
+                    </td>
+                </tr>
+            `;
+        }
+    }
+
+    console.log('✅ Módulo de selección de ambientes cargado');
+})();

@@ -49,6 +49,8 @@
       <script src="vista/js/cl_tipoContratoFormacion.js"></script>
       <script src="vista/js/cl_ambiente.js"></script>
     <script src="vista/js/ambienteMedellin.js"></script>
+    <script src="vista/js/nav.js"></script>
+
 
     <!-- Custom CSS -->
     <link href="vista/css/ambienteMedellin.css" rel="stylesheet">

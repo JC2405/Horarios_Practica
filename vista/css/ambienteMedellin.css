@@ -690,3 +690,76 @@
     font-size: 10px;
     margin: 2px;
 }
+
+/* ========================================
+   ESTILOS AMBIENTE SEDE MEDELLIN - SELECCIÓN
+   ======================================== */
+
+.breadcrumb {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(124, 107, 255, 0.1);
+}
+
+.breadcrumb-item.active {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.breadcrumb-item a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    text-decoration: underline;
+}
+
+.table-custom-header th {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.badge {
+    font-size: 11px;
+    padding: 5px 10px;
+}
+
+/* Estilos específicos para la tabla de selección de ambientes */
+#tablaAmbienteMedellins_wrapper .dt-buttons {
+    margin-bottom: 10px;
+}
+
+#tablaAmbienteMedellins_wrapper .btn-group {
+    white-space: nowrap;
+}
+
+.card-header-custom {
+    background: linear-gradient(135deg, #39A900 0%, #2d8000 100%);
+}
+
+.btn-secondary-custom {
+    background: #6c757d;
+    border-color: #6c757d;
+    color: white;
+}
+
+.btn-secondary-custom:hover {
+    background: #5a6268;
+    border-color: #5a6268;
+    color: white;
+}
+
+.btn-primary-custom {
+    background: #39A900;
+    border-color: #39A900;
+    color: white;
+}
+
+.btn-primary-custom:hover {
+    background: #2d8000;
+    border-color: #2d8000;
+    color: white;
+}

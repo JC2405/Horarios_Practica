@@ -23,10 +23,10 @@ class ambiente {
 
         let dataSet = [];
 
-        // ✅ En tu PHP estás devolviendo los datos en response["mensaje"]
+       
         response["mensaje"].forEach(item => {
 
-          // ✅ Botones (misma idea que listarFicha)
+
           let objBotones = '<div class="btn-group" role="group">';
           objBotones += '<button type="button" class="btn btn-info btnEditarAmbiente" ' +
             'idAmbiente="' + item.idAmbiente + '" ' +
@@ -39,9 +39,6 @@ class ambiente {
             'idSede="' + item.idSede + '"' +
           '><i class="bi bi-pen"></i></button>';
 
-          objBotones += '<button type="button" class="btn btn-danger btnEliminarAmbiente" ' +
-            'idAmbiente="' + item.idAmbiente + '"' +
-          '><i class="bi bi-x"></i></button>';
 
           objBotones += '</div>';
 
@@ -57,11 +54,6 @@ class ambiente {
           ]);
         });
 
-        // ✅ Si ya estaba creada, destruye primero (evita error al recargar)
-        if ($.fn.DataTable.isDataTable("#tablaAmbienteMedellin")) {
-          $("#tablaAmbienteMedellin").DataTable().clear().destroy();
-        }
-
         $("#tablaAmbienteMedellin").DataTable({
           buttons: [{
             extend: "colvis",
@@ -74,18 +66,7 @@ class ambiente {
           dom: "Bfrtip",
           responsive: true,
           destroy: true,
-          data: dataSet,
-          // Opcional: si quieres títulos exactos (si no, toma los del thead)
-          // columns: [
-          //   { title: "ID" },
-          //   { title: "Código" },
-          //   { title: "Capacidad" },
-          //   { title: "Número" },
-          //   { title: "Descripción" },
-          //   { title: "Ubicación" },
-          //   { title: "Estado" },
-          //   { title: "Acciones" }
-          // ]
+          data: dataSet, 
         });
 
       } else {
@@ -95,7 +76,7 @@ class ambiente {
   }
 }
 
-// ✅ Ejecución (como en tu ejemplo)
+
 (() => {
   let objData = { listarAmbienteMedellin: "ok" };
   let objListar = new ambiente(objData);

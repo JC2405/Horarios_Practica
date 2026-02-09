@@ -9,5 +9,6 @@
         objTablaListarTipoContrato.listarTipoContrato();
     }
 
-
+  // comment pra subir al repo 
+  
 })();

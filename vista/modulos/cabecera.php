@@ -39,17 +39,10 @@
 
     <!-- Nav JS -->
     <script src="vista/js/nav.js"></script>
-
-    
-    <script src="vista/js/cl_area.js"></script>
-    <script src="vista/js/cl_instructor.js"></script>
-    <script src="vista/js/cl_tipoContrato.js"></script>
-      <script src="vista/js/cl_sede.js"></script>
-      <script src="vista/js/cl_ficha.js"></script>  
-      <script src="vista/js/cl_tipoContratoFormacion.js"></script>
-      <script src="vista/js/cl_ambiente.js"></script>
-    <script src="vista/js/ambienteMedellin.js"></script>
-    <script src="vista/js/nav.js"></script>
+    <script src="vista/js/cl_programa.js"></script>
+    <script src="vista/js/cl_sede.js"></script>
+    <script src="vista/js/cl_tipoPrograma.js"></script>
+    <script src="../vista/js/nav.js"></script>
 
 
     <!-- Custom CSS -->

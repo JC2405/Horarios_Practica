@@ -2,7 +2,23 @@
  * CONSOLIDATED STYLES - LOGIN COLOR PALETTE
  * Primary: #7c6bff, Primary Hover: #6b5ce7, Light: #f0f2ff
  */
+/* ===== BOOTSTRAP PRIMARY OVERRIDE ===== */
+.btn-primary {
+    background-color: #7c6bff !important;
+    border-color: #7c6bff !important;
+}
 
+.btn-primary:hover {
+    background-color: #6b5ce7 !important;
+    border-color: #6b5ce7 !important;
+}
+
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #6b5ce7 !important;
+    border-color: #6b5ce7 !important;
+    box-shadow: 0 0 0 0.25rem rgba(124, 107, 255, 0.35) !important;
+}
 /* ===== VARIABLES DE COLOR ===== */
 :root {
     --primary: #7c6bff;

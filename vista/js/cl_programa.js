@@ -1,33 +1,39 @@
-class sede {
+class Programa {
 
-    constructor(objData){
+    constructor (objData){
         this._objData = objData;
     }
 
-
-    listarSede(){
+    listarPrograma(){
         let objData = new FormData();
-        objData.append("listarSede",this._objData.listarSede)
+        objData.append("listarPrograma",this._objData.listarPrograma)
 
-        fetch("controlador/sedeControlador.php",{
+        fetch("controlador/programaControlador.php",{
             method:"POST",
             body:objData
+
         }).then(response => response.json()).catch(error=>{
             console.log(error);
         })
-        .then(response=>{
-            console.log(response);
-        
-        if (response["codigo"] == "200") {
-            let dataSet = [];
 
-            response ["listarSedes"].forEach(item =>{
-                let objBotones = '<div class="btn-group" role="group">';
+        .then(response=>{
+            console.log(response)
+
+            if (response["codigo"]== "200"){
+
+                let dataSet = [];
+
+                response ["listarPrograma"].forEach(item=>{
+
+                       let objBotones = '<div class="btn-group" role="group">';
                      objBotones += '<button type="button" class="btn btn-info btnEditarAmbiente" ' +
-                       'idSede="' + item.idSede + '" ' +
-                       'direccion="' + item.descripcion + '" ' +
+                       'idPrograma="' + item.idPrograma + '" ' +
+                       'nombre="' + item.nombre + '" ' +
+                       'codigo="' + item.codigo + '" ' +
+                       'version="' + item.version + '" ' +
                        'estado="' + item.estado + '" ' +
-                       'nombreMunicipio="' + item.nombreMunicipio + '" ' +
+                       'tipoFormacion="' + item.tipoFormacion + '" ' +
+                       'duracion="' + item.duracion + '" ' +
                      '><i class="bi bi-pen"></i></button>';
 
 
@@ -35,14 +41,15 @@ class sede {
 
                      dataSet.push([    
                        item.nombre,
-                       item.direccion,
-                       item.descripcion,
+                       item.codigo,
+                       item.version,
                        item.estado,
-                       item.nombreMunicipio,
+                       item.tipoFormacion,
+                       item.duracion,
                        objBotones
                      ]);
                    });
-              $("#tablaSede").DataTable({
+              $("#tablaPrograma").DataTable({
                      buttons: [{
                        extend: "colvis",
                        text: "Columnas"

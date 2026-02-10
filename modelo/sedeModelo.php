@@ -10,8 +10,10 @@ class sedeModelo {
 
         try {
             $objRespuesta = Conexion::Conectar()->prepare("SELECT
-              s.*,
-              m.idMunicipio,
+              s.nombre,
+              s.direccion,
+              s.descripcion,
+              s.estado,
               m.nombreMunicipio
             FROM sede s
             INNER JOIN municipio m

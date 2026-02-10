@@ -42,9 +42,11 @@ $menus = [
       'label' => 'Programa Formación',
       'icon' => 'bx bx-book',
       'items' => [
-        ['label' => 'Crear ficha', 'href' => 'crearFicha'],
-        ['label' => 'Listar fichas', 'href' => 'listarFichas'],
-        ['label' => 'Carga aprendices', 'href' => 'aprendicesCarga'],
+        
+        ['label' => 'Sedes', 'href' => 'sede'],
+        ['label' => 'Programa', 'href' => 'programa'],
+        ['label' => 'Tipo Programas', 'href' => 'tipoPrograma'],
+
         ['label' => 'Horarios', 'href' => 'moduloHorarios'],
       ]
     ],

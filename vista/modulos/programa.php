@@ -148,7 +148,7 @@
         </div>
 
         <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-          <button type="button" id="btnCancelarPrograma" class="btn btn-light btn-soft">
+          <button href="panel" type="button" id="btnCancelarPrograma" class="btn btn-light btn-soft">
             Cancelar
           </button>
           <button class="btn btn-primary btn-soft-primary" type="submit">
@@ -158,7 +158,7 @@
       </form>
     </div>
 
-    
+
 
       <div id="panelFormularioEditarPrograma" class="form-card" style="display: none;">
       <div class="form-card-header">

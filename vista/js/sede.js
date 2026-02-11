@@ -8,4 +8,11 @@
         objListarSede.listarSede();
     }
 
+    let btnAgregarTipoPrograma = document.getElementById("agregarSede")
+    btnAgregarTipoPrograma.addEventListener("click",()=>{
+    $("#panelTablaSede").hide();
+    $("#panelFormularioTipoPrograma").show();
+ })
+
+
 })();

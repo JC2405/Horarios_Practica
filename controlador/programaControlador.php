@@ -17,10 +17,26 @@ class ProgramaControlador {
         $objRespuesta = programaModelo::mdlListarPrograma();
         echo json_encode($objRespuesta);
     }
+
+
+    public function crtAgregarPrograma(){
+        $objRespuesta = programaModelo::mdlRegistrarPrograma($this->nombre,$this->codigo,$this->idTipoFormacion,$this->version,$this->estado);
+        echo json_encode($objRespuesta);
+    }
 }
 
 
 if (isset($_POST["listarPrograma"])) {
     $objRespuesta = new ProgramaControlador();
     $objRespuesta -> crtListarPrograma();
+}
+
+if (isset($_POST["agregarPrograma"])){
+    $objRespuesta = new ProgramaControlador();
+    $objRespuesta->nombre = $_POST["nombre"];
+    $objRespuesta->codigo = $_POST["codigo"];
+    $objRespuesta->idTipoFormacion = $_POST["idTipoFormacion"];
+    $objRespuesta->version = $_POST["version"];
+    $objRespuesta->estado = $_POST["estado"];
+    $objRespuesta->crtAgregarPrograma();
 }

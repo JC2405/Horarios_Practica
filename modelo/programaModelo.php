@@ -30,5 +30,25 @@ class programaModelo {
         return $mensaje;
     }
 
+    public static function mdlRegistrarPrograma($nombre, $codigo, $idTipoFormacion, $version, $estado){
+    $mensaje = array();
+    try {
+        $objRespuesta = Conexion::Conectar()->prepare("INSERT INTO programa (nombre,codigo,idTipoFormacion,version,estado)
+         VALUES (:nombre,:codigo,:idTipoFormacion,:version,:estado)");
+        $objRespuesta->bindParam(":nombre",$nombre);
+        $objRespuesta->bindParam(":codigo",$codigo);
+        $objRespuesta->bindParam(":idTipoFormacion",$idTipoFormacion);
+        $objRespuesta->bindParam(":version",$version);
+        $objRespuesta->bindParam(":estado",$estado);
 
+            if ($objRespuesta->execute())
+             $mensaje = array("codigo" => "200", "mensaje" => "Programa agregada correctamente");
+            else
+            $mensaje = array("codigo" => "401", "mensaje" => "Error al agregar la Programa");
+                
+            } catch (Exception $e) {
+                $mensaje = array("codigo" => "401", "mensaje" => $e->getMessage());
+            }    
+            return $mensaje;
+    }
 }

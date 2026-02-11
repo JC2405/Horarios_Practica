@@ -122,7 +122,6 @@ class tipoPrograma {
             })
             .then(response => response.json())
             .then(response => {
-                console.log("Respuesta del servidor:", response);
 
                 if (response.codigo == "200") {
                     $("#panelFormularioEditarTipoPrograma").hide();

@@ -43,15 +43,11 @@
         e.preventDefault();
         e.stopPropagation();
         
-        console.log("Click detectado en botón editar");
         
         const idTipoPrograma = $(this).data("id");
         const tipo = $(this).data("tipo");
         const duracion = $(this).data("duracion");
         
-        console.log("ID:", idTipoPrograma);
-        console.log("Tipo:", tipo);
-        console.log("Duración:", duracion);
         
         // Cargar datos directamente sin fetch adicional
         document.getElementById("idTipoProgramaEdit").value = idTipoPrograma;

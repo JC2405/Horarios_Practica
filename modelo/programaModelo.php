@@ -51,4 +51,31 @@ class programaModelo {
             }    
             return $mensaje;
     }
+
+
+    public static function mdlEditarPrograma($idPrograma,$nombre, $codigo, $idTipoFormacion, $version, $estado){
+
+    $mensaje = array();
+
+    try {
+        $objRespuesta = Conexion::Conectar()->prepare(
+            "UPDATE programa set nombre =:nombre , codigo =:codigo , idTipoFormacion =:idTipoFormacion , version=:version,estado=:estado
+            WHERE idPrograma =:idPrograma");
+        $objRespuesta->bindParam(":idPrograma",$idPrograma);
+        $objRespuesta->bindParam(":nombre",$nombre);
+        $objRespuesta->bindParam(":codigo",$codigo);
+        $objRespuesta->bindParam(":idTipoFormacion",$idTipoFormacion);
+        $objRespuesta->bindParam(":version",$version);
+        $objRespuesta->bindParam(":estado",$estado);
+
+        if ($objRespuesta->execute())
+                $mensaje = array("codigo" => "200", "mensaje" => "Tipo Programa actualizada correctamente");
+        else
+                 $mensaje = array("codigo" => "401", "mensaje" => "Error al actualizar el Tipo Del Programa");
+
+          } catch (Exception $e) {
+              $mensaje = array("codigo" => "401", "mensaje" => $e->getMessage());
+          }
+          return $mensaje;
+            }
 }

@@ -39,4 +39,61 @@ btnAgregarTipoPrograma.addEventListener("click", () => {
             }
         }, false);
     })
+
+
+
+
+
+    $(document).on("click", ".btnEditarPrograma", function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        
+        const idPrograma = $(this).data("id");
+        const nombre = $(this).data("nombre");
+        const codigo = $(this).data("codigo");
+        const idTipoFormacion = $(this).data("idTipoFormacion");
+        const version = $(this).data("version");
+        const estado = $(this).data("estado");
+        
+        
+        
+        document.getElementById("idProgramaEdit").value = idPrograma;
+        document.getElementById("nombreFormacionEdit").value = nombre;
+        document.getElementById("codigoEdit").value = codigo;
+        document.getElementById("idTipoFormacionEdit").value = idTipoFormacion ;
+        document.getElementById("versionEdit").value = version;
+        document.getElementById("estadoEdit").value = estado;
+
+        const objPrograma = new Programa({});
+        objPrograma.cargarTiposFormacionEnSelectEdit(idTipoFormacion);
+
+        $("#panelTablaPrograma").hide();
+        $("#panelFormularioEditarPrograma").show();
+    });
+
+    // Validación formulario editar
+    const formEditar = document.getElementById("formEditarPrograma");
+    if(formEditar) {
+        formEditar.addEventListener("submit", function(event) {
+            event.preventDefault();
+            if (!formEditar.checkValidity()) {
+                event.stopPropagation();
+                formEditar.classList.add('was-validated');
+            } else {
+                const objTipoPrograma = new Programa({});
+                objTipoPrograma.editarPrograma();
+            }
+        }, false);
+    }
+
+    // Botones cancelar/regresar formulario editar
+    $("#btnCancelarEditarPrograma, #btnRegresarTablaProgramaEdit").on("click", function(e) {
+      e.preventDefault();
+      $("#panelFormularioEditarPrograma").hide();
+      $("#panelTablaPrograma").show();
+      $("#formEditarPrograma").removeClass('was-validated');
+    });
+    
+        
 })();

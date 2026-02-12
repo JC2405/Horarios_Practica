@@ -23,13 +23,16 @@ class ambienteModelo {
     public static function mdlListarAmbientesPorSede($idSede) {
         $mensaje = array();
         try {
-            $objRespuesta = Conexion::Conectar()->prepare(
-                "SELECT a.*, s.municipio as sedeMunicipio, s.nombre as sedeNombre
-                 FROM ambiente a
-                 INNER JOIN sede s ON a.idSede = s.idSede
-                 WHERE a.idSede = :idSede
-                 ORDER BY a.codigo"
-            );
+             $objRespuesta = Conexion::Conectar()->prepare(
+            "SELECT 
+                a.*,
+                s.nombre AS sedeNombre,
+                m.nombreMunicipio AS sedeMunicipio
+             FROM ambiente a
+             INNER JOIN sede s ON a.idSede = s.idSede
+             LEFT JOIN municipio m ON s.idMunicipio = m.idMunicipio
+             WHERE a.idSede = :idSede
+             ORDER BY a.codigo");
             $objRespuesta->execute([':idSede' => $idSede]);
             $listarAmbientes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
             $objRespuesta = null;

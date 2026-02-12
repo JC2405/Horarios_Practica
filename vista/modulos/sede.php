@@ -1,4 +1,3 @@
-
 <!-- CSS Consolidado -->
 <link href="vista/css/styles.css" rel="stylesheet">
 <div class="container">
@@ -67,10 +66,12 @@
     </table>
   </div>
 </div>
-  <div id="panelFormularioSede" class="form-card" style="display: none;">
+
+<!-- PANEL FORMULARIO AGREGAR SEDE -->
+<div id="panelFormularioSede" class="form-card" style="display: none;">
   <div class="form-card-header">
     <button id="btnRegresarTablaSede" type="button" class="btn-back">
-      <a class="bi bi-arrow-left" href="sede"></a>
+      <i class="bi bi-arrow-left"></i>
       Regresar
     </button>
 
@@ -98,7 +99,6 @@
       <label for="idMunicipioSede" class="form-label">Municipio</label>
       <select class="form-select form-control-soft" id="idMunicipioSede" required>
         <option value="" selected disabled>Seleccione...</option>
-        <!-- aquí cargas los municipios desde BD -->
       </select>
       <div class="invalid-feedback">Seleccione el municipio</div>
     </div>
@@ -139,92 +139,157 @@
   </form>
 </div>
 
+<!-- PANEL FORMULARIO EDITAR SEDE -->
+<div id="panelFormularioEditarSede" class="form-card" style="display: none;">
+  <div class="form-card-header">
+    <button id="btnRegresarTablaSedeEdit" type="button" class="btn-back">
+      <i class="bi bi-arrow-left"></i>
+      Regresar
+    </button>
 
-
-
-
-
-
-
-
-    <div id="panelFormularioEditarSede" class="form-card" style="display: none;">
-      <div class="form-card-header">
-        <button id="btnRegresarTablaSedeEdit" type="button" class="btn-back">
-          <i class="bi bi-arrow-left"></i>
-          Regresar
-        </button>
-    
-        <div class="form-title">
-          <div class="form-title-icon">
-            <i class="bi bi-pencil-square"></i>
-          </div>
-          <div>
-            <h3 class="form-title-text">Editar Sede</h3>
-            <p class="form-subtitle-text">Actualiza la información de la sede</p>
-          </div>
-        </div>
+    <div class="form-title">
+      <div class="form-title-icon">
+        <i class="bi bi-pencil-square"></i>
       </div>
-    
-      <form id="formEditarSede" class="row g-3 needs-validation" novalidate>
-    
-        <!-- ID OCULTO -->
-        <input type="hidden" id="idSedeEdit">
-    
-        <div class="col-md-6">
-          <label for="nombreSedeEdit" class="form-label">Nombre</label>
-          <input type="text" class="form-control form-control-soft" id="nombreSedeEdit"
-                 placeholder="Ej: Sede Central" required>
-          <div class="invalid-feedback">Ingrese el nombre</div>
-        </div>
-    
-        <div class="col-md-6">
-          <label for="idMunicipioSedeEdit" class="form-label">Municipio</label>
-          <select class="form-select form-control-soft" id="idMunicipioSedeEdit" required>
-            <option value="" disabled>Seleccione...</option>
-            <!-- se llena por JS -->
-          </select>
-          <div class="invalid-feedback">Seleccione el municipio</div>
-        </div>
-    
-        <div class="col-md-6">
-          <label for="direccionSedeEdit" class="form-label">Dirección</label>
-          <input type="text" class="form-control form-control-soft" id="direccionSedeEdit"
-                 placeholder="Ej: Calle 45 #10-20" required>
-          <div class="invalid-feedback">Ingrese la dirección</div>
-        </div>
-    
-        <div class="col-md-6">
-          <label for="estadoSedeEdit" class="form-label">Estado</label>
-          <select class="form-select form-control-soft" id="estadoSedeEdit" required>
-            <option value="">Seleccione...</option>
-            <option value="Activo">Activo</option>
-            <option value="Inactivo">Inactivo</option>
-          </select>
-          <div class="invalid-feedback">Seleccione el estado</div>
-        </div>
-    
-        <div class="col-md-12">
-          <label for="descripcionSedeEdit" class="form-label">Descripción</label>
-          <textarea class="form-control form-control-soft" id="descripcionSedeEdit" rows="3"
-                    placeholder="Ej: Oficina principal / atención al público" required></textarea>
-          <div class="invalid-feedback">Ingrese la descripción</div>
-        </div>
-    
-        <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-          <button type="button" id="btnCancelarEditarSede" class="btn btn-light btn-soft">
-            Cancelar
-          </button>
-          <button class="btn btn-primary btn-soft-primary" type="submit">
-            <i class="bi bi-save2 me-2"></i> Guardar cambios
-          </button>
-        </div>
-    
-      </form>
+      <div>
+        <h3 class="form-title-text">Editar Sede</h3>
+        <p class="form-subtitle-text">Actualiza la información de la sede</p>
+      </div>
+    </div>
+  </div>
+
+  <form id="formEditarSede" class="row g-3 needs-validation" novalidate>
+
+    <input type="hidden" id="idSedeEdit">
+
+    <div class="col-md-6">
+      <label for="nombreSedeEdit" class="form-label">Nombre</label>
+      <input type="text" class="form-control form-control-soft" id="nombreSedeEdit"
+             placeholder="Ej: Sede Central" required>
+      <div class="invalid-feedback">Ingrese el nombre</div>
     </div>
 
+    <div class="col-md-6">
+      <label for="idMunicipioSedeEdit" class="form-label">Municipio</label>
+      <select class="form-select form-control-soft" id="idMunicipioSedeEdit" required>
+        <option value="" disabled>Seleccione...</option>
+      </select>
+      <div class="invalid-feedback">Seleccione el municipio</div>
+    </div>
 
+    <div class="col-md-6">
+      <label for="direccionSedeEdit" class="form-label">Dirección</label>
+      <input type="text" class="form-control form-control-soft" id="direccionSedeEdit"
+             placeholder="Ej: Calle 45 #10-20" required>
+      <div class="invalid-feedback">Ingrese la dirección</div>
+    </div>
 
-  <!-- PANEL: AGREGAR AMBIENTE POR SEDE -->
+    <div class="col-md-6">
+      <label for="estadoSedeEdit" class="form-label">Estado</label>
+      <select class="form-select form-control-soft" id="estadoSedeEdit" required>
+        <option value="">Seleccione...</option>
+        <option value="Activo">Activo</option>
+        <option value="Inactivo">Inactivo</option>
+      </select>
+      <div class="invalid-feedback">Seleccione el estado</div>
+    </div>
+
+    <div class="col-md-12">
+      <label for="descripcionSedeEdit" class="form-label">Descripción</label>
+      <textarea class="form-control form-control-soft" id="descripcionSedeEdit" rows="3"
+                placeholder="Ej: Oficina principal / atención al público" required></textarea>
+      <div class="invalid-feedback">Ingrese la descripción</div>
+    </div>
+
+    <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+      <button type="button" id="btnCancelarEditarSede" class="btn btn-light btn-soft">
+        Cancelar
+      </button>
+      <button class="btn btn-primary btn-soft-primary" type="submit">
+        <i class="bi bi-save2 me-2"></i> Guardar cambios
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<!-- PANEL AMBIENTES DE LA SEDE -->
+<div id="panelAmbientesSede" style="display:none;">
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-wrapper">
+        <div class="title-icon"><i class="bi bi-door-open"></i></div>
+        <div>
+          <h2 class="section-title">Ambientes</h2>
+          <p class="section-subtitle">
+            Sede: <strong id="nombreSedeActualListado">---</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <button id="btnRegresarSedesDesdeAmbientes" class="btn btn-light btn-soft">
+        <i class="bi bi-arrow-left"></i> Volver
+      </button>
+
+      <button id="btnNuevoAmbiente" class="btn-add">
+        <span class="btn-glow"></span>
+        <i class="bi bi-plus-lg"></i>
+        <span>Nuevo Ambiente</span>
+      </button>
+    </div>
+  </div>
+
+  <input type="hidden" id="idSedeActualAmbientes">
+
+  <div class="table-wrapper">
+    <table id="tablaAmbientesSede" class="ultra-modern-table">
+      <thead>
+        <tr>
+          <th>
+            <div class="th-wrap">
+              <i class="bi bi-upc-scan"></i>
+              <span>Código</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-wrap">
+              <i class="bi bi-hash"></i>
+              <span>Número</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-wrap">
+              <i class="bi bi-people"></i>
+              <span>Capacidad</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-wrap">
+              <i class="bi bi-geo-alt"></i>
+              <span>Ubicación</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-wrap">
+              <i class="bi bi-circle-fill"></i>
+              <span>Estado</span>
+            </div>
+          </th>
+          <th>
+            <div class="th-wrap">
+              <i class="bi bi-file-text"></i>
+              <span>Descripción</span>
+            </div>
+          </th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+
+<!-- PANEL FORMULARIO AGREGAR AMBIENTE -->
 <div id="panelFormularioAgregarAmbienteSede" class="form-card" style="display:none;">
   <div class="form-card-header">
     <button id="btnRegresarAmbientes" type="button" class="btn-back">
@@ -247,7 +312,6 @@
 
   <form id="formAgregarAmbientePorSede" class="row g-3 needs-validation" novalidate>
 
-    <!-- ID SEDE OCULTO (se llena desde el botón de la tabla de sedes) -->
     <input type="hidden" id="idSedeAgregar" required>
 
     <div class="col-md-4">
@@ -307,53 +371,7 @@
   </form>
 </div>
 
-
-<!-- PANEL: AMBIENTES DE LA SEDE -->
-<div id="panelAmbientesSede" style="display:none;">
-  <div class="header-section">
-    <div class="header-content">
-      <div class="title-wrapper">
-        <div class="title-icon"><i class="bi bi-building"></i></div>
-        <div>
-          <h2 class="section-title">Ambientes</h2>
-          <p class="section-subtitle">
-            Sede: <strong id="nombreSedeActualListado">---</strong>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="d-flex gap-2">
-      <button id="btnRegresarSedesDesdeAmbientes" class="btn btn-light btn-soft">
-        <i class="bi bi-arrow-left"></i> Volver
-      </button>
-
-      <button id="btnNuevoAmbiente" class="btn-add">
-        <span class="btn-glow"></span>
-        <i class="bi bi-plus-lg"></i>
-        <span>Nuevo Ambiente</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- hidden sede actual -->
-  <input type="hidden" id="idSedeActualAmbientes">
-
-  <div class="table-wrapper">
-    <table id="tablaAmbientesSede" class="ultra-modern-table">
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Número</th>
-          <th>Capacidad</th>
-          <th>Ubicación</th>
-          <th>Estado</th>
-          <th>Descripción</th>
-        </tr>
-      </thead>
-    </table>
-  </div>
-  </div>
 </div>
-    
-</div>
+
+<!-- Cargar primero la clase, luego los eventos -->
+

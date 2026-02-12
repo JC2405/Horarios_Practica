@@ -24,31 +24,38 @@ class sede {
             response ["listarSedes"].forEach(item =>{
 
                 let objBotones = '<div class="btn-group" role="group">';
-                objBotones += '<button type="button" class="btn btn-info btnEditarSede" ' +
+                
+                // Botón Editar
+                objBotones += '<button type="button" class="btn btn-primary btn-sm btnEditarSede" ' +
                   'data-idsede="' + item.idSede + '" ' +
                   'data-nombre="' + item.nombre + '" ' +
                   'data-direccion="' + item.direccion + '" ' +
                   'data-descripcion="' + item.descripcion + '" ' +
                   'data-estado="' + item.estado + '" ' +
                   'data-idmunicipio="' + (item.idMunicipio ?? "") + '" ' +
-                '><i class="bi bi-pen"></i></button>';
+                  'title="Editar sede">' +
+                  '<i class="bi bi-pencil"></i>' +
+                '</button>';
                             
-                 objBotones += '<button type="button" class="btn btn-success btnAmbientesSede" ' +
+                // Botón Ambientes
+                objBotones += '<button type="button" class="btn btn-success btn-sm btnAmbientesSede" ' +
                   'data-idsede="' + item.idSede + '" ' +
                   'data-nombre="' + item.nombre + '" ' +
-                '><i class="bi bi-building"></i></button>';
+                  'title="Ver ambientes">' +
+                  '<i class="bi bi-door-open"></i>' +
+                '</button>';
 
-                     objBotones += '</div>';
+                objBotones += '</div>';
 
-                     dataSet.push([    
-                       item.nombre,
-                       item.direccion,
-                       item.descripcion,
-                       item.estado,
-                       item.nombreMunicipio,
-                       objBotones
-                     ]);
-                   });
+                dataSet.push([    
+                  item.nombre,
+                  item.direccion,
+                  item.descripcion,
+                  item.estado,
+                  item.nombreMunicipio,
+                  objBotones
+                ]);
+               });
               $("#tablaSede").DataTable({
                      buttons: [{
                        extend: "colvis",
@@ -101,8 +108,21 @@ class sede {
         // recargar tabla
         let objListar = new sede({ listarSede: "ok" });
         objListar.listarSede();
+        
+        // Mostrar mensaje de éxito
+        Swal.fire({
+            icon: 'success',
+            title: '¡Éxito!',
+            text: response.mensaje,
+            timer: 2000,
+            showConfirmButton: false
+        });
       } else {
-        alert(response["mensaje"]);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: response.mensaje
+        });
       }
     })
     .catch(err => console.log(err));
@@ -140,8 +160,21 @@ class sede {
 
           // recargar tabla
           new sede({ listarSede: "ok" }).listarSede();
+          
+          // Mostrar mensaje de éxito
+          Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: response.mensaje,
+              timer: 2000,
+              showConfirmButton: false
+          });
         } else {
-          alert(response["mensaje"]);
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: response.mensaje
+          });
         }
       })
       .catch(err => console.log(err));

@@ -1,86 +1,124 @@
 (function(){
 
+console.log('✅ Módulo ambiente.js iniciado');
+
 // ====== CLICK: botón "Ambientes" desde la tabla de sedes ======
 $(document).on("click", ".btnAmbientesSede", function (e) {
-  e.preventDefault();
-  e.stopPropagation();
+    e.preventDefault();
+    e.stopPropagation();
 
-  const idSede = $(this).data("idsede");
-  const nombreSede = $(this).data("nombre");
+    const idSede = $(this).data("idsede");
+    const nombreSede = $(this).data("nombre");
 
-  // guardar sede actual
-  $("#idSedeActualAmbientes").val(idSede);
-  $("#nombreSedeActualListado").text(nombreSede);
+    console.log('🏢 Abriendo ambientes de sede:', nombreSede, 'ID:', idSede);
 
-  // ocultar sedes / forms
-  $("#panelTablaSede").hide();
-  $("#panelFormularioSede").hide();
-  $("#panelFormularioEditarSede").hide();
+    // Guardar sede actual en campos ocultos
+    $("#idSedeActualAmbientes").val(idSede);
+    $("#nombreSedeActualListado").text(nombreSede);
 
-  // mostrar listado de ambientes
-  $("#panelAmbientesSede").show();
-  $("#panelFormularioAgregarAmbienteSede").hide();
+    // Ocultar todos los paneles
+    $("#panelTablaSede").hide();
+    $("#panelFormularioSede").hide();
+    $("#panelFormularioEditarSede").hide();
+    $("#panelFormularioAgregarAmbienteSede").hide();
 
-  // listar ambientes de esa sede
-  listarAmbientesPorSede(idSede);
+    // Mostrar panel de ambientes
+    $("#panelAmbientesSede").show();
+
+    // Listar ambientes de esa sede usando la clase
+    const objAmbiente = new Ambiente({});
+    objAmbiente.listarAmbientesPorSede(idSede);
 });
 
 // ====== BOTÓN: Nuevo Ambiente ======
-$("#btnNuevoAmbiente").on("click", function(e){
-  e.preventDefault();
+$(document).on("click", "#btnNuevoAmbiente", function(e) {
+    e.preventDefault();
 
-  const idSede = $("#idSedeActualAmbientes").val();
-  const nombreSede = $("#nombreSedeActualListado").text();
+    const idSede = $("#idSedeActualAmbientes").val();
+    const nombreSede = $("#nombreSedeActualListado").text();
 
-  // setear hidden del form
-  $("#idSedeAgregar").val(idSede);
-  $("#nombreSedeActual").text(nombreSede);
+    console.log('➕ Nuevo ambiente para sede:', nombreSede, 'ID:', idSede);
 
-  $("#panelAmbientesSede").hide();
-  $("#panelFormularioAgregarAmbienteSede").show();
+    // Validar que haya una sede seleccionada
+    if (!idSede) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atención',
+            text: 'Por favor, selecciona una sede primero'
+        });
+        return;
+    }
 
-  $("#formAgregarAmbientePorSede").removeClass("was-validated");
-  document.getElementById("formAgregarAmbientePorSede")?.reset();
+    // Setear datos en el formulario
+    $("#idSedeAgregar").val(idSede);
+    $("#nombreSedeActual").text(nombreSede);
+
+    // Cambiar de panel
+    $("#panelAmbientesSede").hide();
+    $("#panelFormularioAgregarAmbienteSede").show();
+
+    // Limpiar formulario
+    $("#formAgregarAmbientePorSede").removeClass("was-validated");
+    document.getElementById("formAgregarAmbientePorSede")?.reset();
+    
+    // Restaurar el idSede después del reset
+    $("#idSedeAgregar").val(idSede);
 });
 
-// ====== Volver de Ambientes a Sedes ======
-$("#btnRegresarSedesDesdeAmbientes").on("click", function(e){
-  e.preventDefault();
-  $("#panelAmbientesSede").hide();
-  $("#panelFormularioAgregarAmbienteSede").hide();
-  $("#panelTablaSede").show();
+// ====== BOTÓN: Volver de Ambientes a Sedes ======
+$(document).on("click", "#btnRegresarSedesDesdeAmbientes", function(e) {
+    e.preventDefault();
+    console.log('⬅️ Regresando a tabla de sedes');
+    
+    $("#panelAmbientesSede").hide();
+    $("#panelFormularioAgregarAmbienteSede").hide();
+    $("#panelTablaSede").show();
 });
 
-// ====== Cancelar / Regresar del FORM a listado de Ambientes ======
-$("#btnCancelarAgregarAmbiente, #btnRegresarAmbientes").on("click", function(e){
-  e.preventDefault();
-  $("#panelFormularioAgregarAmbienteSede").hide();
-  $("#panelAmbientesSede").show();
-  $("#formAgregarAmbientePorSede").removeClass("was-validated");
-  document.getElementById("formAgregarAmbientePorSede")?.reset();
+// ====== BOTONES: Cancelar / Regresar del FORM a listado de Ambientes ======
+$(document).on("click", "#btnCancelarAgregarAmbiente, #btnRegresarAmbientes", function(e) {
+    e.preventDefault();
+    console.log('⬅️ Regresando a lista de ambientes');
+    
+    $("#panelFormularioAgregarAmbienteSede").hide();
+    $("#panelAmbientesSede").show();
+    $("#formAgregarAmbientePorSede").removeClass("was-validated");
+    document.getElementById("formAgregarAmbientePorSede")?.reset();
 });
 
+// ====== SUBMIT: Formulario Agregar Ambiente ======
+const formAgregarAmbiente = document.getElementById("formAgregarAmbientePorSede");
+if (formAgregarAmbiente) {
+    formAgregarAmbiente.addEventListener("submit", function(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Validar formulario
+        if (!formAgregarAmbiente.checkValidity()) {
+            formAgregarAmbiente.classList.add('was-validated');
+            return;
+        }
 
+        // Validar que exista idSede
+        const idSede = document.getElementById("idSedeAgregar").value;
+        if (!idSede) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'No se ha seleccionado una sede. Por favor, vuelve atrás y selecciona una sede.'
+            });
+            return;
+        }
 
+        console.log('💾 Guardando ambiente para sede:', idSede);
 
+        // Llamar al método de la clase Ambiente
+        const objAmbiente = new Ambiente({});
+        objAmbiente.registrarAmbientePorSede();
+        
+    }, false);
+}
 
- 'use strict';
-
- const formsAgregarAmbientePorSede = document.querySelectorAll("#formAgregarAmbientePorSede");
- Array.from(formsAgregarAmbientePorSede).forEach(form =>{
-     form.addEventListener("submit", event => {
-            event.preventDefault();
-            if (!form.checkValidity()) {
-                event.stopPropagation();
-                form.classList.add('was-validated');
-            } else {
-                const objAmbiente = new Ambiente({});
-                objAmbiente.registrarAmbientePorSede();
-                listarAmbiente();
-            }
-        }, false);
-    })
-
-
+console.log('✅ Eventos de ambiente.js configurados');
 
 })();

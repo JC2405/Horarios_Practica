@@ -64,8 +64,42 @@ class sedeModelo {
     }
 
     return $mensaje;
-}
+    }
 
+
+    
+    public static function mdlEditarSede($idSede, $nombre, $direccion, $descripcion, $estado, $idMunicipio){
+
+    $mensaje = array();
+    try {
+        $objRespuesta = Conexion::Conectar()->prepare("
+            UPDATE sede 
+            SET 
+                nombre = :nombre,
+                direccion = :direccion,
+                descripcion = :descripcion,
+                estado = :estado,
+                idMunicipio = :idMunicipio
+            WHERE idSede = :idSede
+        ");
+
+        $objRespuesta->bindParam(":idSede", $idSede);
+        $objRespuesta->bindParam(":nombre", $nombre);
+        $objRespuesta->bindParam(":direccion", $direccion);
+        $objRespuesta->bindParam(":descripcion", $descripcion);
+        $objRespuesta->bindParam(":estado", $estado);
+        $objRespuesta->bindParam(":idMunicipio", $idMunicipio);
+
+        if ($objRespuesta->execute())
+            $mensaje = array("codigo" => "200", "mensaje" => "Sede actualizada correctamente");
+        else
+            $mensaje = array("codigo" => "401", "mensaje" => "Error al actualizar la sede");
+
+    } catch (Exception $e) {
+        $mensaje = array("codigo" => "401", "mensaje" => $e->getMessage());
+    }
+    return $mensaje;
+    }
 
 }
 

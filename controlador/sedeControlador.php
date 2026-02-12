@@ -20,6 +20,12 @@ class sedeControlador {
         $objRespuesta = sedeModelo::mdlRegistrarSede($this->nombre,$this->direccion,$this->descripcion,$this->estado,$this->idMunicipio);
         echo json_encode($objRespuesta);
     }
+
+
+    public function ctrEditarSede(){
+        $objRespuesta = sedeModelo::mdlEditarSede($this->idSede,$this->nombre,$this->direccion,$this->descripcion,$this->estado,$this->idMunicipio);
+        echo json_encode($objRespuesta);
+    }
 }
 
 
@@ -36,4 +42,15 @@ if(isset($_POST["agregarSede"])){
     $objRespuesta->estado = $_POST["estado"];
     $objRespuesta->idMunicipio = $_POST["idMunicipio"];
     $objRespuesta->ctrAgregarSede();
+}
+
+if(isset($_POST["editarSede"])){
+    $objRespuesta = new sedeControlador();
+    $objRespuesta->idSede = $_POST["idSede"];
+    $objRespuesta->nombre = $_POST["nombre"];
+    $objRespuesta->direccion = $_POST["direccion"];
+    $objRespuesta->descripcion = $_POST["descripcion"];
+    $objRespuesta->estado = $_POST["estado"];
+    $objRespuesta->idMunicipio = $_POST["idMunicipio"];
+    $objRespuesta->ctrEditarSede();
 }

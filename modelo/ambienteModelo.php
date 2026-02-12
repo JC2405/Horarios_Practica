@@ -19,7 +19,7 @@ class ambienteModelo {
         return $mensaje;
     }
 
-    // Listar ambientes por sede
+    
     public static function mdlListarAmbientesPorSede($idSede) {
         $mensaje = array();
         try {
@@ -40,43 +40,6 @@ class ambienteModelo {
         return $mensaje;
     }
 
-    // Listar ambientes por ciudad (municipio)
-    public static function mdlListarAmbientesPorCiudad($municipio) {
-        $mensaje = array();
-        try {
-            $objRespuesta = Conexion::Conectar()->prepare(
-                "SELECT a.*, s.municipio as sedeMunicipio, s.nombre as sedeNombre
-                 FROM ambiente a
-                 INNER JOIN sede s ON a.idSede = s.idSede
-                 WHERE s.municipio = :municipio
-                 ORDER BY a.codigo"
-            );
-            $objRespuesta->execute([':municipio' => $municipio]);
-            $listarAmbientes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
-            $objRespuesta = null;
-            $mensaje = array("codigo" => "200", "ambientes" => $listarAmbientes);
-        } catch (Exception $e) {
-            $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
-        }
-        return $mensaje;
-    }
-
-
-
-     public static function mdlListarAmbienteMedellin(){
-        $mensaje = array();
-
-        try {
-            $objRespuesta = Conexion::Conectar()->prepare("SELECT * from ambiente
-            where idSede = 1;");
-            $objRespuesta->execute();
-            $listarAmbiente = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
-            $objRespuesta = null;
-            $mensaje = array("codigo"=>"200","mensaje"=>$listarAmbiente);
-        } catch (Exception $e) {
-            $mensaje = array("codigo"=>"400","mensaje"=>$e->getMessage());
-        }
-        return $mensaje;
-    }
+    
     
 }

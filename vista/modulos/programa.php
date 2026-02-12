@@ -94,7 +94,6 @@
           <div id="panelFormularioPrograma" class="form-card" style="display: none;">
       <div class="form-card-header">
         <button id="btnRegresarTablaPrograma" type="button" class="btn-back">
-          <a class="bi bi-arrow-left" href="programa"></a>
           Regresar
         </button>
 

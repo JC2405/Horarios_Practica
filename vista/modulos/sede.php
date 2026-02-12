@@ -139,4 +139,88 @@
   </form>
 </div>
 
+
+
+
+
+
+
+
+
+    <div id="panelFormularioEditarSede" class="form-card" style="display: none;">
+      <div class="form-card-header">
+        <button id="btnRegresarTablaSedeEdit" type="button" class="btn-back">
+          <i class="bi bi-arrow-left"></i>
+          Regresar
+        </button>
+    
+        <div class="form-title">
+          <div class="form-title-icon">
+            <i class="bi bi-pencil-square"></i>
+          </div>
+          <div>
+            <h3 class="form-title-text">Editar Sede</h3>
+            <p class="form-subtitle-text">Actualiza la información de la sede</p>
+          </div>
+        </div>
+      </div>
+    
+      <form id="formEditarSede" class="row g-3 needs-validation" novalidate>
+    
+        <!-- ID OCULTO -->
+        <input type="hidden" id="idSedeEdit">
+    
+        <div class="col-md-6">
+          <label for="nombreSedeEdit" class="form-label">Nombre</label>
+          <input type="text" class="form-control form-control-soft" id="nombreSedeEdit"
+                 placeholder="Ej: Sede Central" required>
+          <div class="invalid-feedback">Ingrese el nombre</div>
+        </div>
+    
+        <div class="col-md-6">
+          <label for="idMunicipioSedeEdit" class="form-label">Municipio</label>
+          <select class="form-select form-control-soft" id="idMunicipioSedeEdit" required>
+            <option value="" disabled>Seleccione...</option>
+            <!-- se llena por JS -->
+          </select>
+          <div class="invalid-feedback">Seleccione el municipio</div>
+        </div>
+    
+        <div class="col-md-6">
+          <label for="direccionSedeEdit" class="form-label">Dirección</label>
+          <input type="text" class="form-control form-control-soft" id="direccionSedeEdit"
+                 placeholder="Ej: Calle 45 #10-20" required>
+          <div class="invalid-feedback">Ingrese la dirección</div>
+        </div>
+    
+        <div class="col-md-6">
+          <label for="estadoSedeEdit" class="form-label">Estado</label>
+          <select class="form-select form-control-soft" id="estadoSedeEdit" required>
+            <option value="">Seleccione...</option>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+          <div class="invalid-feedback">Seleccione el estado</div>
+        </div>
+    
+        <div class="col-md-12">
+          <label for="descripcionSedeEdit" class="form-label">Descripción</label>
+          <textarea class="form-control form-control-soft" id="descripcionSedeEdit" rows="3"
+                    placeholder="Ej: Oficina principal / atención al público" required></textarea>
+          <div class="invalid-feedback">Ingrese la descripción</div>
+        </div>
+    
+        <div class="col-12 d-flex justify-content-end gap-2 mt-2">
+          <button type="button" id="btnCancelarEditarSede" class="btn btn-light btn-soft">
+            Cancelar
+          </button>
+          <button class="btn btn-primary btn-soft-primary" type="submit">
+            <i class="bi bi-save2 me-2"></i> Guardar cambios
+          </button>
+        </div>
+    
+      </form>
+    </div>
+
+
 </div>

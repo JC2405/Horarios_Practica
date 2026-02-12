@@ -21,7 +21,18 @@ btnAgregarTipoPrograma.addEventListener("click", () => {
   document.getElementById("formAgregarPrograma").classList.remove("was-validated");
 });
 
+ // ====== BOTONES CANCELAR / REGRESAR (AGREGAR) ======
+$("#btnCancelarPrograma, #btnRegresarTablaPrograma").on("click", function(e){
+  e.preventDefault();
 
+  // ocultar formulario agregar y volver a tabla
+  $("#panelFormularioPrograma").hide();
+  $("#panelTablaPrograma").show();
+
+  // reset form + quitar validación
+  document.getElementById("formAgregarPrograma").reset();
+  $("#formAgregarPrograma").removeClass("was-validated");
+});
 
  'use strict';
 

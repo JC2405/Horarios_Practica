@@ -22,14 +22,21 @@ class sede {
             let dataSet = [];
 
             response ["listarSedes"].forEach(item =>{
-                let objBotones = '<div class="btn-group" role="group">';
-                     objBotones += '<button type="button" class="btn btn-info btnEditarSede" ' +
-                       'idSede="' + item.idSede + '" ' +
-                       'direccion="' + item.descripcion + '" ' +
-                       'estado="' + item.estado + '" ' +
-                       'nombreMunicipio="' + item.nombreMunicipio + '" ' +
-                     '><i class="bi bi-pen"></i></button>';
 
+                let objBotones = '<div class="btn-group" role="group">';
+                objBotones += '<button type="button" class="btn btn-info btnEditarSede" ' +
+                  'data-idsede="' + item.idSede + '" ' +
+                  'data-nombre="' + item.nombre + '" ' +
+                  'data-direccion="' + item.direccion + '" ' +
+                  'data-descripcion="' + item.descripcion + '" ' +
+                  'data-estado="' + item.estado + '" ' +
+                  'data-idmunicipio="' + (item.idMunicipio ?? "") + '" ' +
+                '><i class="bi bi-pen"></i></button>';
+                            
+                 objBotones += '<button type="button" class="btn btn-success btnAmbientesSede" ' +
+                  'data-idsede="' + item.idSede + '" ' +
+                  'data-nombre="' + item.nombre + '" ' +
+                '><i class="bi bi-building"></i></button>';
 
                      objBotones += '</div>';
 
@@ -97,6 +104,37 @@ class sede {
     .catch(err => console.log(err));
   }
 
+      editarSede(){
+      let objData = new FormData();
+      objData.append("editarSede", "ok");
 
+      objData.append("idSede", document.getElementById("idSedeEdit").value);
+      objData.append("nombre", document.getElementById("nombreSedeEdit").value);
+      objData.append("direccion", document.getElementById("direccionSedeEdit").value);
+      objData.append("descripcion", document.getElementById("descripcionSedeEdit").value);
+      objData.append("estado", document.getElementById("estadoSedeEdit").value);
+      objData.append("idMunicipio", document.getElementById("idMunicipioSedeEdit").value);
+
+      fetch("controlador/sedeControlador.php",{
+        method:"POST",
+        body: objData
+      })
+      .then(r => r.json())
+      .then(response => {
+        console.log(response);
+
+        if (response["codigo"] == "200") {
+          $("#panelFormularioEditarSede").hide();
+          $("#panelTablaSede").show();
+          $("#formEditarSede").removeClass("was-validated");
+
+          // recargar tabla
+          new sede({ listarSede: "ok" }).listarSede();
+        } else {
+          alert(response["mensaje"]);
+        }
+      })
+      .catch(err => console.log(err));
+    }
   
 }

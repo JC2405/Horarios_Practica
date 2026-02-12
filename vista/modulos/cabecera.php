@@ -44,6 +44,7 @@
     <script src="vista/js/cl_tipoPrograma.js"></script>
     <script src="../vista/js/nav.js"></script>
     <script src="vista/js/cl_ambiente.js"></script>
+    <script src="vista/js/cl_ficha.js"></script>
 
 
     <!-- Custom CSS -->

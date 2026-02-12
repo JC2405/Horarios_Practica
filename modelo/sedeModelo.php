@@ -20,7 +20,7 @@ class sedeModelo {
              LEFT JOIN municipio m
                  ON s.idMunicipio = m.idMunicipio;");
             $objRespuesta->execute();
-            $listarSedes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
+            $listarSedes = $objRespuesta->fetchAll();
             $objRespuesta = null; 
 
             $mensaje = array("codigo"=>"200", "listarSedes"=>$listarSedes);

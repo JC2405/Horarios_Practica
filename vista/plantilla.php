@@ -16,19 +16,12 @@
           $_GET["ruta"] == "listarFichas" ||
           $_GET["ruta"] == "listarHorarios" ||
           $_GET["ruta"] == "sedeVista" ||
-          $_GET["ruta"] == "fichasInstructor" ||
           $_GET["ruta"] == "crearFicha" ||
-          $_GET["ruta"] == "aprendicesCarga" ||
           $_GET["ruta"] == "sede" ||
-          $_GET["ruta"] == "crearHorario" ||
-          $_GET["ruta"] == "miHorario" ||
-          $_GET["ruta"] == "moduloHorarios"||
-          $_GET["ruta"] == "tipoFormacionCrearHorario" ||
           $_GET["ruta"] == "listarFichaHorarios" ||
           $_GET["ruta"] == "ambienteSedeMedellin" || 
           $_GET["ruta"] == "eleccionSede" ||
           $_GET["ruta"] == "eleccionAmbiente" ||
-          $_GET["ruta"] == "asignacionJornada" ||
           $_GET["ruta"] == "visualizacionFichas" ||
           $_GET["ruta"] == "tipoPrograma"
     

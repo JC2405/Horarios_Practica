@@ -3,40 +3,82 @@
 include_once "../modelo/fichaModelo.php";
 
 class fichaControlador {
+
     public $idFicha;
     public $codigoFicha;
     public $idPrograma;
+    public $idAmbiente;
+    public $estado;
+    public $jornada;
+    public $fechaInicio;
+    public $fechaFin;
+    public $idMunicipio;
+    public $idSede;
 
-    public function ctrListarFichas(){
-        $objRespuesta = fichaModelo::mdlListarFichas();
+    
+    public function ctrListarFicha(){
+        $objRespuesta = fichaModelo::mdlListarFicha();
         echo json_encode($objRespuesta);
     }
 
-    public function ctrListarFichaHorario(){
-        $objRespuesta = fichaModelo::mdlListarFichaHorario();
+ 
+    public function ctrListarMunicipios(){
+        $objRespuesta = fichaModelo::mdlListarMunicipios();
         echo json_encode($objRespuesta);
     }
 
-    public function ctrListarTecnologos(){
-        $objRespuesta = fichaModelo::mdlListarTecnologos();
+
+    public function ctrListarSedesPorMunicipio(){
+        $objRespuesta = fichaModelo::mdlListarSedesPorMunicipio($this->idMunicipio);
         echo json_encode($objRespuesta);
     }
+
+  
+    public function ctrListarAmbientesPorSede(){
+        $objRespuesta = fichaModelo::mdlListarAmbientesPorSede($this->idSede);
+        echo json_encode($objRespuesta);
+    }
+
+ 
+    public function ctrListarProgramas(){
+        $objRespuesta = fichaModelo::mdlListarProgramas();
+        echo json_encode($objRespuesta);
+    }
+
+   
+    
 }
 
-// Establecer el header de respuesta JSON
-header('Content-Type: application/json');
 
-if(isset($_POST["listarFichas"])){
+
+// Listar fichas
+if (isset($_POST["listarFicha"])) {
     $objRespuesta = new fichaControlador();
-    $objRespuesta->ctrListarFichas();
+    $objRespuesta->ctrListarFicha();
 }
 
-if (isset($_POST["listarFichaHorario"])){
+// Listar municipios
+if (isset($_POST["listarMunicipios"])) {
     $objRespuesta = new fichaControlador();
-    $objRespuesta->ctrListarFichaHorario();
+    $objRespuesta->ctrListarMunicipios();
 }
 
-if (isset($_POST["listarTecnologos"])){
+
+if (isset($_POST["listarSedesPorMunicipio"])) {
     $objRespuesta = new fichaControlador();
-    $objRespuesta->ctrListarTecnologos();
+    $objRespuesta->idMunicipio = $_POST["idMunicipio"];
+    $objRespuesta->ctrListarSedesPorMunicipio();
 }
+
+
+if (isset($_POST["listarAmbientesPorSede"])) {
+    $objRespuesta = new fichaControlador();
+    $objRespuesta->idSede = $_POST["idSede"];
+    $objRespuesta->ctrListarAmbientesPorSede();
+}
+
+
+if (isset($_POST["listarProgramas"])) {
+    $objRespuesta = new fichaControlador();
+    $objRespuesta->ctrListarProgramas();
+}   

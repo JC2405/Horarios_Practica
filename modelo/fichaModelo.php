@@ -1,82 +1,157 @@
 <?php
-
 include_once "conexion.php";
 
 class fichaModelo{
 
-    public static function mdlListarFichas(){
-        try {
+
+    public static function mdlListarMunicipios(){
         $mensaje = array();
-        $objRespuesta = Conexion::Conectar()->prepare("SELECT 
-             f.idFicha,
-             p.codigo,
-             p.nombre,
-             p.duracion,
-             p.jornada,
-             f.codigoFicha
-        FROM ficha f
-        INNER JOIN programa p
-        ON p.idPrograma = f.idPrograma");
-        $objRespuesta->execute();
-        $listarFichas = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
-        $objRespuesta = null;
-        $mensaje = array("codigo" => "200" , "listarFichas" => $listarFichas);
-        } catch (Exception $e) {
-        $mensaje = array("codigo" => "400" , "mensaje" =>$e->getMessage());
-        }
-        return $mensaje;
-    }
 
-    public static function mdlListarFichaHorario(){
         try {
-            $mensaje = array();
-            $objRespuesta = Conexion::Conectar()->prepare("SELECT 
-                f.idFicha,
-                f.codigoFicha, 
-                p.nombre, 
-                p.duracion,
-                p.jornada, 
-                s.municipio
-            FROM ficha f
-            INNER JOIN programa p ON p.idPrograma = f.idPrograma
-            INNER JOIN sede s ON s.idSede = f.idSede");
-            $objRespuesta->execute();
-            $listarFichaHorario = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
-            $objRespuesta = null ; 
-            $mensaje = array("codigo"=>"200","listarFichaHorario"=> $listarFichaHorario);
-        } catch (Exception $e) {
-            $mensaje = array("codigo"=>"400", "mensaje"=>$e->getMessage());
-        }
-        return $mensaje;
-    }
+            $objRespuesta = Conexion::Conectar()->prepare(
+                "SELECT idMunicipio, nombreMunicipio
+                 FROM municipio
+                 ORDER BY nombreMunicipio ASC"
+            );
 
-    public static function mdlListarTecnologos(){
-        try {
-            $mensaje = array();
-            $objRespuesta = Conexion::Conectar()->prepare("SELECT 
-       f.idFicha,
-       f.codigoFicha,
-       f.idSede,
-       p.nombre AS programa,
-       p.duracion,
-       p.jornada,
-       s.municipio,
-       s.nombre AS sede
-         FROM ficha f
-         INNER JOIN programa p 
-             ON p.idPrograma = f.idPrograma
-         INNER JOIN sede s 
-             ON s.idSede = f.idSede
-         INNER JOIN tipoformacion tf 
-             ON tf.idTipoFormacion = p.idTipoFormacion
-         WHERE tf.`tipoFormacion` = 'Tecnólogo'");
             $objRespuesta->execute();
-            $listarTecnologos = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
+            $listarMunicipios = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
             $objRespuesta = null;
-            $mensaje = array("codigo"=>"200","listarTecnologos"=> $listarTecnologos);
+
+            $mensaje = array("codigo"=>"200", "listarMunicipios"=>$listarMunicipios);
+
         } catch (Exception $e) {
-            $mensaje = array("codigo"=>"400", "mensaje"=>$e->getMessage());
+            $mensaje = array("codigo"=>"400","mensaje"=>$e->getMessage());
         }
+
         return $mensaje;
     }
+
+
+    public static function mdlListarSedesPorMunicipio($idMunicipio){
+        $mensaje = array();
+
+        try {
+            $objRespuesta = Conexion::Conectar()->prepare(
+                "SELECT idSede, nombre
+                 FROM sede
+                 WHERE idMunicipio = :idMunicipio
+                 ORDER BY nombre ASC"
+            );
+
+            $objRespuesta->bindParam(":idMunicipio", $idMunicipio, PDO::PARAM_INT);
+            $objRespuesta->execute();
+
+            $listarSedes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
+            $objRespuesta = null;
+
+            $mensaje = array("codigo"=>"200", "listarSedes"=>$listarSedes);
+
+        } catch (Exception $e) {
+            $mensaje = array("codigo"=>"400","mensaje"=>$e->getMessage());
+        }
+
+        return $mensaje;
+    }
+
+
+    
+    public static function mdlListarAmbientesPorSede($idSede){
+        $mensaje = array();
+
+        try {
+            $objRespuesta = Conexion::Conectar()->prepare(
+                "SELECT 
+                    idAmbiente,
+                    codigo,
+                    numero
+                 FROM ambiente
+                 WHERE idSede = :idSede
+                 ORDER BY codigo ASC"
+            );
+
+            $objRespuesta->bindParam(":idSede", $idSede, PDO::PARAM_INT);
+            $objRespuesta->execute();
+
+            $listarAmbientes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
+            $objRespuesta = null;
+
+            $mensaje = array("codigo"=>"200", "listarAmbientes"=>$listarAmbientes);
+
+        } catch (Exception $e) {
+            $mensaje = array("codigo"=>"400","mensaje"=>$e->getMessage());
+        }
+
+        return $mensaje;
+    }
+
+
+   
+    public static function mdlListarProgramas(){
+        $mensaje = array();
+
+        try {
+            $objRespuesta = Conexion::Conectar()->prepare(
+                "SELECT 
+                    p.idPrograma,
+                    p.nombre,
+                    tp.tipoFormacion,
+                    tp.duracion
+                 FROM programa p
+                 INNER JOIN tipoprograma tp
+                    ON p.idTipoFormacion = tp.idTipoPrograma
+                 ORDER BY p.nombre ASC"
+            );
+
+            $objRespuesta->execute();
+            $listarProgramas = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
+            $objRespuesta = null;
+
+            $mensaje = array("codigo"=>"200", "listarProgramas"=>$listarProgramas);
+
+        } catch (Exception $e) {
+            $mensaje = array("codigo"=>"400","mensaje"=>$e->getMessage());
+        }
+
+        return $mensaje;
+    }
+
+
+    
+    public static function mdlListarFicha(){
+        $mensaje = array();
+
+        try {
+          $objRespuesta = Conexion::Conectar()->prepare(
+             "SELECT 
+                f.codigoFicha,
+                p.nombre AS programa,
+                a.codigo AS ambiente,
+                a.numero AS numeroAmbiente,
+                f.estado,
+                f.jornada,
+                f.fechaInicio,
+                f.fechaFin
+            FROM ficha f
+            INNER JOIN programa p 
+                ON f.idPrograma = p.idPrograma
+            INNER JOIN ambiente a 
+                ON f.idAmbiente = a.idAmbiente
+            ORDER BY f.idFicha DESC
+            "
+            );
+
+            $objRespuesta->execute();
+            $listarFicha = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
+            $objRespuesta = null;
+
+            $mensaje = array("codigo"=>"200", "listarFicha"=>$listarFicha);
+
+        } catch (Exception $e) {
+            $mensaje = array("codigo"=>"400","mensaje"=>$e->getMessage());
+        }
+
+        return $mensaje;
+    }
+
 }

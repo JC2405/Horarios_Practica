@@ -46,8 +46,7 @@ $menus = [
         ['label' => 'Sedes', 'href' => 'sede'],
         ['label' => 'Programa', 'href' => 'programa'],
         ['label' => 'Tipo Programas', 'href' => 'tipoPrograma'],
-
-        ['label' => 'Horarios', 'href' => 'moduloHorarios'],
+        ['label' => 'Crear Ficha', 'href' => 'crearFicha'],
       ]
     ],
     [

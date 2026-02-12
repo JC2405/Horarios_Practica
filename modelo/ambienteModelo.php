@@ -41,5 +41,34 @@ class ambienteModelo {
     }
 
     
-    
+    public static function mdlRegistrarAmbientePorSede($codigo,$numero,$descripcion,$capacidad,$ubicacion,$estado,$idSede){
+            $mensaje = array();
+
+           try {
+        $objRespuesta = Conexion::Conectar()->prepare(
+            "INSERT INTO ambiente (codigo, capacidad, numero, descripcion, ubicacion, estado, idSede
+            ) VALUES (:codigo, :capacidad, :numero, :descripcion, :ubicacion, :estado, :idSede
+            )
+        ");
+
+        $objRespuesta->bindParam(":codigo", $codigo);
+        $objRespuesta->bindParam(":capacidad", $capacidad);
+        $objRespuesta->bindParam(":numero", $numero);
+        $objRespuesta->bindParam(":descripcion", $descripcion);
+        $objRespuesta->bindParam(":ubicacion", $ubicacion);
+        $objRespuesta->bindParam(":estado", $estado);
+        $objRespuesta->bindParam(":idSede", $idSede);
+
+        if ($objRespuesta->execute()) {
+            $mensaje = array("codigo" => "200", "mensaje" => "Ambiente registrado correctamente");
+        } else {
+            $mensaje = array("codigo" => "401", "mensaje" => "Error al registrar el ambiente");
+        }
+
+    } catch (Exception $e) {
+        $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
+    }
+
+    return $mensaje;
+    }
 }

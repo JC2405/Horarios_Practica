@@ -16,7 +16,7 @@
  })
 
   listarSede();
-  listarMunicipios(); // ✅ llena el select al cargar
+  listarMunicipios(); 
 
   function listarSede(){
     let objData = { listarSede: "ok" };
@@ -118,7 +118,7 @@
   e.stopPropagation();
 
   $("#panelTablaSede").hide();
-  $("#panelFormularioAdministrarAmbientes").show();
+  $("#panelFormularioAgregarAmbienteSede").show();
   });
 
 

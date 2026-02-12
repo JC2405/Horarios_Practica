@@ -4,7 +4,7 @@ class sede {
         this._objData = objData;
     }
 
-
+  // LISTAR SEDE
     listarSede(){
         let objData = new FormData();
         objData.append("listarSede",this._objData.listarSede)
@@ -69,6 +69,10 @@ class sede {
         
     }
 
+
+
+
+    //AGREGAR SEDE 
     agregarSede(){
     let objData = new FormData();
     objData.append("agregarSede", "ok");
@@ -104,6 +108,12 @@ class sede {
     .catch(err => console.log(err));
   }
 
+
+
+
+
+
+      //EDITAR SEDE
       editarSede(){
       let objData = new FormData();
       objData.append("editarSede", "ok");

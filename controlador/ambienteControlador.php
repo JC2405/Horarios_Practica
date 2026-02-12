@@ -7,11 +7,10 @@ class ambienteControlador{
     public $codigo;
     public $numero;
     public $descripcion;
-    public $capacidadPersonas;
+    public $capacidad;
     public $ubicacion; 
     public $estado; 
     public $idSede;
-    public $municipio;
 
     public function ctrListarAmbiente(){
         $objRespuesta = ambienteModelo::mdlListarAmbiente();
@@ -24,14 +23,9 @@ class ambienteControlador{
         echo json_encode($objRespuesta);
     }
 
-    // Listar ambientes por ciudad
-    public function ctrListarAmbientesPorCiudad(){
-        $objRespuesta = ambienteModelo::mdlListarAmbientesPorCiudad($this->municipio);
-        echo json_encode($objRespuesta);
-    }
 
-    public function ctrListarAmbienteMedellin(){
-        $objRespuesta = ambienteModelo ::mdlListarAmbienteMedellin();
+    public function ctrRegistrarAmbientePorSede(){
+        $objRespuesta = ambienteModelo::mdlRegistrarAmbientePorSede($this->codigo,$this->numero,$this->descripcion,$this->capacidad,$this->ubicacion,$this->estado,$this->idSede);
         echo json_encode($objRespuesta);
     }
 }
@@ -47,13 +41,18 @@ if(isset($_POST["listarAmbientesPorSede"])){
     $objRespuesta->ctrListarAmbientesPorSede();
 }
 
-if(isset($_POST["listarAmbientesPorCiudad"])){
+if (isset($_POST["registrarAmbientePorSede"])) {
     $objRespuesta = new ambienteControlador();
-    $objRespuesta->municipio = $_POST["municipio"];
-    $objRespuesta->ctrListarAmbientesPorCiudad();
+   
+    $objRespuesta-> codigo=$_POST["codigo"];
+    $objRespuesta-> numero=$_POST["numero"];
+    $objRespuesta-> descripcion=$_POST["descripcion"];
+    $objRespuesta-> capacidad=$_POST["capacidad"];
+    $objRespuesta-> ubicacion=$_POST["ubicacion"];
+    $objRespuesta-> estado=$_POST["estado"];
+    $objRespuesta-> idSede=$_POST["idSede"];
+    $objRespuesta->ctrRegistrarAmbientePorSede();
+
 }
 
-if(isset($_POST["listarAmbienteMedellin"])){
-   $objRespuesta = new ambienteControlador();  
-   $objRespuesta->ctrListarAmbienteMedellin();
-}
+

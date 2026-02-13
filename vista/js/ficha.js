@@ -534,5 +534,101 @@
     console.log('✅ Módulo ficha.js configurado completamente');
 
     
+  // ========== SUBMIT FORMULARIO CREAR FICHA ==========
+const formCrearFicha = document.getElementById('formCrearFicha');
+if(formCrearFicha){
+    formCrearFicha.addEventListener('submit', function(event){
+        event.preventDefault(); // ← Evita envío default
+        event.stopPropagation();
 
+        // ✅ PASO 1: Validar formulario HTML5
+        if(!formCrearFicha.checkValidity()){
+            formCrearFicha.classList.add('was-validated');
+            
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos incompletos',
+                text: 'Por favor completa todos los campos requeridos'
+            });
+            return; // ← Detiene si hay errores
+        }
+
+        // ✅ PASO 2: Validar campos OCULTOS manualmente
+        const codigo = document.getElementById('codigo').value;
+        const idMunicipio = document.getElementById('idMunicipio').value;
+        const idSede = document.getElementById('idSede').value;
+        const idAmbiente = document.getElementById('idAmbiente').value;
+        const idPrograma = document.getElementById('idPrograma').value;
+        const jornada = document.getElementById('jornada').value;
+        const fechaInicio = document.getElementById('fecha_inicio').value;
+        const fechaFin = document.getElementById('fecha_fin').value;
+
+        // Verificar que TODOS tengan valor
+        if(!codigo || !idMunicipio || !idSede || !idAmbiente || 
+           !idPrograma || !jornada || !fechaInicio || !fechaFin){
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de validación',
+                text: 'Todos los campos son obligatorios. Verifica municipio, sede, ambiente y programa.'
+            });
+            return;
+        }
+
+        // ✅ PASO 3: Mostrar loading
+        Swal.fire({
+            title: 'Guardando ficha...',
+            html: 'Por favor espera',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // ✅ PASO 4: Crear FormData correctamente
+        const formData = new FormData();
+        formData.append('registrarFicha', 'ok'); // ← Trigger del controlador
+        formData.append('codigoFicha', codigo);
+        formData.append('idPrograma', idPrograma);
+        formData.append('idAmbiente', idAmbiente);
+        formData.append('estado', 'Activo');
+        formData.append('jornada', jornada);
+        formData.append('fechaInicio', fechaInicio);
+        formData.append('fechaFin', fechaFin);
+
+        // ✅ PASO 5: Enviar al servidor
+        fetch('controlador/fichaControlador.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('📨 Respuesta:', data);
+
+            if(data.codigo === "200"){
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Ficha creada!',
+                    text: data.mensaje,
+                    timer: 3000
+                }).then(() => {
+                    resetFicha(); // Limpiar formulario
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.mensaje
+                });
+            }
+        })
+        .catch(error => {
+            console.error('❌ Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error de conexión',
+                text: 'No se pudo conectar con el servidor.'
+            });
+        });
+    }, false);
+    }
 })();

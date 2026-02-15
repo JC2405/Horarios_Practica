@@ -1,6 +1,5 @@
 (function(){
-
-    console.log('🚀 Módulo ficha.js iniciado');
+    console.log('🚀 Módulo crearFicha_mejorado.js iniciado');
 
     // ========== VARIABLES GLOBALES ==========
     let duracionMesesSeleccionado = null;
@@ -8,199 +7,203 @@
     let sedes = [];
     let ambientes = [];
     let programas = [];
+    let currentSection = 1;
 
-    // ========== CARGAR DATOS INICIALES ==========
-    cargarMunicipios();
-    cargarProgramas();
+    // ========== INICIALIZACIÓN ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarMunicipios();
+        cargarProgramas();
+        configurarEventListeners();
+    });
+
+    // ========== CONFIGURAR EVENT LISTENERS ==========
+    function configurarEventListeners() {
+        // Cambios en selects
+        document.getElementById('codigo').addEventListener('input', actualizarResumen);
+        document.getElementById('jornada').addEventListener('change', actualizarResumen);
+        document.getElementById('selectMunicipio').addEventListener('change', onMunicipioChange);
+        document.getElementById('selectSede').addEventListener('change', onSedeChange);
+        document.getElementById('selectAmbiente').addEventListener('change', onAmbienteChange);
+        document.getElementById('selectPrograma').addEventListener('change', onProgramaChange);
+        document.getElementById('fecha_inicio').addEventListener('change', calcularFechaFin);
+        
+        // Submit del formulario
+        document.getElementById('formCrearFicha').addEventListener('submit', onSubmit);
+    }
+
+    // ========== NAVEGACIÓN ENTRE SECCIONES ==========
+    window.nextSection = function(sectionNumber) {
+        // Validar sección actual antes de avanzar
+        if (!validateSection(currentSection)) {
+            return;
+        }
+        
+        // Ocultar sección actual
+        document.getElementById(`section${currentSection}`).classList.remove('active');
+        document.getElementById(`step${currentSection}`).classList.remove('active');
+        document.getElementById(`step${currentSection}`).classList.add('completed');
+        
+        // Cambiar iconos
+        const currentIcon = document.querySelector(`#step${currentSection} .step-icon i`);
+        currentIcon.className = 'bi bi-check-circle-fill';
+        
+        // Mostrar nueva sección
+        currentSection = sectionNumber;
+        const newSection = document.getElementById(`section${sectionNumber}`);
+        newSection.classList.add('active', 'next');
+        document.getElementById(`step${sectionNumber}`).classList.add('active');
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(() => {
+            newSection.classList.remove('next');
+        }, 400);
+    };
+
+    window.prevSection = function(sectionNumber) {
+        // Ocultar sección actual
+        document.getElementById(`section${currentSection}`).classList.remove('active');
+        document.getElementById(`step${currentSection}`).classList.remove('active');
+        
+        // Mostrar sección anterior
+        currentSection = sectionNumber;
+        const prevSectionEl = document.getElementById(`section${sectionNumber}`);
+        prevSectionEl.classList.add('active', 'prev');
+        document.getElementById(`step${sectionNumber}`).classList.add('active');
+        document.getElementById(`step${sectionNumber}`).classList.remove('completed');
+        
+        // Restaurar icono
+        const icon = document.querySelector(`#step${sectionNumber} .step-icon i`);
+        icon.className = `bi bi-${sectionNumber}-circle-fill`;
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        setTimeout(() => {
+            prevSectionEl.classList.remove('prev');
+        }, 400);
+    };
+
+    // ========== VALIDACIÓN DE SECCIONES ==========
+    function validateSection(sectionNumber) {
+        let isValid = true;
+        let errorMessage = '';
+        
+        switch(sectionNumber) {
+            case 1:
+                const codigo = document.getElementById('codigo').value.trim();
+                const jornada = document.getElementById('jornada').value;
+                
+                if (!codigo) {
+                    errorMessage = 'Por favor ingrese el código de la ficha';
+                    isValid = false;
+                } else if (!jornada) {
+                    errorMessage = 'Por favor seleccione una jornada';
+                    isValid = false;
+                }
+                break;
+                
+            case 2:
+                const idMunicipio = document.getElementById('idMunicipio').value;
+                const idSede = document.getElementById('idSede').value;
+                const idAmbiente = document.getElementById('idAmbiente').value;
+                
+                if (!idMunicipio) {
+                    errorMessage = 'Por favor seleccione un municipio';
+                    isValid = false;
+                } else if (!idSede) {
+                    errorMessage = 'Por favor seleccione una sede';
+                    isValid = false;
+                } else if (!idAmbiente) {
+                    errorMessage = 'Por favor seleccione un ambiente';
+                    isValid = false;
+                }
+                break;
+                
+            case 3:
+                const idPrograma = document.getElementById('idPrograma').value;
+                
+                if (!idPrograma) {
+                    errorMessage = 'Por favor seleccione un programa';
+                    isValid = false;
+                }
+                break;
+        }
+        
+        if (!isValid) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Campos incompletos',
+                text: errorMessage,
+                confirmButtonColor: '#7c6bff'
+            });
+        }
+        
+        return isValid;
+    }
 
     // ========== CARGAR MUNICIPIOS ==========
-    function cargarMunicipios(){
-        let objData = new FormData();
-        objData.append("listarMunicipios", "ok");
-
+    function cargarMunicipios() {
         fetch("controlador/fichaControlador.php", {
             method: "POST",
-            body: objData
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: "listarMunicipios=ok"
         })
         .then(r => r.json())
         .then(response => {
             if(response.codigo === "200"){
                 municipios = response.listarMunicipios;
-                console.log('✅ Municipios cargados:', municipios.length);
-            }
-        })
-        .catch(err => console.error('❌ Error cargando municipios:', err));
-    }
-
-    // ========== CARGAR PROGRAMAS ==========
-    function cargarProgramas(){
-        let objData = new FormData();
-        objData.append("listarProgramas", "ok");
-
-        fetch("controlador/fichaControlador.php", {
-            method: "POST",
-            body: objData
-        })
-        .then(r => r.json())
-        .then(response => {
-            if(response.codigo === "200"){
-                programas = response.listarProgramas;
-                console.log('✅ Programas cargados:', programas.length);
-            }
-        })
-        .catch(err => console.error('❌ Error cargando programas:', err));
-    }
-
-    // ========== ABRIR PANEL ==========
-    window.openPanel = function(tipo){
-        const panel = document.getElementById('panel');
-        const panelTitle = document.getElementById('panelTitle');
-        const panelSubtitle = document.getElementById('panelSubtitle');
-        const panelList = document.getElementById('panelList');
-        const panelSearch = document.getElementById('panelSearch');
-
-        panel.style.display = 'block';
-        panelList.innerHTML = '<div class="empty">Cargando...</div>';
-        panelSearch.value = ''; // Limpiar búsqueda
-
-        switch(tipo){
-            case 'municipio':
-                panelTitle.textContent = 'Seleccionar Municipio';
-                panelSubtitle.textContent = 'Elige el municipio de la sede';
                 renderizarMunicipios();
-                break;
-
-            case 'sede':
-                const municipioNombre = document.getElementById('txtMunicipio').textContent;
-                panelTitle.textContent = 'Seleccionar Sede';
-                panelSubtitle.textContent = municipioNombre !== 'Seleccionar municipio…' 
-                    ? `Sedes en ${municipioNombre}` 
-                    : 'Elige la sede';
-                cargarSedes();
-                break;
-
-            case 'ambiente':
-                const sedeNombre = document.getElementById('txtSede').textContent;
-                panelTitle.textContent = 'Seleccionar Ambiente';
-                panelSubtitle.textContent = sedeNombre !== 'Seleccionar sede…' 
-                    ? `Ambientes en ${sedeNombre}` 
-                    : 'Elige el ambiente';
-                cargarAmbientes();
-                break;
-
-            case 'programa':
-                panelTitle.textContent = 'Seleccionar Programa';
-                panelSubtitle.textContent = 'Elige el programa de formación';
-                renderizarProgramas();
-                break;
-        }
-    };
-
-    // ========== CERRAR PANEL ==========
-    window.closePanel = function(){
-        const panel = document.getElementById('panel');
-        panel.style.display = 'none';
-    };
-
-    // ========== FILTRAR PANEL ==========
-    window.filterPanel = function(){
-        const termino = document.getElementById('panelSearch').value.toLowerCase();
-        const opciones = document.querySelectorAll('.option');
-        
-        opciones.forEach(opt => {
-            // No filtrar el botón de atrás
-            if(opt.classList.contains('btn-atras')){
-                return;
+                console.log('✅ Municipios cargados:', municipios.length);
+            } else {
+                console.error('❌ Error:', response.mensaje);
             }
-            
-            const texto = opt.textContent.toLowerCase();
-            opt.style.display = texto.includes(termino) ? 'block' : 'none';
+        })
+        .catch(err => {
+            console.error('❌ Error cargando municipios:', err);
+            mostrarError('selectMunicipio', 'Error al cargar municipios');
         });
-    };
-
-    // ========== RENDERIZAR MUNICIPIOS ==========
-    function renderizarMunicipios(){
-        const panelList = document.getElementById('panelList');
-        panelList.innerHTML = '';
-
-        if(municipios.length === 0){
-            panelList.innerHTML = '<div class="empty">No hay municipios disponibles</div>';
-            return;
-        }
-
-        municipios.forEach(mun => {
-            const div = document.createElement('div');
-            div.className = 'option';
-            div.textContent = mun.nombreMunicipio;
-            div.addEventListener('click', () => seleccionarMunicipio(mun));
-            panelList.appendChild(div);
-        });
-
-        console.log('✅ Municipios renderizados:', municipios.length);
     }
 
-    // ========== SELECCIONAR MUNICIPIO ==========
-    function seleccionarMunicipio(mun){
-        console.log('📍 Municipio seleccionado:', mun.nombreMunicipio);
+    function renderizarMunicipios() {
+        const select = document.getElementById('selectMunicipio');
+        select.innerHTML = '<option value="">Seleccione un municipio...</option>';
         
-        // Guardar selección
-        document.getElementById('idMunicipio').value = mun.idMunicipio;
-        document.getElementById('txtMunicipio').textContent = mun.nombreMunicipio;
-        document.getElementById('hintMunicipio').textContent = '✓ Seleccionado';
+        municipios.forEach(mun => {
+            const option = document.createElement('option');
+            option.value = mun.idMunicipio;
+            option.textContent = mun.nombreMunicipio;
+            select.appendChild(option);
+        });
+    }
+
+    function onMunicipioChange(e) {
+        const idMunicipio = e.target.value;
+        document.getElementById('idMunicipio').value = idMunicipio;
         
-        // Habilitar botón de sede
-        document.getElementById('btnSede').disabled = false;
-        document.getElementById('hintSede').textContent = 'Click para buscar';
-        
-        // Reset campos posteriores
-        resetearAmbiente();
-        
-        // 🔥 CARGAR SEDES AUTOMÁTICAMENTE EN EL MISMO PANEL
-        const panelTitle = document.getElementById('panelTitle');
-        const panelSubtitle = document.getElementById('panelSubtitle');
-        const panelList = document.getElementById('panelList');
-        const panelSearch = document.getElementById('panelSearch');
-        
-        panelTitle.textContent = 'Seleccionar Sede';
-        panelSubtitle.textContent = `Sedes disponibles en ${mun.nombreMunicipio}`;
-        panelList.innerHTML = `
-            <div class="empty">
-                <i class="bi bi-hourglass-split"></i> 
-                Cargando sedes de ${mun.nombreMunicipio}...
-            </div>
-        `;
-        
-        panelSearch.value = ''; // Limpiar búsqueda
-        
-        // Cargar sedes del municipio seleccionado
-        cargarSedes();
+        if (idMunicipio) {
+            const municipio = municipios.find(m => m.idMunicipio == idMunicipio);
+            document.getElementById('summaryMunicipio').textContent = municipio.nombreMunicipio;
+            document.getElementById('summaryMunicipio').classList.remove('text-muted');
+            
+            cargarSedes(idMunicipio);
+        } else {
+            resetearSedes();
+            resetearAmbientes();
+        }
     }
 
     // ========== CARGAR SEDES ==========
-    function cargarSedes(){
-        const idMunicipio = document.getElementById('idMunicipio').value;
+    function cargarSedes(idMunicipio) {
+        const selectSede = document.getElementById('selectSede');
+        selectSede.innerHTML = '<option value="">Cargando sedes...</option>';
+        selectSede.disabled = true;
         
-        if(!idMunicipio){
-            console.warn('⚠️ No hay municipio seleccionado');
-            const panelList = document.getElementById('panelList');
-            panelList.innerHTML = `
-                <div class="empty" style="color: #f59e0b;">
-                    <i class="bi bi-exclamation-triangle"></i> 
-                    Primero selecciona un municipio
-                </div>
-            `;
-            return;
-        }
-
-        console.log('🔄 Cargando sedes del municipio:', idMunicipio);
-
-        let objData = new FormData();
-        objData.append("listarSedesPorMunicipio", "ok");
-        objData.append("idMunicipio", idMunicipio);
-
         fetch("controlador/fichaControlador.php", {
             method: "POST",
-            body: objData
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `listarSedesPorMunicipio=ok&idMunicipio=${idMunicipio}`
         })
         .then(r => r.json())
         .then(response => {
@@ -209,128 +212,66 @@
             if(response.codigo === "200"){
                 sedes = response.listarSedes;
                 renderizarSedes();
+                console.log('✅ Sedes cargadas:', sedes.length);
             } else {
                 console.error('❌ Error:', response.mensaje);
-                const panelList = document.getElementById('panelList');
-                panelList.innerHTML = `
-                    <div class="empty" style="color: #ef4444;">
-                        <i class="bi bi-x-circle"></i> 
-                        Error al cargar sedes
-                    </div>
-                `;
+                mostrarError('selectSede', 'No hay sedes disponibles');
             }
         })
         .catch(err => {
-            console.error('❌ Error en petición:', err);
-            const panelList = document.getElementById('panelList');
-            panelList.innerHTML = `
-                <div class="empty" style="color: #ef4444;">
-                    <i class="bi bi-wifi-off"></i> 
-                    Error de conexión
-                </div>
-            `;
+            console.error('❌ Error cargando sedes:', err);
+            mostrarError('selectSede', 'Error al cargar sedes');
         });
     }
 
-    // ========== RENDERIZAR SEDES ==========
-    function renderizarSedes(){
-        const panelList = document.getElementById('panelList');
-        panelList.innerHTML = '';
-
-        // 🔥 BOTÓN ATRÁS - Volver a municipios
-        const btnAtras = document.createElement('div');
-        btnAtras.className = 'option btn-atras';
-        btnAtras.style.cssText = `
-            background: linear-gradient(135deg, #f0f2ff 0%, #e0e4ff 100%);
-            color: #7c6bff;
-            font-weight: 700;
-            border-left: 4px solid #7c6bff;
-            cursor: pointer;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        `;
-        btnAtras.innerHTML = '<i class="bi bi-arrow-left"></i> Volver a municipios';
-        btnAtras.addEventListener('click', () => {
-            console.log('⬅️ Volviendo a municipios...');
-            openPanel('municipio');
-        });
-        panelList.appendChild(btnAtras);
-
-        // Verificar si hay sedes
+    function renderizarSedes() {
+        const select = document.getElementById('selectSede');
+        
         if(sedes.length === 0){
-            const divEmpty = document.createElement('div');
-            divEmpty.className = 'empty';
-            divEmpty.style.cssText = 'padding: 30px 20px; color: #6c757d;';
-            divEmpty.innerHTML = `
-                <i class="bi bi-info-circle" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
-                No hay sedes disponibles en este municipio
-            `;
-            panelList.appendChild(divEmpty);
-            console.log('⚠️ No hay sedes en este municipio');
+            select.innerHTML = '<option value="">No hay sedes disponibles</option>';
+            select.disabled = true;
             return;
         }
-
-        // Renderizar sedes
+        
+        select.innerHTML = '<option value="">Seleccione una sede...</option>';
+        
         sedes.forEach(sede => {
-            const div = document.createElement('div');
-            div.className = 'option';
-            div.innerHTML = `
-                <strong>${sede.nombre}</strong>
-                ${sede.direccion ? `<br><small style="color: #6c757d;">${sede.direccion}</small>` : ''}
-            `;
-            div.addEventListener('click', () => seleccionarSede(sede));
-            panelList.appendChild(div);
+            const option = document.createElement('option');
+            option.value = sede.idSede;
+            option.textContent = sede.nombre;
+            select.appendChild(option);
         });
-
-        console.log('✅ Sedes renderizadas:', sedes.length);
+        
+        select.disabled = false;
     }
 
-    // ========== SELECCIONAR SEDE ==========
-    function seleccionarSede(sede){
-    console.log('🏢 Sede seleccionada:', sede.nombre);
-
-    document.getElementById('idSede').value = sede.idSede;
-    document.getElementById('txtSede').textContent = sede.nombre;
-    document.getElementById('hintSede').textContent = '✓ Seleccionado';
-
-    // Reset SOLO valores del ambiente (sin deshabilitar)
-    document.getElementById('idAmbiente').value = '';
-    document.getElementById('txtAmbiente').textContent = 'Seleccionar ambiente…';
-    document.getElementById('hintAmbiente').textContent = 'Click para buscar';
-
-    // Habilitar ambiente al final
-    document.getElementById('btnAmbiente').disabled = false;
-
-    closePanel();
-}
+    function onSedeChange(e) {
+        const idSede = e.target.value;
+        document.getElementById('idSede').value = idSede;
+        
+        if (idSede) {
+            const sede = sedes.find(s => s.idSede == idSede);
+            document.getElementById('summarySede').textContent = sede.nombre;
+            document.getElementById('summarySede').classList.remove('text-muted');
+            
+            cargarAmbientes(idSede);
+        } else {
+            resetearAmbientes();
+        }
+    }
 
     // ========== CARGAR AMBIENTES ==========
-    function cargarAmbientes(){
-        const idSede = document.getElementById('idSede').value;
+    function cargarAmbientes(idSede) {
+        const selectAmbiente = document.getElementById('selectAmbiente');
+        selectAmbiente.innerHTML = '<option value="">Cargando ambientes...</option>';
+        selectAmbiente.disabled = true;
         
-        if(!idSede){
-            console.warn('⚠️ No hay sede seleccionada');
-            const panelList = document.getElementById('panelList');
-            panelList.innerHTML = `
-                <div class="empty" style="color: #f59e0b;">
-                    <i class="bi bi-exclamation-triangle"></i> 
-                    Primero selecciona una sede
-                </div>
-            `;
-            return;
-        }
-
-        console.log('🔄 Cargando ambientes de la sede:', idSede);
-
-        let objData = new FormData();
-        objData.append("listarAmbientesPorSede", "ok");
-        objData.append("idSede", idSede);
-
+        console.log('🔄 Cargando ambientes para sede:', idSede);
+        
         fetch("controlador/fichaControlador.php", {
             method: "POST",
-            body: objData
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `listarAmbientesPorSede=ok&idSede=${idSede}`
         })
         .then(r => r.json())
         .then(response => {
@@ -339,127 +280,116 @@
             if(response.codigo === "200"){
                 ambientes = response.listarAmbientes;
                 renderizarAmbientes();
+                console.log('✅ Ambientes cargados:', ambientes.length);
             } else {
                 console.error('❌ Error:', response.mensaje);
-                const panelList = document.getElementById('panelList');
-                panelList.innerHTML = `
-                    <div class="empty" style="color: #ef4444;">
-                        <i class="bi bi-x-circle"></i> 
-                        Error al cargar ambientes
-                    </div>
-                `;
+                mostrarError('selectAmbiente', 'No hay ambientes disponibles');
             }
         })
         .catch(err => {
-            console.error('❌ Error en petición:', err);
-            const panelList = document.getElementById('panelList');
-            panelList.innerHTML = `
-                <div class="empty" style="color: #ef4444;">
-                    <i class="bi bi-wifi-off"></i> 
-                    Error de conexión
-                </div>
-            `;
+            console.error('❌ Error cargando ambientes:', err);
+            mostrarError('selectAmbiente', 'Error al cargar ambientes');
         });
     }
 
-    // ========== RENDERIZAR AMBIENTES ==========
-    function renderizarAmbientes(){
-        const panelList = document.getElementById('panelList');
-        panelList.innerHTML = '';
-
+    function renderizarAmbientes() {
+        const select = document.getElementById('selectAmbiente');
+        
         if(ambientes.length === 0){
-            const divEmpty = document.createElement('div');
-            divEmpty.className = 'empty';
-            divEmpty.style.cssText = 'padding: 30px 20px; color: #6c757d;';
-            divEmpty.innerHTML = `
-                <i class="bi bi-info-circle" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
-                No hay ambientes disponibles en esta sede
-            `;
-            panelList.appendChild(divEmpty);
-            console.log('⚠️ No hay ambientes en esta sede');
+            select.innerHTML = '<option value="">No hay ambientes disponibles</option>';
+            select.disabled = true;
             return;
         }
-
+        
+        select.innerHTML = '<option value="">Seleccione un ambiente...</option>';
+        
         ambientes.forEach(amb => {
-            const div = document.createElement('div');
-            div.className = 'option';
-            div.innerHTML = `
-                <strong style="color: #7c6bff;">${amb.codigo}</strong> - Número: ${amb.numero}
-                ${amb.capacidad ? `<br><small style="color: #6c757d;">Capacidad: ${amb.capacidad} personas</small>` : ''}
-            `;
-            div.addEventListener('click', () => seleccionarAmbiente(amb));
-            panelList.appendChild(div);
+            const option = document.createElement('option');
+            option.value = amb.idAmbiente;
+            option.textContent = `${amb.codigo} - Número: ${amb.numero} (Capacidad: ${amb.capacidad || 'N/A'})`;
+            select.appendChild(option);
         });
-
-        console.log('✅ Ambientes renderizados:', ambientes.length);
+        
+        select.disabled = false;
     }
 
-    // ========== SELECCIONAR AMBIENTE ==========
-    function seleccionarAmbiente(amb){
-        console.log('🚪 Ambiente seleccionado:', amb.codigo);
+    function onAmbienteChange(e) {
+        const idAmbiente = e.target.value;
+        document.getElementById('idAmbiente').value = idAmbiente;
         
-        document.getElementById('idAmbiente').value = amb.idAmbiente;
-        document.getElementById('txtAmbiente').textContent = `${amb.codigo} - #${amb.numero}`;
-        document.getElementById('hintAmbiente').textContent = '✓ Seleccionado';
-        
-        closePanel();
-    }
-
-    // ========== RENDERIZAR PROGRAMAS ==========
-    function renderizarProgramas(){
-        const panelList = document.getElementById('panelList');
-        panelList.innerHTML = '';
-
-        if(programas.length === 0){
-            panelList.innerHTML = `
-                <div class="empty" style="padding: 30px 20px; color: #6c757d;">
-                    <i class="bi bi-info-circle" style="font-size: 24px; display: block; margin-bottom: 10px;"></i>
-                    No hay programas disponibles
-                </div>
-            `;
-            return;
+        if (idAmbiente) {
+            const ambiente = ambientes.find(a => a.idAmbiente == idAmbiente);
+            document.getElementById('summaryAmbiente').textContent = `${ambiente.codigo} - #${ambiente.numero}`;
+            document.getElementById('summaryAmbiente').classList.remove('text-muted');
+        } else {
+            document.getElementById('summaryAmbiente').textContent = 'No especificado';
+            document.getElementById('summaryAmbiente').classList.add('text-muted');
         }
-
-        programas.forEach(prog => {
-            const div = document.createElement('div');
-            div.className = 'option';
-            div.innerHTML = `
-                <strong style="color: #7c6bff;">${prog.nombre}</strong>
-                <br>
-                <small style="color: #6c757d;">
-                    <i class="bi bi-bookmark"></i> ${prog.tipoFormacion} | 
-                    <i class="bi bi-clock"></i> ${prog.duracion} meses
-                </small>
-            `;
-            div.addEventListener('click', () => seleccionarPrograma(prog));
-            panelList.appendChild(div);
-        });
-
-        console.log('✅ Programas renderizados:', programas.length);
     }
 
-    // ========== SELECCIONAR PROGRAMA ==========
-    function seleccionarPrograma(prog){
-        console.log('📚 Programa seleccionado:', prog.nombre);
+    // ========== CARGAR PROGRAMAS ==========
+    function cargarProgramas() {
+        fetch("controlador/fichaControlador.php", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: "listarProgramas=ok"
+        })
+        .then(r => r.json())
+        .then(response => {
+            if(response.codigo === "200"){
+                programas = response.listarProgramas;
+                renderizarProgramas();
+                console.log('✅ Programas cargados:', programas.length);
+            } else {
+                console.error('❌ Error:', response.mensaje);
+            }
+        })
+        .catch(err => {
+            console.error('❌ Error cargando programas:', err);
+            mostrarError('selectPrograma', 'Error al cargar programas');
+        });
+    }
+
+    function renderizarProgramas() {
+        const select = document.getElementById('selectPrograma');
+        select.innerHTML = '<option value="">Seleccione un programa...</option>';
         
-        document.getElementById('idPrograma').value = prog.idPrograma;
-        document.getElementById('txtPrograma').textContent = prog.nombre;
-        document.getElementById('hintPrograma').textContent = '✓ Seleccionado';
+        programas.forEach(prog => {
+            const option = document.createElement('option');
+            option.value = prog.idPrograma;
+            option.textContent = `${prog.nombre} (${prog.tipoFormacion} - ${prog.duracion} meses)`;
+            option.dataset.duracion = prog.duracion;
+            select.appendChild(option);
+        });
+    }
+
+    function onProgramaChange(e) {
+        const idPrograma = e.target.value;
+        document.getElementById('idPrograma').value = idPrograma;
         
-        // Guardar duración
-        duracionMesesSeleccionado = parseInt(prog.duracion);
-        document.getElementById('duracionMeses').value = duracionMesesSeleccionado;
-        document.getElementById('duracionValue').textContent = duracionMesesSeleccionado;
-        document.getElementById('duracionLabel').style.display = 'block';
-        
-        // Calcular fecha fin si hay fecha inicio
-        calcularFechaFin();
-        
-        closePanel();
+        if (idPrograma) {
+            const programa = programas.find(p => p.idPrograma == idPrograma);
+            document.getElementById('summaryPrograma').textContent = programa.nombre;
+            document.getElementById('summaryPrograma').classList.remove('text-muted');
+            
+            // Guardar duración
+            duracionMesesSeleccionado = parseInt(programa.duracion);
+            document.getElementById('duracionMeses').value = duracionMesesSeleccionado;
+            document.getElementById('duracionValue').textContent = duracionMesesSeleccionado;
+            document.getElementById('infoDuracion').style.display = 'block';
+            
+            // Recalcular fecha fin si hay fecha inicio
+            calcularFechaFin();
+        } else {
+            document.getElementById('summaryPrograma').textContent = 'No especificado';
+            document.getElementById('summaryPrograma').classList.add('text-muted');
+            document.getElementById('infoDuracion').style.display = 'none';
+            duracionMesesSeleccionado = null;
+        }
     }
 
     // ========== CALCULAR FECHA FIN ==========
-    function calcularFechaFin(){
+    function calcularFechaFin() {
         const fechaInicio = document.getElementById('fecha_inicio').value;
         
         if(!fechaInicio || !duracionMesesSeleccionado){
@@ -480,113 +410,103 @@
         const fechaFin = `${year}-${month}-${day}`;
         document.getElementById('fecha_fin').value = fechaFin;
         
+        // Actualizar resumen
+        const fechaInicioFormat = new Date(fechaInicio).toLocaleDateString('es-CO');
+        const fechaFinFormat = new Date(fechaFin).toLocaleDateString('es-CO');
+        document.getElementById('summaryFechas').textContent = `${fechaInicioFormat} - ${fechaFinFormat}`;
+        document.getElementById('summaryFechas').classList.remove('text-muted');
+        
         console.log('   Fecha fin:', fechaFin);
     }
 
-    // Event listener para fecha inicio
-    const fechaInicioInput = document.getElementById('fecha_inicio');
-    if(fechaInicioInput){
-        fechaInicioInput.addEventListener('change', calcularFechaFin);
-    }
-
-    // ========== RESET FUNCIONES ==========
-    function resetearSede(){
-        document.getElementById('idSede').value = '';
-        document.getElementById('txtSede').textContent = 'Seleccionar sede…';
-        document.getElementById('hintSede').textContent = 'Primero elige un municipio';
-        document.getElementById('btnSede').disabled = true;
-    }
-
-    function resetearAmbiente(){
-        document.getElementById('idAmbiente').value = '';
-        document.getElementById('txtAmbiente').textContent = 'Seleccionar ambiente…';
-        document.getElementById('hintAmbiente').textContent = 'Primero elige una sede';
-        document.getElementById('btnAmbiente').disabled = true;
-    }
-
-    // ========== RESET COMPLETO DEL FORMULARIO ==========
-    window.resetFicha = function(){
-        console.log('🔄 Reseteando formulario...');
+    // ========== ACTUALIZAR RESUMEN ==========
+    function actualizarResumen() {
+        const codigo = document.getElementById('codigo').value.trim();
+        const jornada = document.getElementById('jornada').value;
         
-        document.getElementById('codigo').value = '';
-        
-        document.getElementById('idMunicipio').value = '';
-        document.getElementById('txtMunicipio').textContent = 'Seleccionar municipio…';
-        document.getElementById('hintMunicipio').textContent = 'Click para buscar';
-        
-        resetearSede();
-        resetearAmbiente();
-        
-        document.getElementById('idPrograma').value = '';
-        document.getElementById('txtPrograma').textContent = 'Seleccionar programa…';
-        document.getElementById('hintPrograma').textContent = 'Click para buscar';
-        
-        document.getElementById('jornada').value = '';
-        document.getElementById('fecha_inicio').value = '';
-        document.getElementById('fecha_fin').value = '';
-        
-        duracionMesesSeleccionado = null;
-        document.getElementById('duracionLabel').style.display = 'none';
-        
-        console.log('✅ Formulario reseteado');
-    };
-
-    console.log('✅ Módulo ficha.js configurado completamente');
-
-    
-  // ========== SUBMIT FORMULARIO CREAR FICHA ==========
-const formCrearFicha = document.getElementById('formCrearFicha');
-if(formCrearFicha){
-    formCrearFicha.addEventListener('submit', function(event){
-        event.preventDefault(); // ← Evita envío default
-        event.stopPropagation();
-
-        // ✅ PASO 1: Validar formulario HTML5
-        if(!formCrearFicha.checkValidity()){
-            formCrearFicha.classList.add('was-validated');
-            
-            Swal.fire({
-                icon: 'warning',
-                title: 'Campos incompletos',
-                text: 'Por favor completa todos los campos requeridos'
-            });
-            return; // ← Detiene si hay errores
+        if (codigo) {
+            document.getElementById('summaryCodigo').textContent = codigo;
+            document.getElementById('summaryCodigo').classList.remove('text-muted');
+        } else {
+            document.getElementById('summaryCodigo').textContent = 'No especificado';
+            document.getElementById('summaryCodigo').classList.add('text-muted');
         }
+        
+        if (jornada) {
+            const jornadaTexts = {
+                'MAÑANA': '🌅 Mañana',
+                'TARDE': '☀️ Tarde',
+                'NOCHE': '🌙 Noche'
+            };
+            document.getElementById('summaryJornada').textContent = jornadaTexts[jornada] || jornada;
+            document.getElementById('summaryJornada').classList.remove('text-muted');
+        } else {
+            document.getElementById('summaryJornada').textContent = 'No especificado';
+            document.getElementById('summaryJornada').classList.add('text-muted');
+        }
+    }
 
-        // ✅ PASO 2: Validar campos OCULTOS manualmente
-        const codigo = document.getElementById('codigo').value;
-        const idMunicipio = document.getElementById('idMunicipio').value;
-        const idSede = document.getElementById('idSede').value;
-        const idAmbiente = document.getElementById('idAmbiente').value;
+    // ========== RESETEAR CAMPOS ==========
+    function resetearSedes() {
+        const select = document.getElementById('selectSede');
+        select.innerHTML = '<option value="">Primero seleccione un municipio</option>';
+        select.disabled = true;
+        document.getElementById('idSede').value = '';
+        document.getElementById('summarySede').textContent = 'No especificado';
+        document.getElementById('summarySede').classList.add('text-muted');
+    }
+
+    function resetearAmbientes() {
+        const select = document.getElementById('selectAmbiente');
+        select.innerHTML = '<option value="">Primero seleccione una sede</option>';
+        select.disabled = true;
+        document.getElementById('idAmbiente').value = '';
+        document.getElementById('summaryAmbiente').textContent = 'No especificado';
+        document.getElementById('summaryAmbiente').classList.add('text-muted');
+    }
+
+    function mostrarError(selectId, mensaje) {
+        const select = document.getElementById(selectId);
+        select.innerHTML = `<option value="">${mensaje}</option>`;
+        select.disabled = true;
+    }
+
+    // ========== SUBMIT FORMULARIO ==========
+    function onSubmit(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        // Validar todos los campos
+        const codigo = document.getElementById('codigo').value.trim();
         const idPrograma = document.getElementById('idPrograma').value;
+        const idAmbiente = document.getElementById('idAmbiente').value;
         const jornada = document.getElementById('jornada').value;
         const fechaInicio = document.getElementById('fecha_inicio').value;
         const fechaFin = document.getElementById('fecha_fin').value;
-
-        // Verificar que TODOS tengan valor
-        if(!codigo || !idMunicipio || !idSede || !idAmbiente || 
-           !idPrograma || !jornada || !fechaInicio || !fechaFin){
+        
+        if (!codigo || !idPrograma || !idAmbiente || !jornada || !fechaInicio || !fechaFin) {
             Swal.fire({
                 icon: 'error',
-                title: 'Error de validación',
-                text: 'Todos los campos son obligatorios. Verifica municipio, sede, ambiente y programa.'
+                title: 'Campos incompletos',
+                text: 'Por favor complete todos los campos del formulario',
+                confirmButtonColor: '#7c6bff'
             });
             return;
         }
-
-        // ✅ PASO 3: Mostrar loading
+        
+        // Mostrar loading
         Swal.fire({
-            title: 'Guardando ficha...',
-            html: 'Por favor espera',
+            title: 'Creando ficha...',
+            html: 'Por favor espere',
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
             }
         });
-
-        // ✅ PASO 4: Crear FormData correctamente
+        
+        // Crear FormData
         const formData = new FormData();
-        formData.append('registrarFicha', 'ok'); // ← Trigger del controlador
+        formData.append('registrarFicha', 'ok');
         formData.append('codigoFicha', codigo);
         formData.append('idPrograma', idPrograma);
         formData.append('idAmbiente', idAmbiente);
@@ -594,8 +514,8 @@ if(formCrearFicha){
         formData.append('jornada', jornada);
         formData.append('fechaInicio', fechaInicio);
         formData.append('fechaFin', fechaFin);
-
-        // ✅ PASO 5: Enviar al servidor
+        
+        // Enviar al servidor
         fetch('controlador/fichaControlador.php', {
             method: 'POST',
             body: formData
@@ -603,21 +523,23 @@ if(formCrearFicha){
         .then(response => response.json())
         .then(data => {
             console.log('📨 Respuesta:', data);
-
+            
             if(data.codigo === "200"){
                 Swal.fire({
                     icon: 'success',
                     title: '¡Ficha creada!',
                     text: data.mensaje,
-                    timer: 3000
+                    confirmButtonColor: '#7c6bff'
                 }).then(() => {
-                    resetFicha(); // Limpiar formulario
+                    // Recargar página o redirigir
+                    window.location.reload();
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error',
-                    text: data.mensaje
+                    text: data.mensaje || 'Error al crear la ficha',
+                    confirmButtonColor: '#7c6bff'
                 });
             }
         })
@@ -626,9 +548,12 @@ if(formCrearFicha){
             Swal.fire({
                 icon: 'error',
                 title: 'Error de conexión',
-                text: 'No se pudo conectar con el servidor.'
+                text: 'No se pudo conectar con el servidor',
+                confirmButtonColor: '#7c6bff'
             });
         });
-    }, false);
     }
+
+    console.log('✅ Módulo crearFicha_mejorado.js configurado completamente');
+
 })();

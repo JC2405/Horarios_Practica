@@ -1,124 +1,146 @@
-(function(){
+(function () {
 
-console.log('✅ Módulo ambiente.js iniciado');
-
-// ====== CLICK: botón "Ambientes" desde la tabla de sedes ======
-$(document).on("click", ".btnAmbientesSede", function (e) {
+  $(document).on("click", ".btnAmbientesSede", function (e) {
     e.preventDefault();
     e.stopPropagation();
 
     const idSede = $(this).data("idsede");
     const nombreSede = $(this).data("nombre");
 
-    console.log('🏢 Abriendo ambientes de sede:', nombreSede, 'ID:', idSede);
-
-    // Guardar sede actual en campos ocultos
+    // guardar sede actual
     $("#idSedeActualAmbientes").val(idSede);
     $("#nombreSedeActualListado").text(nombreSede);
 
-    // Ocultar todos los paneles
+    // paneles
     $("#panelTablaSede").hide();
     $("#panelFormularioSede").hide();
     $("#panelFormularioEditarSede").hide();
     $("#panelFormularioAgregarAmbienteSede").hide();
+    $("#panelFormularioEditarAmbienteSede").hide();
 
-    // Mostrar panel de ambientes
     $("#panelAmbientesSede").show();
 
-    // Listar ambientes de esa sede usando la clase
+    // listar ambientes
     const objAmbiente = new Ambiente({});
     objAmbiente.listarAmbientesPorSede(idSede);
-});
+  });
 
-// ====== BOTÓN: Nuevo Ambiente ======
-$(document).on("click", "#btnNuevoAmbiente", function(e) {
+  // ====== BOTÓN: Nuevo Ambiente ======
+  $(document).on("click", "#btnNuevoAmbiente", function (e) {
     e.preventDefault();
 
     const idSede = $("#idSedeActualAmbientes").val();
     const nombreSede = $("#nombreSedeActualListado").text();
 
-    console.log('➕ Nuevo ambiente para sede:', nombreSede, 'ID:', idSede);
-
-    // Validar que haya una sede seleccionada
     if (!idSede) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Atención',
-            text: 'Por favor, selecciona una sede primero'
-        });
-        return;
+      Swal.fire({ icon: "warning", title: "Atención", text: "Selecciona una sede primero" });
+      return;
     }
 
-    // Setear datos en el formulario
     $("#idSedeAgregar").val(idSede);
     $("#nombreSedeActual").text(nombreSede);
 
-    // Cambiar de panel
     $("#panelAmbientesSede").hide();
+    $("#panelFormularioEditarAmbienteSede").hide();
     $("#panelFormularioAgregarAmbienteSede").show();
 
-    // Limpiar formulario
+    document.getElementById("formAgregarAmbientePorSede").reset();
     $("#formAgregarAmbientePorSede").removeClass("was-validated");
-    document.getElementById("formAgregarAmbientePorSede")?.reset();
-    
-    // Restaurar el idSede después del reset
+
+    // restaurar idSede luego del reset
     $("#idSedeAgregar").val(idSede);
-});
+  });
 
-// ====== BOTÓN: Volver de Ambientes a Sedes ======
-$(document).on("click", "#btnRegresarSedesDesdeAmbientes", function(e) {
+  // ====== CANCELAR / REGRESAR (AGREGAR) ======
+  $("#btnCancelarAgregarAmbiente, #btnRegresarAmbientes").on("click", function (e) {
     e.preventDefault();
-    console.log('⬅️ Regresando a tabla de sedes');
-    
-    $("#panelAmbientesSede").hide();
-    $("#panelFormularioAgregarAmbienteSede").hide();
-    $("#panelTablaSede").show();
-});
 
-// ====== BOTONES: Cancelar / Regresar del FORM a listado de Ambientes ======
-$(document).on("click", "#btnCancelarAgregarAmbiente, #btnRegresarAmbientes", function(e) {
-    e.preventDefault();
-    console.log('⬅️ Regresando a lista de ambientes');
-    
     $("#panelFormularioAgregarAmbienteSede").hide();
     $("#panelAmbientesSede").show();
+
+    document.getElementById("formAgregarAmbientePorSede").reset();
     $("#formAgregarAmbientePorSede").removeClass("was-validated");
-    document.getElementById("formAgregarAmbientePorSede")?.reset();
-});
+  });
 
-// ====== SUBMIT: Formulario Agregar Ambiente ======
-const formAgregarAmbiente = document.getElementById("formAgregarAmbientePorSede");
-if (formAgregarAmbiente) {
-    formAgregarAmbiente.addEventListener("submit", function(event) {
-        event.preventDefault();
+  // ====== SUBMIT AGREGAR (validación bootstrap igual a tu estilo) ======
+  const formAgregar = document.getElementById("formAgregarAmbientePorSede");
+  if (formAgregar) {
+    formAgregar.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      if (!formAgregar.checkValidity()) {
         event.stopPropagation();
-        
-        // Validar formulario
-        if (!formAgregarAmbiente.checkValidity()) {
-            formAgregarAmbiente.classList.add('was-validated');
-            return;
-        }
-
-        // Validar que exista idSede
-        const idSede = document.getElementById("idSedeAgregar").value;
-        if (!idSede) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'No se ha seleccionado una sede. Por favor, vuelve atrás y selecciona una sede.'
-            });
-            return;
-        }
-
-        console.log('💾 Guardando ambiente para sede:', idSede);
-
-        // Llamar al método de la clase Ambiente
+        formAgregar.classList.add("was-validated");
+      } else {
         const objAmbiente = new Ambiente({});
         objAmbiente.registrarAmbientePorSede();
-        
+      }
     }, false);
-}
+  }
 
-console.log('✅ Eventos de ambiente.js configurados');
+  // ====== CLICK: EDITAR AMBIENTE (igual estilo Programa) ======
+  $(document).on("click", ".btnEditarAmbiente", function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const idAmbiente = $(this).data("id");
+    const codigo = $(this).data("codigo");
+    const numero = $(this).data("numero");
+    const capacidad = $(this).data("capacidad");
+    const ubicacion = $(this).data("ubicacion");
+    const estado = $(this).data("estado");
+    const descripcion = $(this).data("descripcion");
+
+    // llenar form editar
+    document.getElementById("idAmbienteEdit").value = idAmbiente;
+    document.getElementById("codigoEdit").value = codigo;
+    document.getElementById("numeroEdit").value = numero;
+    document.getElementById("capacidadEdit").value = capacidad;
+    document.getElementById("ubicacionEdit").value = ubicacion;
+    document.getElementById("estadoEdit").value = estado;
+    document.getElementById("descripcionEdit").value = descripcion;
+
+    // paneles
+    $("#panelAmbientesSede").hide();
+    $("#panelFormularioAgregarAmbienteSede").hide();
+    $("#panelFormularioEditarAmbienteSede").show();
+
+    $("#formEditarAmbientePorSede").removeClass("was-validated");
+  });
+
+  // ====== SUBMIT EDITAR (validación bootstrap igual) ======
+  const formEditar = document.getElementById("formEditarAmbientePorSede");
+  if (formEditar) {
+    formEditar.addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      if (!formEditar.checkValidity()) {
+        event.stopPropagation();
+        formEditar.classList.add("was-validated");
+      } else {
+        const objAmbiente = new Ambiente({});
+        objAmbiente.editarAmbientePorSede();
+      }
+    }, false);
+  }
+
+  // ====== CANCELAR / REGRESAR (EDITAR) ======
+  $("#btnCancelarEditarAmbiente, #btnRegresarEditarAmbiente").on("click", function (e) {
+    e.preventDefault();
+
+    $("#panelFormularioEditarAmbienteSede").hide();
+    $("#panelAmbientesSede").show();
+
+    $("#formEditarAmbientePorSede").removeClass("was-validated");
+  });
+
+  // ====== VOLVER DE AMBIENTES A SEDES ======
+  $("#btnRegresarSedesDesdeAmbientes").on("click", function (e) {
+    e.preventDefault();
+    $("#panelAmbientesSede").hide();
+    $("#panelFormularioAgregarAmbienteSede").hide();
+    $("#panelFormularioEditarAmbienteSede").hide();
+    $("#panelTablaSede").show();
+  });
 
 })();

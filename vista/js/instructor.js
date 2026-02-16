@@ -9,6 +9,8 @@ function listarInstructor(){
     objListarInstructores.listarInstructor()
 }
 
+    
+
 
 // BOTÓN AGREGAR
     document.getElementById("agregarInstructor").addEventListener("click", function(){

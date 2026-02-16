@@ -13,7 +13,7 @@
     if (isset($_GET["ruta"])) {
       if (
           $_GET["ruta"] == "area" ||
-          $_GET["ruta"] == "crearFicha" ||
+          $_GET["ruta"] == "ficha" ||
           $_GET["ruta"] == "crearHorario" ||
           $_GET["ruta"] == "programa" ||
           $_GET["ruta"] == "sede" ||

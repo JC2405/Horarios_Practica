@@ -1,5 +1,14 @@
 (function(){
-    console.log('🚀 Módulo crearFicha_mejorado.js iniciado');
+    
+
+
+    listarFicha();
+
+    function listarFicha(){
+        let objData = {listarFicha:"ok"}
+        let objListarFicha = new ficha(objData)
+        objListarFicha.listarFicha();
+    }
 
     // ========== VARIABLES GLOBALES ==========
     let duracionMesesSeleccionado = null;

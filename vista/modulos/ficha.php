@@ -1,6 +1,63 @@
 <!-- CSS Consolidado -->
-<!--<link href="vista/css/styles.css" rel="stylesheet"> -->
+<!--<link href="vista/css/styles.css" rel="stylesheet">-->
 <link href="vista/css/crearFicha.css" rel="stylesheet">
+
+
+
+<div class="container">
+
+  <!-- ========================= -->
+  <!-- PANEL TABLA FICHAS -->
+  <!-- ========================= -->
+  <div id="panelTablaFichas">
+
+    <div class="header-section">
+      <div class="header-content">
+        <div class="title-wrapper">
+          <div class="title-icon">
+            <i class="bi bi-journal-text"></i>
+          </div>
+          <div>
+            <h2 class="section-title">Fichas</h2>
+            <p class="section-subtitle">Administra las fichas registradas</p>
+          </div>
+        </div>
+      </div>
+
+      <button id="btnCrearFicha" class="btn-add" type="button">
+        <span class="btn-glow"></span>
+        <i class="bi bi-plus-lg"></i>
+        <span>Nueva Ficha</span>
+      </button>
+    </div>
+
+    <div class="table-wrapper">
+      <table id="tablaFichas" class="ultra-modern-table">
+        <thead>
+          <tr>
+            <th>
+                <div class="th-wrap">
+                    <i class="bi bi-hash"></i>
+                    <span>Código</span>
+                </div>
+            </th>
+            <th><div class="th-wrap"><i class="bi bi-book"></i><span>Programa</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-door-open"></i><span>Ambiente</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-clock"></i><span>Jornada</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-circle-fill"></i><span>Estado</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-calendar-event"></i><span>Inicio</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-calendar-check"></i><span>Fin</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-sliders"></i><span>Acciones</span></div></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+
 
 <div class="container-fluid py-4">
     <div class="row justify-content-center">
@@ -329,4 +386,6 @@
             
         </div>
     </div>
+    </div>
+</div>
 </div>

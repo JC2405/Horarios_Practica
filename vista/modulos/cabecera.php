@@ -45,6 +45,10 @@
     <script src="../vista/js/nav.js"></script>
     <script src="vista/js/cl_ambiente.js"></script>
     <script src="vista/js/cl_ficha.js"></script>
+    <script src="vista/js/cl_area.js"></script>
+    <script src="vista/js/cl_tipoContrato.js"></script>
+    <script src="vista/js/cl_instructor.js"></script>
+
 
 
     <!-- Custom CSS -->

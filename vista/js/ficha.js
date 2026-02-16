@@ -155,15 +155,8 @@
             if(response.codigo === "200"){
                 municipios = response.listarMunicipios;
                 renderizarMunicipios();
-                console.log('✅ Municipios cargados:', municipios.length);
-            } else {
-                console.error('❌ Error:', response.mensaje);
             }
         })
-        .catch(err => {
-            console.error('❌ Error cargando municipios:', err);
-            mostrarError('selectMunicipio', 'Error al cargar municipios');
-        });
     }
 
     function renderizarMunicipios() {

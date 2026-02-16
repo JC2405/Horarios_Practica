@@ -15,9 +15,6 @@ class areaControlador {
     }
 
 
-    
-
-
 }
 
 

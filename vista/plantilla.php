@@ -12,18 +12,18 @@
     
     if (isset($_GET["ruta"])) {
       if (
-          $_GET["ruta"] == "programa" ||
-          $_GET["ruta"] == "listarFichas" ||
-          $_GET["ruta"] == "listarHorarios" ||
-          $_GET["ruta"] == "sedeVista" ||
+          $_GET["ruta"] == "area" ||
           $_GET["ruta"] == "crearFicha" ||
+          $_GET["ruta"] == "crearHorario" ||
+          $_GET["ruta"] == "programa" ||
           $_GET["ruta"] == "sede" ||
-          $_GET["ruta"] == "listarFichaHorarios" ||
-          $_GET["ruta"] == "ambienteSedeMedellin" || 
-          $_GET["ruta"] == "eleccionSede" ||
-          $_GET["ruta"] == "eleccionAmbiente" ||
-          $_GET["ruta"] == "visualizacionFichas" ||
-          $_GET["ruta"] == "tipoPrograma"
+          $_GET["ruta"] == "tipoPrograma" ||
+          $_GET["ruta"] == "tipoContrato" ||
+          $_GET["ruta"] == "instructor" || 
+          $_GET["ruta"] == "" ||
+          $_GET["ruta"] == "" ||
+          $_GET["ruta"] == "" ||
+          $_GET["ruta"] == ""
     
       ) {
         include_once "vista/modulos/" . $_GET["ruta"] . ".php";

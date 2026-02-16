@@ -4,9 +4,9 @@
 
     function listarTablaAreas(){
     
-        let objData = {listarTablaAreas  : 1 };
+        let objData = {listarArea  : "ok" };
         let objListarAreas = new area(objData);
-        objListarAreas.listarTablaAreas();
+        objListarAreas.listarArea();
     }
 
 

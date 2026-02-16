@@ -54,7 +54,9 @@ $menus = [
       'label' => 'Instructores',
       'icon' => 'bx bx-user',
       'items' => [
-        ['label' => 'Áreas', 'href' => 'areas'],
+        ['label' => 'Tipo de contrato', 'href' => 'tipoContrato'],
+        ['label' => 'Áreas', 'href' => 'area'],
+        ['label' => 'Instructores', 'href' => 'instructor'],
       ]
     ],
     [

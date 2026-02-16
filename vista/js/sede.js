@@ -28,11 +28,8 @@
                 response.listarMunicipios.forEach(m => {
                     select.innerHTML += `<option value="${m.idMunicipio}">${m.nombreMunicipio}</option>`;
                 });
-            } else {
-                console.log(response.mensaje);
             }
         })
-        .catch(err => console.log(err));
     }
 
     function cargarMunicipiosEnSelectEdit(idMunicipioSeleccionado){

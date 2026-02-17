@@ -154,7 +154,7 @@
       newSection?.classList.remove("next");
     }, 400);
   };
-//asasas
+
   window.prevSection = function (sectionNumber) {
     document.getElementById(`section${currentSection}`)?.classList.remove("active");
     document.getElementById(`step${currentSection}`)?.classList.remove("active");
@@ -619,39 +619,66 @@
     formData.append("fechaInicio", fechaInicio);
     formData.append("fechaFin", fechaFin);
 
-    fetch("controlador/fichaControlador.php", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("📨 Respuesta:", data);
+    // En ficha.js - dentro de la función onSubmit (cerca de la línea donde hace el fetch)
 
-        if (data.codigo === "200") {
-          Swal.fire({
+fetch("controlador/fichaControlador.php", {
+    method: "POST",
+    body: formData,
+})
+.then((response) => response.json())
+.then((data) => {
+    console.log("📨 Respuesta:", data);
+    
+    // ✅ CERRAR EL SPINNER SIEMPRE, aunque sea error
+    Swal.close();
+    
+    if (data.codigo === "200") {
+        Swal.fire({
             icon: "success",
             title: "¡Ficha creada!",
             text: data.mensaje,
             confirmButtonColor: "#7c6bff",
-          }).then(() => window.location.reload());
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: data.mensaje || "Error al crear la ficha",
-            confirmButtonColor: "#7c6bff",
-          });
-        }
-      })
-      .catch((error) => {
-        console.error("❌ Error:", error);
+        }).then(() => window.location.reload());
+        
+    } else if (data.codigo === "409") {
+        // ⚠️ ERROR DE CONFLICTO DE JORNADA
         Swal.fire({
-          icon: "error",
-          title: "Error de conexión",
-          text: "No se pudo conectar con el servidor",
-          confirmButtonColor: "#7c6bff",
+            icon: "error",
+            title: "Conflicto de Jornada",
+            html: `<p style="text-align: center; margin-bottom: 15px;">${data.mensaje}</p>
+                   <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; text-align: left; border-radius: 8px;">
+                       <strong>💡 Solución:</strong><br>
+                       • Cambia el ambiente<br>
+                       • Cambia la jornada (Mañana/Tarde/Noche)<br>
+                       • Cambia las fechas de inicio/fin
+                   </div>`,
+            confirmButtonColor: "#7c6bff",
+            confirmButtonText: "Entendido"
         });
-      });
-  }
+        
+    } else {
+        // ❌ OTROS ERRORES
+        Swal.fire({
+            icon: "error",
+            title: "Error al crear ficha",
+            text: data.mensaje || "Error desconocido al crear la ficha",
+            confirmButtonColor: "#7c6bff",
+        });
+    }
+})
+.catch((error) => {
+    console.error("❌ Error:", error);
+    
+    // ✅ CERRAR SPINNER TAMBIÉN EN CASO DE ERROR DE RED
+    Swal.close();
+    
+    Swal.fire({
+        icon: "error",
+        title: "Error de conexión",
+        text: "No se pudo conectar con el servidor. Verifica tu conexión.",
+        confirmButtonColor: "#7c6bff",
+    });
+    });
 
+}   
 })();

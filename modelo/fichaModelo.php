@@ -158,33 +158,73 @@
 
 
         public static function mdlRegistrarFicha($codigoFicha, $idPrograma, $idAmbiente, $estado, $jornada, $fechaInicio, $fechaFin){
-        $mensaje = array();
+    $mensaje = array();
+    
+    try {
+        $conexion = Conexion::Conectar();
         
-        try {
-            $objRespuesta = Conexion::Conectar()->prepare(
-                "INSERT INTO ficha (codigoFicha, idPrograma, idAmbiente, estado, jornada, fechaInicio, fechaFin)
-                VALUES (:codigoFicha, :idPrograma, :idAmbiente, :estado, :jornada, :fechaInicio, :fechaFin)"
+        // ✅ VALIDACIÓN CRÍTICA: Verificar conflicto de fechas/jornada en el mismo ambiente
+        $sqlValidacion = "
+            SELECT COUNT(*) as total 
+            FROM ficha 
+            WHERE idAmbiente = :idAmbiente 
+            AND jornada = :jornada
+            AND estado = 'Activo'
+            AND (
+                -- Caso 1: La nueva ficha comienza dentro de una existente
+                (:fechaInicio BETWEEN fechaInicio AND fechaFin)
+                OR
+                -- Caso 2: La nueva ficha termina dentro de una existente
+                (:fechaFin BETWEEN fechaInicio AND fechaFin)
+                OR
+                -- Caso 3: La nueva ficha abarca completamente una existente
+                (fechaInicio BETWEEN :fechaInicio AND :fechaFin)
+                OR
+                -- Caso 4: La nueva ficha está contenida en una existente
+                (fechaFin BETWEEN :fechaInicio AND :fechaFin)
+            )
+        ";
+        
+        $stmtValidacion = $conexion->prepare($sqlValidacion);
+        $stmtValidacion->bindParam(":idAmbiente", $idAmbiente, PDO::PARAM_INT);
+        $stmtValidacion->bindParam(":jornada", $jornada, PDO::PARAM_STR);
+        $stmtValidacion->bindParam(":fechaInicio", $fechaInicio, PDO::PARAM_STR);
+        $stmtValidacion->bindParam(":fechaFin", $fechaFin, PDO::PARAM_STR);
+        $stmtValidacion->execute();
+        
+        $resultado = $stmtValidacion->fetch(PDO::FETCH_ASSOC);
+        
+        if ($resultado['total'] > 0) {
+            return array(
+                "codigo" => "409",
+                "mensaje" => "⚠️ CONFLICTO: Ya existe una ficha activa en este ambiente durante esa jornada y rango de fechas. Un ambiente solo puede tener 1 ficha por jornada."
             );
-            
-            $objRespuesta->bindParam(":codigoFicha", $codigoFicha);
-            $objRespuesta->bindParam(":idPrograma", $idPrograma);
-            $objRespuesta->bindParam(":idAmbiente", $idAmbiente);
-            $objRespuesta->bindParam(":estado", $estado);
-            $objRespuesta->bindParam(":jornada", $jornada);
-            $objRespuesta->bindParam(":fechaInicio", $fechaInicio);
-            $objRespuesta->bindParam(":fechaFin", $fechaFin);
-            
-            if ($objRespuesta->execute()) {
-                $mensaje = array("codigo" => "200", "mensaje" => "Ficha registrada correctamente");
-            } else {
-                $mensaje = array("codigo" => "401", "mensaje" => "Error al registrar la ficha");
-            }
-            
-        } catch (Exception $e) {
-            $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
         }
         
-        return $mensaje;
+        // ✅ Si no hay conflicto, proceder con la inserción normal
+        $objRespuesta = $conexion->prepare(
+            "INSERT INTO ficha (codigoFicha, idPrograma, idAmbiente, estado, jornada, fechaInicio, fechaFin)
+            VALUES (:codigoFicha, :idPrograma, :idAmbiente, :estado, :jornada, :fechaInicio, :fechaFin)"
+        );
+        
+        $objRespuesta->bindParam(":codigoFicha", $codigoFicha);
+        $objRespuesta->bindParam(":idPrograma", $idPrograma);
+        $objRespuesta->bindParam(":idAmbiente", $idAmbiente);
+        $objRespuesta->bindParam(":estado", $estado);
+        $objRespuesta->bindParam(":jornada", $jornada);
+        $objRespuesta->bindParam(":fechaInicio", $fechaInicio);
+        $objRespuesta->bindParam(":fechaFin", $fechaFin);
+        
+        if ($objRespuesta->execute()) {
+            $mensaje = array("codigo" => "200", "mensaje" => "✅ Ficha registrada correctamente");
+        } else {
+            $mensaje = array("codigo" => "401", "mensaje" => "❌ Error al registrar la ficha");
         }
-
+        
+    } catch (Exception $e) {
+        $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
     }
+    
+    return $mensaje;
+    }
+}

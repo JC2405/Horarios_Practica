@@ -1,6 +1,97 @@
 /* ========================================
    CREAR FICHA - ESTILOS MEJORADOS
    ======================================== */
+/* ========================================
+   BOTÓN VOLVER MEJORADO
+   ======================================== */
+
+/* Definir variables si no existen */
+.panel-crear-ficha {
+    --primary: #7c6bff;
+    --primary-hover: #6b5ce7;
+    --primary-light: #f0f2ff;
+}
+
+/* Botón Volver - Estilo Morado Profesional */
+.panel-crear-ficha .btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(124, 107, 255, 0.25);
+}
+
+.panel-crear-ficha .btn-volver:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(124, 107, 255, 0.4);
+    background: linear-gradient(135deg, var(--primary-hover) 0%, #8a7aee 100%);
+    color: white;
+}
+
+.panel-crear-ficha .btn-volver:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(124, 107, 255, 0.3);
+}
+
+.panel-crear-ficha .btn-volver i {
+    font-size: 16px;
+    transition: transform 0.3s ease;
+}
+
+.panel-crear-ficha .btn-volver:hover i {
+    transform: translateX(-3px);
+}
+
+/* Variante: Botón Volver Outline (si prefieres estilo outline) */
+.panel-crear-ficha .btn-volver-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(124, 107, 255, 0.1);
+}
+
+.panel-crear-ficha .btn-volver-outline:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(124, 107, 255, 0.3);
+}
+
+.panel-crear-ficha .btn-volver-outline i {
+    transition: transform 0.3s ease;
+}
+
+.panel-crear-ficha .btn-volver-outline:hover i {
+    transform: translateX(-3px);
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .panel-crear-ficha .btn-volver,
+    .panel-crear-ficha .btn-volver-outline {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 24px;
+    }
+}
+
 
 /* Steps Container */
 .steps-container {

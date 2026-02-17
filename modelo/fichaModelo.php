@@ -124,21 +124,23 @@
             try {
             $objRespuesta = Conexion::Conectar()->prepare(
                 "SELECT 
-                    f.codigoFicha,
-                    p.nombre AS programa,
-                    a.codigo AS ambiente,
-                    a.numero AS numeroAmbiente,
-                    f.estado,
-                    f.jornada,
-                    f.fechaInicio,
-                    f.fechaFin
-                FROM ficha f
-                INNER JOIN programa p 
-                    ON f.idPrograma = p.idPrograma
-                INNER JOIN ambiente a 
-                    ON f.idAmbiente = a.idAmbiente
-                ORDER BY f.idFicha DESC
-                "
+                f.idFicha,
+                f.codigoFicha,
+                p.nombre AS programa,
+                s.nombre AS sede,
+                a.numero AS numeroAmbiente,
+                f.estado,
+                f.jornada,
+                f.fechaInicio,
+                f.fechaFin
+            FROM ficha f
+            INNER JOIN programa p 
+                ON f.idPrograma = p.idPrograma
+            INNER JOIN ambiente a 
+                ON f.idAmbiente = a.idAmbiente
+            INNER JOIN sede s
+                ON a.idSede = s.idSede
+            ORDER BY f.idFicha;"
                 );
 
                 $objRespuesta->execute();

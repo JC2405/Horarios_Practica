@@ -6,73 +6,71 @@ class ficha {
 
 
 
-    listarFicha(){
-    let objData = new FormData();
-    objData.append("listarFicha", this._objData.listarFicha);
+   listarFicha(){
+  let objData = new FormData();
+  objData.append("listarFicha", this._objData.listarFicha);
 
-    fetch("controlador/fichaControlador.php",{
-      method:"POST",
-      body:objData
-    })
-    .then(response => response.json())
-    .catch(error => {
-      console.log(error);
-    })
-    .then(response => {
-      console.log(response);
+  fetch("controlador/fichaControlador.php",{
+    method:"POST",
+    body:objData
+  })
+  .then(response => response.json())
+  .catch(error => console.log(error))
+  .then(response => {
 
-      if (response["codigo"] == "200") {
+    console.log(response);
 
-        let dataSet = [];
+    if (response["codigo"] == "200") {
 
-        response["listarFicha"].forEach(item => {
+      let dataSet = [];
 
-          let objBotones = '<div class="btn-group" role="group">';
-          objBotones += 
-            '<button type="button" class="btn btn-info btnEditarFicha" ' +
-              'data-codigo="' + item.codigoFicha + '" ' +
-              'data-programa="' + item.programa + '" ' +
-              'data-ambiente="' + item.ambiente + '" ' +
-              'data-numero="' + item.numeroAmbiente + '" ' +
-              'data-jornada="' + item.jornada + '" ' +
-              'data-estado="' + item.estado + '" ' +
-              'data-fechainicio="' + item.fechaInicio + '" ' +
-              'data-fechafin="' + item.fechaFin + '" ' +
-            '><i class="bi bi-pen"></i></button>';
-          objBotones += '</div>';
+      response["listarFicha"].forEach(item => {
 
-          dataSet.push([
-            item.codigoFicha,
-            item.programa,
-            item.ambiente + " - " + item.numeroAmbiente,
-            item.jornada,
-            item.estado,
-            item.fechaInicio,
-            item.fechaFin,
-            objBotones
-          ]);
+        let objBotones = '<div class="btn-group" role="group">';
+        objBotones +=
+          '<button type="button" class="btn btn-info btnEditarFicha" ' +
+            'data-idficha="' + item.idFicha + '" ' +
+            'data-codigo="' + item.codigoFicha + '" ' +
+            'data-programa="' + item.programa + '" ' +
+            'data-sede="' + item.sede + '" ' +
+            'data-numeroambiente="' + item.numeroAmbiente + '" ' +
+            'data-jornada="' + item.jornada + '" ' +
+            'data-estado="' + item.estado + '" ' +
+            'data-fechainicio="' + item.fechaInicio + '" ' +
+            'data-fechafin="' + item.fechaFin + '" ' +
+          '><i class="bi bi-pen"></i></button>';
+        objBotones += '</div>';
 
-        });
+        dataSet.push([
+          item.codigoFicha,
+          item.programa,
+          item.sede,
+          item.numeroAmbiente,
+          item.jornada,
+          item.estado,
+          item.fechaInicio,
+          item.fechaFin,
+          objBotones
+        ]);
+      });
 
-        $("#tablaFichas").DataTable({
-          buttons: [{
-            extend: "colvis",
-            text: "Columnas"
-          },
+      $("#tablaFichas").DataTable({
+        buttons: [
+          { extend: "colvis", text: "Columnas" },
           "excel",
           "pdf",
           "print"
-          ],
-          dom: "Bfrtip",
-          responsive: true,
-          destroy: true,
-          data: dataSet
-        });
+        ],
+        dom: "Bfrtip",
+        responsive: true,
+        destroy: true,
+        data: dataSet
+      });
 
-      }
+    }
 
-    });
-  }
+  });
+}
 
     // LISTAR MUNICIPIOS
     listarMunicipios(){

@@ -154,7 +154,7 @@
       newSection?.classList.remove("next");
     }, 400);
   };
-
+//asasas
   window.prevSection = function (sectionNumber) {
     document.getElementById(`section${currentSection}`)?.classList.remove("active");
     document.getElementById(`step${currentSection}`)?.classList.remove("active");

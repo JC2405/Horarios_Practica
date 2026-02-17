@@ -1,4 +1,4 @@
-(function (){
+document.addEventListener('DOMContentLoaded',function (){
 
     listarTipoPrograma();
 
@@ -81,4 +81,4 @@
         $("#formEditarTipoPrograma").removeClass('was-validated');
     });
 
-})();
+});

@@ -1,4 +1,4 @@
-(function () {
+document.addEventListener('DOMContentLoaded',function () {
 
   $(document).on("click", ".btnAmbientesSede", function (e) {
     e.preventDefault();
@@ -143,4 +143,4 @@
     $("#panelTablaSede").show();
   });
 
-})();
+});

@@ -408,7 +408,7 @@
     ambientes.forEach((amb) => {
       const option = document.createElement("option");
       option.value = amb.idAmbiente;
-      option.textContent = `${amb.codigo} - Número: ${amb.numero} (Capacidad: ${amb.capacidad || "N/A"})`;
+      option.textContent = `${amb.codigo} - Número: ${amb.numero}`;
       select.appendChild(option);
     });
 

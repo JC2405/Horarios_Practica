@@ -1,4 +1,4 @@
-(function (){
+document.addEventListener('DOMContentLoaded',function (){
 
 listarPrograma();
 
@@ -107,4 +107,4 @@ $("#btnCancelarPrograma, #btnRegresarTablaPrograma").on("click", function(e){
     });
     
         
-})();
+});

@@ -1,4 +1,4 @@
-(function(){
+document.addEventListener('DOMContentLoaded',function(){
 
 
 
@@ -11,4 +11,4 @@
         objDataTipoContrato.listarTipoContrato();
     }
 
-})();
+});

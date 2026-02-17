@@ -1,4 +1,4 @@
-(function(){
+document.addEventListener('DOMContentLoaded',function(){
 
     listarSede();
     listarMunicipios(); 
@@ -140,4 +140,4 @@
         $("#formEditarSede").removeClass("was-validated");
     });
 
-})();
+});

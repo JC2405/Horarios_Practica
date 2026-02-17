@@ -1,4 +1,4 @@
-(function(){
+document.addEventListener('DOMContentLoaded',function(){
 
 
 listarInstructor();
@@ -50,4 +50,4 @@ function listarInstructor(){
 
 
 
-})();
+});

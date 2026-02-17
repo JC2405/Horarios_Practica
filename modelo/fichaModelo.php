@@ -126,7 +126,9 @@
                 "SELECT 
                 f.idFicha,
                 f.codigoFicha,
+                f.idAmbiente,         -- ✅ AGREGAR
                 p.nombre AS programa,
+                s.idSede,             -- ✅ AGREGAR
                 s.nombre AS sede,
                 a.numero AS numeroAmbiente,
                 f.estado,
@@ -139,8 +141,7 @@
             INNER JOIN ambiente a 
                 ON f.idAmbiente = a.idAmbiente
             INNER JOIN sede s
-                ON a.idSede = s.idSede
-            ORDER BY f.idFicha;"
+                ON a.idSede = s.idSede"
                 );
 
                 $objRespuesta->execute();
@@ -158,9 +159,9 @@
 
 
         public static function mdlRegistrarFicha($codigoFicha, $idPrograma, $idAmbiente, $estado, $jornada, $fechaInicio, $fechaFin){
-    $mensaje = array();
+         $mensaje = array();
     
-    try {
+            try {
         $conexion = Conexion::Conectar();
         
         // ✅ VALIDACIÓN CRÍTICA: Verificar conflicto de fechas/jornada en el mismo ambiente
@@ -227,4 +228,78 @@
     
     return $mensaje;
     }
+
+
+
+    public static function mdlEditarFicha($idFicha, $idAmbiente, $estado, $fechaInicio, $fechaFin, $jornada){
+    $mensaje = array();
+
+    try {
+        $conexion = Conexion::Conectar();
+
+        
+        $sqlValidacion = "
+            SELECT COUNT(*) as total 
+            FROM ficha 
+            WHERE idAmbiente = :idAmbiente
+            AND jornada = :jornada
+            AND estado = 'Activo'
+            AND idFicha <> :idFicha
+            AND (
+                (:fechaInicio BETWEEN fechaInicio AND fechaFin)
+                OR
+                (:fechaFin BETWEEN fechaInicio AND fechaFin)
+                OR
+                (fechaInicio BETWEEN :fechaInicio AND :fechaFin)
+                OR
+                (fechaFin BETWEEN :fechaInicio AND :fechaFin)
+            )
+        ";
+
+        $stmtValidacion = $conexion->prepare($sqlValidacion);
+        $stmtValidacion->bindParam(":idAmbiente", $idAmbiente, PDO::PARAM_INT);
+        $stmtValidacion->bindParam(":jornada", $jornada, PDO::PARAM_STR);
+        $stmtValidacion->bindParam(":idFicha", $idFicha, PDO::PARAM_INT);
+        $stmtValidacion->bindParam(":fechaInicio", $fechaInicio, PDO::PARAM_STR);
+        $stmtValidacion->bindParam(":fechaFin", $fechaFin, PDO::PARAM_STR);
+        $stmtValidacion->execute();
+
+        $resultado = $stmtValidacion->fetch(PDO::FETCH_ASSOC);
+
+        if ($resultado["total"] > 0) {
+            return array(
+                "codigo" => "409",
+                "mensaje" => "⚠️ CONFLICTO: Ya existe una ficha activa en ese ambiente, jornada y rango de fechas."
+            );
+        }
+
+        
+        $objRespuesta = $conexion->prepare(
+            "UPDATE ficha
+             SET idAmbiente = :idAmbiente,
+                 estado = :estado,
+                 fechaInicio = :fechaInicio,
+                 fechaFin = :fechaFin
+             WHERE idFicha = :idFicha"
+        );
+
+        $objRespuesta->bindParam(":idFicha", $idFicha, PDO::PARAM_INT);
+        $objRespuesta->bindParam(":idAmbiente", $idAmbiente, PDO::PARAM_INT);
+        $objRespuesta->bindParam(":estado", $estado, PDO::PARAM_STR);
+        $objRespuesta->bindParam(":fechaInicio", $fechaInicio, PDO::PARAM_STR);
+        $objRespuesta->bindParam(":fechaFin", $fechaFin, PDO::PARAM_STR);
+
+        if ($objRespuesta->execute()) {
+            $mensaje = array("codigo"=>"200","mensaje"=>"✅ Ficha actualizada correctamente");
+        } else {
+            $mensaje = array("codigo"=>"401","mensaje"=>"❌ Error al actualizar la ficha");
+        }
+
+    } catch (Exception $e) {
+        $mensaje = array("codigo"=>"400","mensaje"=>$e->getMessage());
+    }
+
+    return $mensaje;
+}
+
 }

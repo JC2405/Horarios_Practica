@@ -5,24 +5,24 @@
 <div id="panelTablaTipoPrograma">
 
   <div class="header-section">
-    <div class="header-content">
-      <div class="title-wrapper">
-        <div class="title-icon">
-          <i class="bi bi-diagram-3"></i>
-        </div>
-        <div>
-          <h2 class="section-title">Area</h2>
-          <p class="section-subtitle">Administra los tipos y las Areas</p>
-        </div>
+  <div class="header-content">
+    <div class="title-wrapper">
+      <div class="title-icon">
+        <i class="bi bi-diagram-3"></i>
+      </div>
+      <div>
+        <h2 class="section-title">Área</h2>
+        <p class="section-subtitle">Administra las áreas del sistema</p>
       </div>
     </div>
-
-    <button id="agregarArea" class="btn-add">
-      <span class="btn-glow"></span>
-      <i class="bi bi-plus-lg"></i>
-      <span>Nuevo Tipo</span>
-    </button>
   </div>
+
+  <button id="agregarArea" class="btn-add" type="button">
+    <i class="bi bi-plus-lg"></i>
+    Nueva Área
+  </button>
+</div>
+
 
   <div class="table-wrapper">
     <table id="tablaArea" class="ultra-modern-table">

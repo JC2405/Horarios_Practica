@@ -1,0 +1,420 @@
+/* ========================================
+   TABLA ULTRA-MODERN SLIM (BLANCO + MORADO)
+   PEGA ESTO AL FINAL DEL CSS
+   ======================================== */
+
+/* 1) Contenedor */
+.table-wrapper{
+  background: #ffffff !important;
+  border-radius: 16px;
+  border: 1px solid rgba(124,107,255,.14);
+  box-shadow: 0 10px 30px rgba(0,0,0,.04);
+  overflow: hidden;
+}
+
+/* Opcional: si el wrapper tiene padding grande en otro lado */
+.table-wrapper{ padding: 10px !important; }
+
+/* 2) Tabla base */
+table.ultra-modern-table{
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: #fff !important;
+  font-size: 12.5px !important; /* más delgadita */
+  margin: 0 !important;
+}
+
+/* 3) CABECERA blanca + texto morado */
+table.ultra-modern-table thead th{
+  background: #ffffff !important;
+  color: var(--primary) !important;
+  padding: 10px 12px !important;  /* slim */
+  font-size: 10.5px !important;   /* slim */
+  font-weight: 800 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase;
+  border-bottom: 2px solid rgba(124,107,255,.10) !important;
+  border-top: none !important;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Bordes redondeados arriba */
+table.ultra-modern-table thead th:first-child{
+  border-top-left-radius: 14px;
+}
+table.ultra-modern-table thead th:last-child{
+  border-top-right-radius: 14px;
+}
+
+/* 4) Celdas cuerpo */
+table.ultra-modern-table tbody td{
+  padding: 8px 12px !important; /* slim */
+  background: #fff !important;
+  color: #475569 !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  vertical-align: middle;
+  transition: all .18s ease;
+}
+
+/* Zebra sutil */
+table.ultra-modern-table tbody tr:nth-child(even) td{
+  background: #fbfbff !important;
+}
+
+/* Hover: lila clarito + texto morado */
+table.ultra-modern-table tbody tr:hover td{
+  background: #f8f7ff !important;
+  color: var(--primary) !important;
+}
+
+/* Si usas name-primary dentro */
+table.ultra-modern-table tbody tr:hover .name-primary{
+  color: var(--primary) !important;
+}
+
+/* 5) Evitar líneas verticales si antes las tenías */
+table.ultra-modern-table td,
+table.ultra-modern-table th{
+  border-right: none !important;
+}
+
+/* 6) Contenido compacto */
+.cell-text{ font-size: 12.5px !important; }
+.name-primary{
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  color: #1e293b !important;
+}
+.name-code{
+  font-size: 10px !important;
+  padding: 1px 6px !important;
+  border-radius: 6px !important;
+  background: #f1f5f9 !important;
+}
+
+/* 7) Botones de acción */
+.action-group{
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.action-btn{
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  cursor: pointer;
+  transition: all .18s ease;
+}
+
+.action-btn i{
+  font-size: 13px !important;
+  color: #94a3b8 !important;
+}
+
+.action-btn:hover{
+  background: rgba(124,107,255,.08) !important;
+  border-color: rgba(124,107,255,.18) !important;
+}
+
+.action-btn:hover i{
+  color: var(--primary) !important;
+}
+
+/* 8) DataTables (buscador / paginación / info) */
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_length label,
+.dataTables_wrapper .dataTables_info{
+  color: #64748b !important;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Input buscador slim */
+.dataTables_wrapper .dataTables_filter input{
+  border: 1px solid rgba(226,232,240,.95) !important;
+  border-radius: 12px !important;
+  padding: 6px 10px !important;
+  outline: none !important;
+  background: #fff !important;
+  margin-left: 8px !important;
+}
+
+.dataTables_wrapper .dataTables_filter input:focus{
+  border-color: rgba(124,107,255,.55) !important;
+  box-shadow: 0 0 0 3px rgba(124,107,255,.12) !important;
+}
+
+/* Paginación */
+.dataTables_wrapper .dataTables_paginate .paginate_button{
+  border-radius: 10px !important;
+  border: 1px solid transparent !important;
+  padding: 6px 10px !important;
+  margin: 0 2px !important;
+  color: #64748b !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover{
+  background: rgba(124,107,255,.08) !important;
+  border-color: rgba(124,107,255,.18) !important;
+  color: var(--primary) !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current{
+  background: var(--primary) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 8px 18px rgba(124,107,255,.22) !important;
+}
+
+/* 9) Responsive: que no se rompa */
+.table-wrapper{ overflow-x: auto; }
+table.ultra-modern-table{ min-width: 920px; } /* ajusta si quieres */
+
+
+/* =========================================
+   TABLA FICHAS - BLANCO / MORADO - SLIM
+   SOLO PARA #panelTablaFichas
+   ========================================= */
+
+#panelTablaFichas .table-wrapper{
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid rgba(124,107,255,.14);
+  box-shadow: 0 10px 30px rgba(0,0,0,.04);
+  padding: 10px;
+  margin: 14px 0 20px;
+  overflow: hidden;
+}
+
+/* tabla base */
+#panelTablaFichas table#tablaFichas.ultra-modern-table{
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: #fff !important;
+  font-size: 12.5px !important;
+  margin: 0 !important;
+}
+
+/* cabecera blanca con texto morado */
+#panelTablaFichas table#tablaFichas.ultra-modern-table thead th{
+  background: #ffffff !important;
+  color: var(--primary) !important;
+  padding: 10px 12px !important; /* delgado */
+  font-size: 10.5px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase;
+  letter-spacing: .08em !important;
+  border-bottom: 2px solid rgba(124,107,255,.10) !important;
+  border-top: none !important;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+#panelTablaFichas table#tablaFichas.ultra-modern-table thead th:first-child{
+  border-top-left-radius: 14px;
+}
+#panelTablaFichas table#tablaFichas.ultra-modern-table thead th:last-child{
+  border-top-right-radius: 14px;
+}
+
+/* tu th-wrap (icono + texto) */
+#panelTablaFichas .th-wrap{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+#panelTablaFichas .th-wrap i{
+  font-size: 12px;
+  color: var(--primary);
+  opacity: .95;
+}
+
+/* body slim */
+#panelTablaFichas table#tablaFichas.ultra-modern-table tbody td{
+  padding: 8px 12px !important; /* delgado */
+  background: #fff !important;
+  color: #475569 !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  vertical-align: middle;
+  transition: all .18s ease;
+}
+
+/* zebra */
+#panelTablaFichas table#tablaFichas.ultra-modern-table tbody tr:nth-child(even) td{
+  background: #fbfbff !important;
+}
+
+/* hover lila + texto morado */
+#panelTablaFichas table#tablaFichas.ultra-modern-table tbody tr:hover td{
+  background: #f8f7ff !important;
+  color: var(--primary) !important;
+  cursor: pointer;
+}
+
+/* no bordes verticales */
+#panelTablaFichas table#tablaFichas.ultra-modern-table td,
+#panelTablaFichas table#tablaFichas.ultra-modern-table th{
+  border-right: none !important;
+}
+
+/* acciones (si usas action-group/action-btn) */
+#panelTablaFichas .action-group{
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+#panelTablaFichas .action-btn{
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  cursor: pointer;
+  transition: all .18s ease;
+}
+
+#panelTablaFichas .action-btn i{
+  font-size: 13px !important;
+  color: #94a3b8 !important;
+}
+
+#panelTablaFichas .action-btn:hover{
+  background: rgba(124,107,255,.08) !important;
+  border-color: rgba(124,107,255,.18) !important;
+}
+
+#panelTablaFichas .action-btn:hover i{
+  color: var(--primary) !important;
+}
+
+/* ===== DataTables dentro de tu panel ===== */
+
+/* input buscador slim */
+#panelTablaFichas .dataTables_wrapper .dataTables_filter input{
+  border: 1px solid rgba(226,232,240,.95) !important;
+  border-radius: 12px !important;
+  padding: 6px 10px !important;
+  outline: none !important;
+  background: #fff !important;
+  margin-left: 8px !important;
+}
+
+#panelTablaFichas .dataTables_wrapper .dataTables_filter input:focus{
+  border-color: rgba(124,107,255,.55) !important;
+  box-shadow: 0 0 0 3px rgba(124,107,255,.12) !important;
+}
+
+/* paginación */
+#panelTablaFichas .dataTables_wrapper .dataTables_paginate .paginate_button{
+  border-radius: 10px !important;
+  border: 1px solid transparent !important;
+  padding: 6px 10px !important;
+  margin: 0 2px !important;
+  color: #64748b !important;
+}
+
+#panelTablaFichas .dataTables_wrapper .dataTables_paginate .paginate_button:hover{
+  background: rgba(124,107,255,.08) !important;
+  border-color: rgba(124,107,255,.18) !important;
+  color: var(--primary) !important;
+}
+
+#panelTablaFichas .dataTables_wrapper .dataTables_paginate .paginate_button.current{
+  background: var(--primary) !important;
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 8px 18px rgba(124,107,255,.22) !important;
+}
+
+/* responsive: si se desborda en móvil */
+#panelTablaFichas .table-wrapper{ overflow-x: auto; }
+#panelTablaFichas table#tablaFichas.ultra-modern-table{ min-width: 980px; }
+
+
+/* =========================================
+   HEADER MODERNO - FICHAS
+   ========================================= */
+
+.header-section-modern{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 0 22px;
+  border-bottom: 1px solid #eef2f7;
+  margin-bottom: 25px;
+}
+
+/* Lado izquierdo */
+.header-left{
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-icon{
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, var(--primary), #9b8dff);
+  border-radius: 14px;
+  color: white;
+  font-size: 20px;
+  box-shadow: 0 8px 18px rgba(124,107,255,.25);
+}
+
+.header-text h2{
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.header-text p{
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Lado derecho */
+.header-right{
+  display: flex;
+  align-items: center;
+}
+
+/* Botón moderno */
+.btn-primary-modern{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, var(--primary), #9b8dff);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .2s ease;
+  box-shadow: 0 10px 22px rgba(124,107,255,.25);
+}
+
+.btn-primary-modern:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(124,107,255,.35);
+}
+
+.btn-primary-modern i{
+  font-size: 14px;
+}

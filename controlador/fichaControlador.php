@@ -52,6 +52,10 @@
         echo json_encode($objRespuesta);
         }
         
+        public function ctrEditarFicha(){
+        $objRespuesta = fichaModelo::mdlEditarFicha($this->idFicha,$this->idAmbiente,$this->estado,$this->fechaInicio,$this->fechaFin,$this->jornada);
+        echo json_encode($objRespuesta);
+        }
     }
 
 
@@ -99,4 +103,15 @@
         $objRespuesta->fechaInicio = $_POST["fechaInicio"];
         $objRespuesta->fechaFin = $_POST["fechaFin"];
         $objRespuesta->ctrRegistrarFicha();
+    }
+
+    if (isset($_POST["editarFicha"])) {
+    $objRespuesta = new fichaControlador();
+    $objRespuesta->idFicha = $_POST["idFicha"];
+    $objRespuesta->idAmbiente = $_POST["idAmbiente"];
+    $objRespuesta->estado = $_POST["estado"];
+    $objRespuesta->fechaInicio = $_POST["fechaInicio"];
+    $objRespuesta->fechaFin = $_POST["fechaFin"];
+    $objRespuesta->jornada = $_POST["jornada"]; 
+    $objRespuesta->ctrEditarFicha();
     }

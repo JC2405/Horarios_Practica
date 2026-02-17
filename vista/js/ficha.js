@@ -680,5 +680,156 @@ fetch("controlador/fichaControlador.php", {
     });
     });
 
+
 }   
+
+// ========== VALIDACIÓN Y SUBMIT DEL FORMULARIO DE EDICIÓN ==========
+const formEditarFicha = document.getElementById("formEditarFicha");
+if(formEditarFicha){
+  formEditarFicha.addEventListener("submit", function(event){
+    event.preventDefault();
+    event.stopPropagation();
+
+    console.log("🔄 Submit del formulario de edición activado");
+
+    if(!formEditarFicha.checkValidity()){
+      formEditarFicha.classList.add("was-validated");
+      
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos incompletos',
+        text: 'Por favor completa todos los campos obligatorios',
+        confirmButtonColor: '#7c6bff'
+      });
+      
+    } else {
+      // ✅ Formulario válido, proceder a guardar
+      const obj = new ficha({});
+      obj.editarFicha();
+    }
+  }, false);
+}
+
+// ========== FUNCIÓN CORREGIDA: CARGAR AMBIENTES EN EDICIÓN ==========
+function cargarAmbientesEdit(idSede, idAmbienteActual){
+  const select = document.getElementById("selectAmbienteEdit");
+  if(!select) return;
+
+  select.innerHTML = "<option value=''>Cargando ambientes...</option>";
+  select.disabled = true;
+
+  console.log("🔄 Cargando ambientes para sede:", idSede, "| Actual:", idAmbienteActual);
+
+  fetch("controlador/fichaControlador.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `listarAmbientesPorSede=ok&idSede=${idSede}`,
+  })
+  .then(r => r.json())
+  .then(resp => {
+    console.log("📦 Respuesta ambientes:", resp);
+    
+    if(resp.codigo === "200"){
+      select.innerHTML = "<option value=''>Seleccione un ambiente...</option>";
+
+      resp.listarAmbientes.forEach(amb => {
+        const opt = document.createElement("option");
+        opt.value = amb.idAmbiente;
+        opt.textContent = `${amb.codigo} - Número: ${amb.numero}`;
+        select.appendChild(opt);
+      });
+
+      select.disabled = false;
+      
+      // ✅ Seleccionar el ambiente actual
+      if(idAmbienteActual){
+        select.value = idAmbienteActual;
+      }
+      
+    } else {
+      select.innerHTML = "<option value=''>No hay ambientes disponibles</option>";
+      select.disabled = true;
+    }
+  })
+  .catch(err => {
+    console.error("❌ Error cargando ambientes:", err);
+    select.innerHTML = "<option value=''>Error al cargar</option>";
+    select.disabled = true;
+  });
+}
+
+// ========== EVENTO EDITAR FICHA (CORREGIDO) ==========
+$(document).on("click", ".btnEditarFicha", function(e){
+  e.preventDefault();
+  e.stopPropagation();
+
+  const idFicha = $(this).data("idficha");
+  const codigo = $(this).data("codigo");
+  const programa = $(this).data("programa");
+  const sede = $(this).data("sede");
+  const idSede = $(this).data("idsede");
+  const idAmbiente = $(this).data("idambiente");
+  const numeroAmbiente = $(this).data("numeroambiente");
+  const estado = $(this).data("estado");
+  const jornada = $(this).data("jornada");
+  const fechaInicio = $(this).data("fechainicio");
+  const fechaFin = $(this).data("fechafin");
+
+  console.log("✏️ Editando ficha:", {idFicha, codigo, idSede, idAmbiente});
+
+  // ========== CAMPOS OCULTOS ==========
+  document.getElementById("idFichaEdit").value = idFicha;
+  document.getElementById("jornadaEdit").value = jornada;
+  document.getElementById("idSedeEdit").value = idSede;
+
+  // ========== PANEL DE INFORMACIÓN (NO EDITABLE) ==========
+  document.getElementById("codigoEditDisplay").textContent = codigo;
+  document.getElementById("programaEditDisplay").textContent = programa;
+  document.getElementById("sedeEditDisplay").textContent = sede;
+  
+  const jornadaIcons = {
+    'MAÑANA': '🌅 Mañana',
+    'TARDE': '☀️ Tarde',
+    'NOCHE': '🌙 Noche'
+  };
+  document.getElementById("jornadaEditDisplay").textContent = jornadaIcons[jornada] || jornada;
+
+  // ========== CAMPOS EDITABLES ==========
+  document.getElementById("estadoEdit").value = estado;
+  document.getElementById("fechaInicioEdit").value = fechaInicio;
+  document.getElementById("fechaFinEdit").value = fechaFin;
+
+  // ========== CARGAR AMBIENTES Y SELECCIONAR ACTUAL ==========
+  if(idSede){
+    cargarAmbientesEdit(idSede, idAmbiente);
+  } else {
+    console.error("❌ No se encontró idSede para cargar ambientes");
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo cargar los ambientes. Falta información de la sede.',
+      confirmButtonColor: '#7c6bff'
+    });
+  }
+
+  // ========== MOSTRAR PANEL ==========
+  $("#panelTablaFichas").hide();
+  $("#panelCrearFicha").hide();
+  $("#panelEditarFicha").show();
+  
+  // Quitar validación previa si existe
+  $("#formEditarFicha").removeClass("was-validated");
+  
+  // Scroll al inicio
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// ========== BOTONES CANCELAR/VOLVER (EDITANDO) ==========
+$("#btnCancelarEditarFicha, #btnVolverTablaEdit").on("click", function(e){
+  e.preventDefault();
+  $("#panelEditarFicha").hide();
+  $("#panelTablaFichas").show();
+  $("#formEditarFicha").removeClass("was-validated");
+});
+
 })();

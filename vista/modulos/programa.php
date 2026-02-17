@@ -4,25 +4,24 @@
 
 <div class="container">
       <div id="panelTablaPrograma">
-        <div class="header-section">
-          <div class="header-content">
-            <div class="title-wrapper">
-              <div class="title-icon">
-                <i class="bi bi-journal-text"></i>
-              </div>
-              <div>
-                <h2 class="section-title">Programas</h2>
-                <p class="section-subtitle">Gestiona tus programas de formación</p>
-              </div>
-            </div>
-          </div>
+      <div class="header-section">
+  <div class="header-content">
+    <div class="title-wrapper">
+      <div class="title-icon">
+        <i class="bi bi-journal-text"></i>
+      </div>
+      <div>
+        <h2 class="section-title">Programas</h2>
+        <p class="section-subtitle">Gestiona tus programas de formación</p>
+      </div>
+    </div>
+  </div>
 
-          <button id="agregarPrograma" class="btn-add">
-            <span class="btn-glow"></span>
-            <i class="bi bi-plus-lg"></i>
-            <span>Nuevo Programa</span>
-          </button>
-        </div>
+  <button id="agregarPrograma" class="btn-add" type="button">
+    <i class="bi bi-plus-lg"></i>
+    Nuevo Programa
+  </button>
+</div>
 
         <div class="table-wrapper">
           <table id="tablaPrograma" class="ultra-modern-table">

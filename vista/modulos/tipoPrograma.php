@@ -6,25 +6,25 @@
 
 <div id="panelTablaTipoPrograma">
 
-  <div class="header-section">
-    <div class="header-content">
-      <div class="title-wrapper">
-        <div class="title-icon">
-          <i class="bi bi-diagram-3"></i>
-        </div>
-        <div>
-          <h2 class="section-title">Tipos de Programa</h2>
-          <p class="section-subtitle">Administra los tipos y su duración</p>
-        </div>
+ <div class="header-section">
+  <div class="header-content">
+    <div class="title-wrapper">
+      <div class="title-icon">
+        <i class="bi bi-diagram-3"></i>
+      </div>
+      <div>
+        <h2 class="section-title">Tipos de Programa</h2>
+        <p class="section-subtitle">Administra los tipos y su duración</p>
       </div>
     </div>
-
-    <button id="agregarTipoPrograma" class="btn-add">
-      <span class="btn-glow"></span>
-      <i class="bi bi-plus-lg"></i>
-      <span>Nuevo Tipo</span>
-    </button>
   </div>
+
+  <button id="agregarTipoPrograma" class="btn-add" type="button">
+    <i class="bi bi-plus-lg"></i>
+    Nuevo Tipo
+  </button>
+</div>
+
 
   <div class="table-wrapper">
     <table id="tablaTipoPrograma" class="ultra-modern-table">

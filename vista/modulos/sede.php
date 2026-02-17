@@ -5,7 +5,7 @@
 
   <!-- ===================== PANEL TABLA SEDE ===================== -->
   <div id="panelTablaSede">
-    <div class="header-section">
+      <div class="header-section">
       <div class="header-content">
         <div class="title-wrapper">
           <div class="title-icon">
@@ -17,12 +17,13 @@
           </div>
         </div>
       </div>
+    
       <button id="agregarSede" class="btn-add" type="button">
-        <span class="btn-glow"></span>
         <i class="bi bi-plus-lg"></i>
-        <span>Nueva Sede</span>
+        Nueva Sede
       </button>
     </div>
+
 
     <div class="table-wrapper">
       <table id="tablaSede" class="ultra-modern-table">

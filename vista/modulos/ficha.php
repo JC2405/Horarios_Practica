@@ -1,470 +1,663 @@
-<!-- ========================================
-     PANEL DE TABLA FICHAS
-     ======================================== -->
-<div id="panelTablaFichas" class="panel-tabla-fichas">
-  <link href="vista/css/tablaFichas.css" rel="stylesheet">  
-  <div class="container">
-    <div class="header-section">
-      <div class="header-content">
-        <div class="title-wrapper">
-          <div class="title-icon">
-            <i class="bi bi-journal-text"></i>
-          </div>
-          <div>
-            <h2 class="section-title">Fichas</h2>
-            <p class="section-subtitle">Administra las fichas registradas</p>
-          </div>
+  <!-- ========================================
+      PANEL DE TABLA FICHAS
+      ======================================== -->
+  <div id="panelTablaFichas" class="panel-tabla-fichas">
+    <link href="vista/css/tablaFicha.css" rel="stylesheet">  
+    <div class="container">
+      <div class="header-section-modern">
+
+      <div class="header-left">
+        <div class="header-icon">
+          <i class="bi bi-journal-text"></i>
+        </div>
+
+        <div class="header-text">
+          <h2>Fichas</h2>
+          <p>Administra las fichas registradas</p>
         </div>
       </div>
 
-      <button id="btnCrearFicha" class="btn-add" type="button">
-        <span class="btn-glow"></span>
-        <i class="bi bi-plus-lg"></i>
-        <span>Nueva Ficha</span>
-      </button>
-    </div>
+      <div class="header-right">
+        <button id="btnCrearFicha" class="btn-primary-modern">
+          <i class="bi bi-plus-lg"></i>
+          Nueva Ficha
+        </button>
+      </div>
+      </div>
+      <div class="table-wrapper">
+        <table id="tablaFichas" class="ultra-modern-table">
+    <thead> 
+      <tr>
+        <th>
+          <div class="th-wrap">
+            <i class="bi bi-hash"></i>
+            <span>Código</span>
+          </div>
+        </th>
 
-    <div class="table-wrapper">
-      <table id="tablaFichas" class="ultra-modern-table">
-  <thead>
-    <tr>
-      <th>
-        <div class="th-wrap">
-          <i class="bi bi-hash"></i>
-          <span>Código</span>
-        </div>
-      </th>
+        <th>
+          <div class="th-wrap">
+            <i class="bi bi-book"></i>
+            <span>Programa</span>
+          </div>
+        </th>
 
-      <th>
-        <div class="th-wrap">
-          <i class="bi bi-book"></i>
-          <span>Programa</span>
-        </div>
-      </th>
+        <th>
+          <div class="th-wrap">
+            <i class="bi bi-geo-alt"></i>
+            <span>Sede</span>
+          </div>
+        </th>
 
-      <th>
-        <div class="th-wrap">
-          <i class="bi bi-geo-alt"></i>
-          <span>Sede</span>
-        </div>
-      </th>
+        <th>
+          <div class="th-wrap">
+            <i class="bi bi-123"></i>
+            <span>N. Ambiente</span>
+          </div>
+        </th>
 
-      <th>
-        <div class="th-wrap">
-          <i class="bi bi-123"></i>
-          <span>N. Ambiente</span>
-        </div>
-      </th>
+        <th>
+          <div class="th-wrap">
+            <i class="bi bi-clock"></i>
+            <span>Jornada</span>
+          </div>
+        </th>
 
-      <th>
-        <div class="th-wrap">
-          <i class="bi bi-clock"></i>
-          <span>Jornada</span>
-        </div>
-      </th>
+        <th>
+          <div class="th-wrap">
+            <i class="bi bi-circle-fill"></i>
+            <span>Estado</span>
+          </div>
+        </th>
 
-      <th>
-        <div class="th-wrap">
-          <i class="bi bi-circle-fill"></i>
-          <span>Estado</span>
-        </div>
-      </th>
+        <th>
+          <div class="th-wrap">
+            <i class="bi bi-calendar-event"></i>
+            <span>Inicio</span>
+          </div>
+        </th>
 
-      <th>
-        <div class="th-wrap">
-          <i class="bi bi-calendar-event"></i>
-          <span>Inicio</span>
-        </div>
-      </th>
+        <th>
+          <div class="th-wrap">
+            <i class="bi bi-calendar-check"></i>
+            <span>Fin</span>
+          </div>
+        </th>
 
-      <th>
-        <div class="th-wrap">
-          <i class="bi bi-calendar-check"></i>
-          <span>Fin</span>
-        </div>
-      </th>
-
-      <th>
-        <div class="th-wrap">
-          <i class="bi bi-sliders"></i>
-          <span>Acciones</span>
-        </div>
-      </th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-</div>
+        <th>
+          <div class="th-wrap">
+            <i class="bi bi-sliders"></i>
+            <span>Acciones</span>
+          </div>
+        </th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
   </div>
-</div>
-<!-- ========================================
-     PANEL DE CREAR FICHA
-     ======================================== -->
-<div id="panelCrearFicha" class="panel-crear-ficha" style="display: none;">
-  <div class="container-fluid py-4">
-    <div class="row justify-content-center">
-      <div class="col-12 col-xl-10">
-        
-        <!-- Botón Volver -->
-    
-
-        <!-- Header con Steps Visuales -->
-       <!-- Header con Steps Visuales -->
-<div class="card shadow-sm border-0 mb-4">
-  <div class="card-body p-4">
-    <!-- Header con título y botón alineados -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2 class="mb-0 text-primary fw-bold">
-        <i class="bi bi-journal-plus me-2"></i>
-        Crear Nueva Ficha
-      </h2>
-      
-      <button type="button" id="btnVolverTabla" class="btn-volver-outline">
-        <i class="bi bi-arrow-left"></i>
-        <span>Volver a la tabla</span>
-      </button>
     </div>
-            
-            <!-- Progress Steps -->
-            <div class="steps-container">
-              <div class="step active" id="step1">
-                <div class="step-icon">
-                  <i class="bi bi-1-circle-fill"></i>
+  </div>
+  <!-- ========================================
+      PANEL DE CREAR FICHA
+      ======================================== -->
+  <div id="panelCrearFicha" class="panel-crear-ficha" style="display: none;">
+    <div class="container-fluid py-4">
+      <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+          
+          <!-- Botón Volver -->
+      
+
+          <!-- Header con Steps Visuales -->
+        <!-- Header con Steps Visuales -->
+  <div class="card shadow-sm border-0 mb-4">
+    <div class="card-body p-4">
+      <!-- Header con título y botón alineados -->
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0 text-primary fw-bold">
+          <i class="bi bi-journal-plus me-2"></i>
+          Crear Nueva Ficha
+        </h2>
+        
+        <button type="button" id="btnVolverTabla" class="btn-volver-outline">
+          <i class="bi bi-arrow-left"></i>
+          <span>Volver a la tabla</span>
+        </button>
+      </div>
+              
+              <!-- Progress Steps -->
+              <div class="steps-container">
+                <div class="step active" id="step1">
+                  <div class="step-icon">
+                    <i class="bi bi-1-circle-fill"></i>
+                  </div>
+                  <div class="step-label">Información Básica</div>
                 </div>
-                <div class="step-label">Información Básica</div>
-              </div>
-              
-              <div class="step-line"></div>
-              
-              <div class="step" id="step2">
-                <div class="step-icon">
-                  <i class="bi bi-2-circle"></i>
+                
+                <div class="step-line"></div>
+                
+                <div class="step" id="step2">
+                  <div class="step-icon">
+                    <i class="bi bi-2-circle"></i>
+                  </div>
+                  <div class="step-label">Ubicación</div>
                 </div>
-                <div class="step-label">Ubicación</div>
-              </div>
-              
-              <div class="step-line"></div>
-              
-              <div class="step" id="step3">
-                <div class="step-icon">
-                  <i class="bi bi-3-circle"></i>
+                
+                <div class="step-line"></div>
+                
+                <div class="step" id="step3">
+                  <div class="step-icon">
+                    <i class="bi bi-3-circle"></i>
+                  </div>
+                  <div class="step-label">Programa</div>
                 </div>
-                <div class="step-label">Programa</div>
-              </div>
-              
-              <div class="step-line"></div>
-              
-              <div class="step" id="step4">
-                <div class="step-icon">
-                  <i class="bi bi-4-circle"></i>
+                
+                <div class="step-line"></div>
+                
+                <div class="step" id="step4">
+                  <div class="step-icon">
+                    <i class="bi bi-4-circle"></i>
+                  </div>
+                  <div class="step-label">Fechas</div>
                 </div>
-                <div class="step-label">Fechas</div>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Formulario Principal -->
-        <form id="formCrearFicha">
-          <div class="row g-4">
-            
-            <!-- Panel Izquierdo: Campos del Formulario -->
-            <div class="col-lg-8">
-              <div class="card shadow-sm border-0">
-                <div class="card-body p-4">
-                  
-                  <!-- SECCIÓN 1: INFORMACIÓN BÁSICA -->
-                  <div class="form-section active" id="section1">
-                    <h5 class="section-title">
-                      <i class="bi bi-info-circle me-2"></i>
-                      Información Básica
-                    </h5>
+          <!-- Formulario Principal -->
+          <form id="formCrearFicha">
+            <div class="row g-4">
+              
+              <!-- Panel Izquierdo: Campos del Formulario -->
+              <div class="col-lg-8">
+                <div class="card shadow-sm border-0">
+                  <div class="card-body p-4">
                     
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label for="codigo" class="form-label">
-                          <i class="bi bi-hash me-1"></i>
-                          Código de la Ficha
-                        </label>
-                        <input 
-                          type="text" 
-                          class="form-control form-control-lg" 
-                          id="codigo" 
-                          placeholder="Ej: 2866432" 
-                          required
-                        >
-                        <div class="form-text">Código único de identificación</div>
+                    <!-- SECCIÓN 1: INFORMACIÓN BÁSICA -->
+                    <div class="form-section active" id="section1">
+                      <h5 class="section-title">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Información Básica
+                      </h5>
+                      
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="codigo" class="form-label">
+                            <i class="bi bi-hash me-1"></i>
+                            Código de la Ficha
+                          </label>
+                          <input 
+                            type="text" 
+                            class="form-control form-control-lg" 
+                            id="codigo" 
+                            placeholder="Ej: 2866432" 
+                            required
+                          >
+                          <div class="form-text">Código único de identificación</div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                          <label for="jornada" class="form-label">
+                            <i class="bi bi-clock me-1"></i>
+                            Jornada
+                          </label>
+                          <select class="form-select form-select-lg" id="jornada" required>
+                            <option value="">Seleccionar jornada...</option>
+                            <option value="MAÑANA">🌅 Mañana (6:00 AM - 12:00 PM)</option>
+                            <option value="TARDE">☀️ Tarde (12:00 PM - 6:00 PM)</option>
+                            <option value="NOCHE">🌙 Noche (6:00 PM - 10:00 PM)</option>
+                          </select>
+                        </div>
                       </div>
                       
+                      <div class="d-flex justify-content-end mt-4">
+                        <button type="button" class="btn btn-primary btn-lg" onclick="nextSection(2)">
+                          Siguiente
+                          <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- SECCIÓN 2: UBICACIÓN -->
+                    <div class="form-section" id="section2">
+                      <h5 class="section-title">
+                        <i class="bi bi-geo-alt me-2"></i>
+                        Ubicación
+                      </h5>
+                      
+                      <div class="row g-3">
+                        <!-- Municipio -->
+                        <div class="col-12">
+                          <label class="form-label">
+                            <i class="bi bi-map me-1"></i>
+                            Municipio
+                          </label>
+                          <div class="select-wrapper">
+                            <select class="form-select form-select-lg" id="selectMunicipio" required>
+                              <option value="">Cargando municipios...</option>
+                            </select>
+                          </div>
+                          <input type="hidden" id="idMunicipio">
+                        </div>
+
+                        <!-- Sede -->
+                        <div class="col-12">
+                          <label class="form-label">
+                            <i class="bi bi-building me-1"></i>
+                            Sede
+                          </label>
+                          <div class="select-wrapper">
+                            <select class="form-select form-select-lg" id="selectSede" disabled required>
+                              <option value="">Primero seleccione un municipio</option>
+                            </select>
+                          </div>
+                          <input type="hidden" id="idSede">
+                        </div>
+
+                        <!-- Ambiente -->
+                        <div class="col-12">
+                          <label class="form-label">
+                            <i class="bi bi-door-closed me-1"></i>
+                            Ambiente
+                          </label>
+                          <div class="select-wrapper">
+                            <select class="form-select form-select-lg" id="selectAmbiente" disabled required>
+                              <option value="">Primero seleccione una sede</option>
+                            </select>
+                          </div>
+                          <input type="hidden" id="idAmbiente">
+                        </div>
+                      </div>
+                      
+                      <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-secondary btn-lg" onclick="prevSection(1)">
+                          <i class="bi bi-arrow-left me-2"></i>
+                          Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" onclick="nextSection(3)">
+                          Siguiente
+                          <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- SECCIÓN 3: PROGRAMA -->
+                    <div class="form-section" id="section3">
+                      <h5 class="section-title">
+                        <i class="bi bi-mortarboard me-2"></i>
+                        Programa de Formación
+                      </h5>
+                      
+                      <div class="row g-3">
+                        <div class="col-12">
+                          <label class="form-label">
+                            <i class="bi bi-book me-1"></i>
+                            Seleccionar Programa
+                          </label>
+                          <div class="select-wrapper">
+                            <select class="form-select form-select-lg" id="selectPrograma" required>
+                              <option value="">Cargando programas...</option>
+                            </select>
+                          </div>
+                          <input type="hidden" id="idPrograma">
+                          <input type="hidden" id="duracionMeses">
+                        </div>
+
+                        <div class="col-12" id="infoDuracion" style="display: none;">
+                          <div class="alert alert-info">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Duración del programa:</strong> 
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-secondary btn-lg" onclick="prevSection(2)">
+                          <i class="bi bi-arrow-left me-2"></i>
+                          Anterior
+                        </button>
+                        <button type="button" class="btn btn-primary btn-lg" onclick="nextSection(4)">
+                          Siguiente
+                          <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- SECCIÓN 4: FECHAS -->
+                    <div class="form-section" id="section4">
+                      <h5 class="section-title">
+                        <i class="bi bi-calendar-range me-2"></i>
+                        Fechas de Formación
+                      </h5>
+                      
+                      <div class="row g-3">
+                        <div class="col-md-6">
+                          <label for="fecha_inicio" class="form-label">
+                            <i class="bi bi-calendar-event me-1"></i>
+                            Fecha de Inicio
+                          </label>
+                          <input 
+                            type="date" 
+                            class="form-control form-control-lg" 
+                            id="fecha_inicio" 
+                            required
+                          >
+                        </div>
+
+                        <div class="col-md-6">
+                          <label for="fecha_fin" class="form-label">
+                            <i class="bi bi-calendar-check me-1"></i>
+                            Fecha de Finalización
+                          </label>
+                          <input 
+                            type="date" 
+                            class="form-control form-control-lg" 
+                            id="fecha_fin" 
+                            readonly
+                          >
+                          <div class="form-text">Se calcula automáticamente</div>
+                        </div>
+                      </div>
+                      
+                      <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-secondary btn-lg" onclick="prevSection(3)">
+                          <i class="bi bi-arrow-left me-2"></i>
+                          Anterior
+                        </button>
+                        <button type="submit" class="btn btn-success btn-lg">
+                          <i class="bi bi-check-circle me-2"></i>
+                          Crear Ficha
+                        </button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panel Derecho: Resumen en Vivo -->
+              <div class="col-lg-4">
+                <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
+                  <div class="card-header" style="background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%); color: white;">
+                    <h5 class="mb-0">
+                      <i class="bi bi-eye me-2"></i>
+                      Vista Previa
+                    </h5>
+                  </div>
+                  <div class="card-body">
+                    
+                    <div class="summary-item">
+                      <div class="summary-label">
+                        <i class="bi bi-hash me-1"></i>
+                        Código
+                      </div>
+                      <div class="summary-value text-muted" id="summaryCodigo">
+                        No especificado
+                      </div>
+                    </div>
+
+                    <div class="summary-item">
+                      <div class="summary-label">
+                        <i class="bi bi-clock me-1"></i>
+                        Jornada
+                      </div>
+                      <div class="summary-value text-muted" id="summaryJornada">
+                        No especificado
+                      </div>
+                    </div>
+
+                    <div class="summary-item">
+                      <div class="summary-label">
+                        <i class="bi bi-map me-1"></i>
+                        Municipio
+                      </div>
+                      <div class="summary-value text-muted" id="summaryMunicipio">
+                        No especificado
+                      </div>
+                    </div>
+
+                    <div class="summary-item">
+                      <div class="summary-label">
+                        <i class="bi bi-building me-1"></i>
+                        Sede
+                      </div>
+                      <div class="summary-value text-muted" id="summarySede">
+                        No especificado
+                      </div>
+                    </div>
+
+                    <div class="summary-item">
+                      <div class="summary-label">
+                        <i class="bi bi-door-closed me-1"></i>
+                        Ambiente
+                      </div>
+                      <div class="summary-value text-muted" id="summaryAmbiente">
+                        No especificado
+                      </div>
+                    </div>
+
+                    <div class="summary-item">
+                      <div class="summary-label">
+                        <i class="bi bi-book me-1"></i>
+                        Programa
+                      </div>
+                      <div class="summary-value text-muted" id="summaryPrograma">
+                        No especificado
+                      </div>
+                    </div>
+
+                    <div class="summary-item">
+                      <div class="summary-label">
+                        <i class="bi bi-calendar-range me-1"></i>
+                        Fechas
+                      </div>
+                      <div class="summary-value text-muted" id="summaryFechas">
+                        No especificado
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- ========================================
+      PANEL DE EDITAR FICHA (DISEÑO MEJORADO)
+      ======================================== -->
+  <div id="panelEditarFicha" class="panel-crear-ficha" style="display: none;">
+    <div class="container-fluid py-4">
+      <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+          
+          <!-- Header con Botón Volver -->
+          <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+              <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0 text-primary fw-bold">
+                  <i class="bi bi-pencil-square me-2"></i>
+                  Editar Ficha
+                </h2>
+                
+                <button type="button" id="btnVolverTablaEdit" class="btn-volver-outline">
+                  <i class="bi bi-arrow-left"></i>
+                  <span>Volver a la tabla</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <form id="formEditarFicha" class="needs-validation" novalidate>
+            <input type="hidden" id="idFichaEdit">
+            <input type="hidden" id="jornadaEdit">
+            <input type="hidden" id="idSedeEdit">
+
+            <div class="row g-4">
+              
+              <!-- Panel Izquierdo: Información No Editable -->
+              <div class="col-lg-5">
+                <div class="card shadow-sm border-0 h-100">
+                  <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                    <h5 class="mb-0">
+                      <i class="bi bi-info-circle me-2"></i>
+                      Información de la Ficha
+                    </h5>
+                  </div>
+                  <div class="card-body p-4">
+                    
+                    <!-- Código -->
+                    <div class="info-item mb-4">
+                      <div class="info-label">
+                        <i class="bi bi-hash text-primary me-2"></i>
+                        Código de Ficha
+                      </div>
+                      <div class="info-value" id="codigoEditDisplay">
+                        --
+                      </div>
+                    </div>
+
+                    <!-- Programa -->
+                    <div class="info-item mb-4">
+                      <div class="info-label">
+                        <i class="bi bi-book text-success me-2"></i>
+                        Programa
+                      </div>
+                      <div class="info-value" id="programaEditDisplay">
+                        --
+                      </div>
+                    </div>
+
+                    <!-- Sede -->
+                    <div class="info-item mb-4">
+                      <div class="info-label">
+                        <i class="bi bi-building text-info me-2"></i>
+                        Sede
+                      </div>
+                      <div class="info-value" id="sedeEditDisplay">
+                        --
+                      </div>
+                    </div>
+
+                    <!-- Jornada -->
+                    <div class="info-item mb-4">
+                      <div class="info-label">
+                        <i class="bi bi-clock text-warning me-2"></i>
+                        Jornada
+                      </div>
+                      <div class="info-value" id="jornadaEditDisplay">
+                        --
+                      </div>
+                    </div>
+
+                    <div class="alert alert-light border mt-4">
+                      <small class="text-muted">
+                        <i class="bi bi-lock-fill me-1"></i>
+                        Estos campos no son editables. Solo puedes modificar el ambiente, estado y fechas.
+                      </small>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <!-- Panel Derecho: Campos Editables -->
+              <div class="col-lg-7">
+                <div class="card shadow-sm border-0">
+                  <div class="card-header" style="background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%); color: white;">
+                    <h5 class="mb-0">
+                      <i class="bi bi-pencil me-2"></i>
+                      Datos Editables
+                    </h5>
+                  </div>
+                  <div class="card-body p-4">
+                    
+                    <!-- Ambiente (Editable) -->
+                    <div class="mb-4">
+                      <label for="selectAmbienteEdit" class="form-label fw-bold">
+                        <i class="bi bi-door-closed me-1"></i>
+                        Ambiente
+                      </label>
+                      <select id="selectAmbienteEdit" class="form-select form-select-lg" required>
+                        <option value="">Cargando ambientes...</option>
+                      </select>
+                    
+                    </div>
+
+                    <!-- Estado (Editable) -->
+                    <div class="mb-4">
+                      <label for="estadoEdit" class="form-label fw-bold">
+                        <i class="bi bi-circle-fill me-1"></i>
+                        Estado
+                      </label>
+                      <select id="estadoEdit" class="form-select form-select-lg" required>
+                        <option value="">Seleccione un estado...</option>
+                        <option value="Activo">✅ Activo</option>
+                        <option value="Inactivo">⛔ Inactivo</option>
+                      </select>
+                      
+                    </div>
+
+                    <!-- Fechas (Editables) -->
+                    <div class="row g-3">
                       <div class="col-md-6">
-                        <label for="jornada" class="form-label">
-                          <i class="bi bi-clock me-1"></i>
-                          Jornada
-                        </label>
-                        <select class="form-select form-select-lg" id="jornada" required>
-                          <option value="">Seleccionar jornada...</option>
-                          <option value="MAÑANA">🌅 Mañana (6:00 AM - 12:00 PM)</option>
-                          <option value="TARDE">☀️ Tarde (12:00 PM - 6:00 PM)</option>
-                          <option value="NOCHE">🌙 Noche (6:00 PM - 10:00 PM)</option>
-                        </select>
-                      </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-end mt-4">
-                      <button type="button" class="btn btn-primary btn-lg" onclick="nextSection(2)">
-                        Siguiente
-                        <i class="bi bi-arrow-right ms-2"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- SECCIÓN 2: UBICACIÓN -->
-                  <div class="form-section" id="section2">
-                    <h5 class="section-title">
-                      <i class="bi bi-geo-alt me-2"></i>
-                      Ubicación
-                    </h5>
-                    
-                    <div class="row g-3">
-                      <!-- Municipio -->
-                      <div class="col-12">
-                        <label class="form-label">
-                          <i class="bi bi-map me-1"></i>
-                          Municipio
-                        </label>
-                        <div class="select-wrapper">
-                          <select class="form-select form-select-lg" id="selectMunicipio" required>
-                            <option value="">Cargando municipios...</option>
-                          </select>
-                        </div>
-                        <input type="hidden" id="idMunicipio">
-                      </div>
-
-                      <!-- Sede -->
-                      <div class="col-12">
-                        <label class="form-label">
-                          <i class="bi bi-building me-1"></i>
-                          Sede
-                        </label>
-                        <div class="select-wrapper">
-                          <select class="form-select form-select-lg" id="selectSede" disabled required>
-                            <option value="">Primero seleccione un municipio</option>
-                          </select>
-                        </div>
-                        <input type="hidden" id="idSede">
-                      </div>
-
-                      <!-- Ambiente -->
-                      <div class="col-12">
-                        <label class="form-label">
-                          <i class="bi bi-door-closed me-1"></i>
-                          Ambiente
-                        </label>
-                        <div class="select-wrapper">
-                          <select class="form-select form-select-lg" id="selectAmbiente" disabled required>
-                            <option value="">Primero seleccione una sede</option>
-                          </select>
-                        </div>
-                        <input type="hidden" id="idAmbiente">
-                      </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between mt-4">
-                      <button type="button" class="btn btn-outline-secondary btn-lg" onclick="prevSection(1)">
-                        <i class="bi bi-arrow-left me-2"></i>
-                        Anterior
-                      </button>
-                      <button type="button" class="btn btn-primary btn-lg" onclick="nextSection(3)">
-                        Siguiente
-                        <i class="bi bi-arrow-right ms-2"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- SECCIÓN 3: PROGRAMA -->
-                  <div class="form-section" id="section3">
-                    <h5 class="section-title">
-                      <i class="bi bi-mortarboard me-2"></i>
-                      Programa de Formación
-                    </h5>
-                    
-                    <div class="row g-3">
-                      <div class="col-12">
-                        <label class="form-label">
-                          <i class="bi bi-book me-1"></i>
-                          Seleccionar Programa
-                        </label>
-                        <div class="select-wrapper">
-                          <select class="form-select form-select-lg" id="selectPrograma" required>
-                            <option value="">Cargando programas...</option>
-                          </select>
-                        </div>
-                        <input type="hidden" id="idPrograma">
-                        <input type="hidden" id="duracionMeses">
-                      </div>
-
-                      <div class="col-12" id="infoDuracion" style="display: none;">
-                        <div class="alert alert-info">
-                          <i class="bi bi-info-circle me-2"></i>
-                          <strong>Duración del programa:</strong> 
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between mt-4">
-                      <button type="button" class="btn btn-outline-secondary btn-lg" onclick="prevSection(2)">
-                        <i class="bi bi-arrow-left me-2"></i>
-                        Anterior
-                      </button>
-                      <button type="button" class="btn btn-primary btn-lg" onclick="nextSection(4)">
-                        Siguiente
-                        <i class="bi bi-arrow-right ms-2"></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  <!-- SECCIÓN 4: FECHAS -->
-                  <div class="form-section" id="section4">
-                    <h5 class="section-title">
-                      <i class="bi bi-calendar-range me-2"></i>
-                      Fechas de Formación
-                    </h5>
-                    
-                    <div class="row g-3">
-                      <div class="col-md-6">
-                        <label for="fecha_inicio" class="form-label">
+                        <label for="fechaInicioEdit" class="form-label fw-bold">
                           <i class="bi bi-calendar-event me-1"></i>
                           Fecha de Inicio
                         </label>
                         <input 
                           type="date" 
+                          id="fechaInicioEdit" 
                           class="form-control form-control-lg" 
-                          id="fecha_inicio" 
                           required
                         >
+                  
                       </div>
 
                       <div class="col-md-6">
-                        <label for="fecha_fin" class="form-label">
+                        <label for="fechaFinEdit" class="form-label fw-bold">
                           <i class="bi bi-calendar-check me-1"></i>
-                          Fecha de Finalización
+                          Fecha de Fin
                         </label>
                         <input 
                           type="date" 
+                          id="fechaFinEdit" 
                           class="form-control form-control-lg" 
-                          id="fecha_fin" 
-                          readonly
+                          required
                         >
-                        <div class="form-text">Se calcula automáticamente</div>
                       </div>
                     </div>
-                    
-                    <div class="d-flex justify-content-between mt-4">
-                      <button type="button" class="btn btn-outline-secondary btn-lg" onclick="prevSection(3)">
-                        <i class="bi bi-arrow-left me-2"></i>
-                        Anterior
-                      </button>
-                      <button type="submit" class="btn btn-success btn-lg">
+
+                    <!-- Botones de Acción -->
+                    <div class="d-flex gap-3 mt-5">
+                      <button class="btn btn-success btn-lg flex-fill" type="submit">
                         <i class="bi bi-check-circle me-2"></i>
-                        Crear Ficha
+                        Guardar Cambios
+                      </button>
+                      <button 
+                        id="btnCancelarEditarFicha" 
+                        class="btn btn-outline-secondary btn-lg" 
+                        type="button"
+                      >
+                        <i class="bi bi-x-circle me-2"></i>
+                        Cancelar
                       </button>
                     </div>
-                  </div>
 
+                  </div>
                 </div>
               </div>
+
             </div>
+          </form>
 
-            <!-- Panel Derecho: Resumen en Vivo -->
-            <div class="col-lg-4">
-              <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
-                <div class="card-header" style="background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%); color: white;">
-                  <h5 class="mb-0">
-                    <i class="bi bi-eye me-2"></i>
-                    Vista Previa
-                  </h5>
-                </div>
-                <div class="card-body">
-                  
-                  <div class="summary-item">
-                    <div class="summary-label">
-                      <i class="bi bi-hash me-1"></i>
-                      Código
-                    </div>
-                    <div class="summary-value text-muted" id="summaryCodigo">
-                      No especificado
-                    </div>
-                  </div>
-
-                  <div class="summary-item">
-                    <div class="summary-label">
-                      <i class="bi bi-clock me-1"></i>
-                      Jornada
-                    </div>
-                    <div class="summary-value text-muted" id="summaryJornada">
-                      No especificado
-                    </div>
-                  </div>
-
-                  <div class="summary-item">
-                    <div class="summary-label">
-                      <i class="bi bi-map me-1"></i>
-                      Municipio
-                    </div>
-                    <div class="summary-value text-muted" id="summaryMunicipio">
-                      No especificado
-                    </div>
-                  </div>
-
-                  <div class="summary-item">
-                    <div class="summary-label">
-                      <i class="bi bi-building me-1"></i>
-                      Sede
-                    </div>
-                    <div class="summary-value text-muted" id="summarySede">
-                      No especificado
-                    </div>
-                  </div>
-
-                  <div class="summary-item">
-                    <div class="summary-label">
-                      <i class="bi bi-door-closed me-1"></i>
-                      Ambiente
-                    </div>
-                    <div class="summary-value text-muted" id="summaryAmbiente">
-                      No especificado
-                    </div>
-                  </div>
-
-                  <div class="summary-item">
-                    <div class="summary-label">
-                      <i class="bi bi-book me-1"></i>
-                      Programa
-                    </div>
-                    <div class="summary-value text-muted" id="summaryPrograma">
-                      No especificado
-                    </div>
-                  </div>
-
-                  <div class="summary-item">
-                    <div class="summary-label">
-                      <i class="bi bi-calendar-range me-1"></i>
-                      Fechas
-                    </div>
-                    <div class="summary-value text-muted" id="summaryFechas">
-                      No especificado
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </form>
-
+        </div>
       </div>
     </div>
   </div>
-</div>
-<link href="vista/css/crearFicha.css" rel="stylesheet">
+  <link href="vista/css/crearFicha.css" rel="stylesheet">

@@ -3,26 +3,25 @@
 <div class="container">
 
 <div id="panelListarInstructor">
-
-  <div class="header-section">
-    <div class="header-content">
-      <div class="title-wrapper">
-        <div class="title-icon">
-          <i class="bi bi-person-badge"></i>
-        </div>
-        <div>
-          <h2 class="section-title">Instructores</h2>
-          <p class="section-subtitle">Administra los instructores</p>
-        </div>
+<div class="header-section">
+  <div class="header-content">
+    <div class="title-wrapper">
+      <div class="title-icon">
+        <i class="bi bi-person-badge"></i>
+      </div>
+      <div>
+        <h2 class="section-title">Instructores</h2>
+        <p class="section-subtitle">Administra los instructores</p>
       </div>
     </div>
-
-    <button id="agregarInstructor" class="btn-add" type="button">
-      <span class="btn-glow"></span>
-      <i class="bi bi-plus-lg"></i>
-      <span>Nuevo Instructor</span>
-    </button>
   </div>
+
+  <button id="agregarInstructor" class="btn-add" type="button">
+    <i class="bi bi-plus-lg"></i>
+    Nuevo Instructor
+  </button>
+</div>
+
 
   <div class="table-wrapper">
     <table id="tablaInstructores" class="ultra-modern-table">

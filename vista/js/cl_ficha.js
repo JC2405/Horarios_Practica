@@ -27,19 +27,21 @@ class ficha {
       response["listarFicha"].forEach(item => {
 
         let objBotones = '<div class="btn-group" role="group">';
-        objBotones +=
-          '<button type="button" class="btn btn-info btnEditarFicha" ' +
-            'data-idficha="' + item.idFicha + '" ' +
-            'data-codigo="' + item.codigoFicha + '" ' +
-            'data-programa="' + item.programa + '" ' +
-            'data-sede="' + item.sede + '" ' +
-            'data-numeroambiente="' + item.numeroAmbiente + '" ' +
-            'data-jornada="' + item.jornada + '" ' +
-            'data-estado="' + item.estado + '" ' +
-            'data-fechainicio="' + item.fechaInicio + '" ' +
-            'data-fechafin="' + item.fechaFin + '" ' +
-          '><i class="bi bi-pen"></i></button>';
-        objBotones += '</div>';
+               objBotones +=
+            '<button type="button" class="btn btn-info btnEditarFicha" ' +
+              'data-idficha="' + item.idFicha + '" ' +
+              'data-codigo="' + item.codigoFicha + '" ' +
+              'data-programa="' + item.programa + '" ' +
+              'data-sede="' + item.sede + '" ' +
+              'data-idsede="' + item.idSede + '" ' +              
+              'data-idambiente="' + item.idAmbiente + '" ' +
+              'data-numeroambiente="' + item.numeroAmbiente + '" ' + 
+              'data-estado="' + item.estado + '" ' +
+              'data-jornada="' + item.jornada + '" ' +
+              'data-fechainicio="' + item.fechaInicio + '" ' +
+              'data-fechafin="' + item.fechaFin + '" ' +
+            '><i class="bi bi-pen"></i></button>';
+          objBotones += '</div>';
 
         dataSet.push([
           item.codigoFicha,
@@ -213,5 +215,93 @@ class ficha {
     });
   }
 
-  
+ editarFicha(){
+  console.log("💾 Ejecutando editarFicha()");
+
+  const formData = new FormData();
+  formData.append("editarFicha", "ok");
+  formData.append("idFicha", document.getElementById("idFichaEdit").value);
+  formData.append("idAmbiente", document.getElementById("selectAmbienteEdit").value);
+  formData.append("estado", document.getElementById("estadoEdit").value);
+  formData.append("fechaInicio", document.getElementById("fechaInicioEdit").value);
+  formData.append("fechaFin", document.getElementById("fechaFinEdit").value);
+  formData.append("jornada", document.getElementById("jornadaEdit").value);
+
+  // 🔍 Log para debugging
+  console.log("📤 Datos enviados:", {
+    idFicha: document.getElementById("idFichaEdit").value,
+    idAmbiente: document.getElementById("selectAmbienteEdit").value,
+    estado: document.getElementById("estadoEdit").value,
+    fechaInicio: document.getElementById("fechaInicioEdit").value,
+    fechaFin: document.getElementById("fechaFinEdit").value,
+    jornada: document.getElementById("jornadaEdit").value
+  });
+
+  // Mostrar loading
+  Swal.fire({
+    title: 'Guardando cambios...',
+    html: 'Por favor espere',
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading()
+  });
+
+  fetch("controlador/fichaControlador.php", {
+    method: "POST",
+    body: formData
+  })
+  .then(r => r.json())
+  .then(resp => {
+    console.log("📨 Respuesta del servidor:", resp);
+
+    // Cerrar loading
+    Swal.close();
+
+    if(resp.codigo === "200"){
+      $("#panelEditarFicha").hide();
+      $("#panelTablaFichas").show();
+      this.listarFicha();
+
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: resp.mensaje,
+        showConfirmButton: false,
+        timer: 1500
+      });
+
+    } else if(resp.codigo === "409"){
+      Swal.fire({
+        icon: "error",
+        title: "Conflicto de Jornada",
+        html: `<p style="text-align: center; margin-bottom: 15px;">${resp.mensaje}</p>
+               <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; text-align: left; border-radius: 8px;">
+                   <strong>💡 Solución:</strong><br>
+                   • Cambia el ambiente<br>
+                   • Cambia la jornada<br>
+                   • Cambia las fechas
+               </div>`,
+        confirmButtonColor: "#7c6bff",
+      });
+
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: resp.mensaje || "Error desconocido",
+      });
+    }
+
+  })
+  .catch(err => {
+    console.error("❌ Error de red:", err);
+    Swal.close();
+    
+    Swal.fire({
+      icon: "error",
+      title: "Error de conexión",
+      text: "Hubo un problema al actualizar. Verifica tu conexión."
+    });
+  });
+ }
+
 }

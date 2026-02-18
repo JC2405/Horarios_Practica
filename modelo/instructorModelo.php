@@ -9,7 +9,8 @@ class instructorModelo {
         try {
 
             $mensaje = array();
-            $objRespuesta = Conexion::Conectar()->prepare("SELECT 
+            $objRespuesta = Conexion::Conectar()->prepare("SELECT
+              f.idFuncionario, 
                 f.nombre,
                 f.correo,
                 f.telefono,
@@ -77,7 +78,7 @@ class instructorModelo {
 
 
 
-    public static function mdlRegistrarInstructor($nombre, $correo, $telefono, $estado, $idArea, $idTipoContrato){
+    public static function mdlRegistrarInstructor($nombre, $correo, $telefono, $estado, $idArea, $idTipoContrato,$password){
 
     $mensaje = array();
 
@@ -89,14 +90,15 @@ class instructorModelo {
         // 1️⃣ Insertar en funcionario
         $objRespuesta = $conexion->prepare("
             INSERT INTO funcionario 
-            (nombre, correo, telefono, estado, idArea, idTipoContrato)
+            (nombre, correo, telefono, password ,estado, idArea, idTipoContrato)
             VALUES 
-            (:nombre, :correo, :telefono, :estado, :idArea, :idTipoContrato)
+            (:nombre, :correo, :telefono,:password ,:estado, :idArea, :idTipoContrato)
         ");
 
         $objRespuesta->bindParam(":nombre", $nombre);
         $objRespuesta->bindParam(":correo", $correo);
         $objRespuesta->bindParam(":telefono", $telefono);
+        $objRespuesta->bindParam(":password",$password);
         $objRespuesta->bindParam(":estado", $estado);
         $objRespuesta->bindParam(":idArea", $idArea);
         $objRespuesta->bindParam(":idTipoContrato", $idTipoContrato);

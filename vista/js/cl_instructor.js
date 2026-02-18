@@ -40,8 +40,8 @@ class instructor{
                                    'data-telefono="' + item.telefono + '" ' +
                                    'data-estado="' + item.estado + '" ' +
                                    'data-correo="' + item.correo + '" ' +
-                                   'data-nombreArea="' + item.nombreArea + '" ' +
-                                   'data-tipoContrato="' + item.tipoContrato + '" ' +
+                                    'data-nombre-area="' + item.nombreArea + '" ' +
+                                    'data-tipo-contrato="' + item.tipoContrato + '" ' +
                                    'data-nombreRol="' + item.nombreRol + '" ' +
 
                                '><i class="bi bi-pen"></i></button>';
@@ -95,6 +95,8 @@ class instructor{
         formData.append("estado", document.getElementById("estadoInstructor").value);
         formData.append("idArea", document.getElementById("idAreaInstructor").value);
         formData.append("idTipoContrato", document.getElementById("idTipoContratoInstructor").value);
+        formData.append("password", document.getElementById("passwordInstructor").value);
+        
 
         fetch("controlador/instructorControlador.php", {
             method: "POST",

@@ -104,163 +104,155 @@
 
 
 
-<!-- ========================= -->
-<!-- PANEL FORMULARIO AGREGAR -->
-<!-- ========================= -->
-<div id="panelFormularioInstructor" class="form-card" style="display:none;">
+<!-- FORMULARIO AGREGAR -->
+<div id="panelFormularioInstructor" style="display:none;">
+  <div style="max-width:760px; margin:0 auto;">
+    <div class="form-card">
+      <div class="form-card-header">
+        <button id="btnRegresarTablaInstructor" type="button" class="btn-back">
+          <i class="bi bi-arrow-left"></i> Regresar
+        </button>
+        <div class="form-title">
+          <div class="form-title-icon"><i class="bi bi-person-plus"></i></div>
+          <div>
+            <h2 class="form-title-text">Nuevo Instructor</h2>
+            <p class="form-subtitle-text">Registra un nuevo instructor</p>
+          </div>
+        </div>
+      </div>
 
-  <div class="form-card-header">
-    <div class="form-title">
-      <div class="form-title-icon">
-        <i class="bi bi-person-plus"></i>
-      </div>
-      <div>
-        <h3 class="form-title-text">Nuevo Instructor</h3>
-        <p class="form-subtitle-text">Registra la información del instructor</p>
-      </div>
+      <form id="formAgregarInstructor" novalidate>
+        <div class="row g-3">
+
+          <div class="col-md-10">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" id="nombreInstructor" class="form-control-soft w-100" required>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+
+          <div class="col-md-10">
+            <label class="form-label">Correo electrónico</label>
+            <input type="email" id="correoInstructor" class="form-control-soft w-100" required>
+            <div class="invalid-feedback">Correo válido requerido</div>
+          </div>
+
+          <div class="col-md-10">
+            <label class="form-label">Teléfono</label>
+            <input type="text" id="telefonoInstructor" class="form-control-soft w-100" required>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+
+          <div class="col-md-10">
+            <label class="form-label">Área</label>
+            <select id="idAreaInstructor" class="form-control-soft w-100" required>
+              <option value="" disabled selected>Cargando...</option>
+            </select>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+
+          <div class="col-md-10">
+            <label class="form-label">Tipo de Contrato</label>
+            <select id="idTipoContratoInstructor" class="form-control-soft w-100" required>
+              <option value="" disabled selected>Cargando...</option>
+            </select>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+
+          <div class="col-md-10">
+            <label class="form-label">Contraseña</label>
+            <input type="password" id="passwordInstructor" class="form-control-soft w-100" required>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+
+          <div class="col-md-10">
+            <label class="form-label">Estado</label>
+            <select id="estadoInstructor" class="form-control-soft w-100" required>
+              <option value="" disabled selected>Seleccione...</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+
+        </div>
+
+        <div class="d-flex justify-content-end mt-4 gap-2">
+          <button type="button" id="btnCancelarInstructor" class="btn btn-light">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+
     </div>
   </div>
-
-  <form id="formAgregarInstructor" class="row g-3 needs-validation" novalidate>
-
-    <div class="col-md-6">
-      <label class="form-label">Nombre</label>
-      <input type="text" id="nombreInstructor" class="form-control form-control-soft" required>
-      <div class="invalid-feedback">Ingrese el nombre</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Correo</label>
-      <input type="email" id="correoInstructor" class="form-control form-control-soft" required>
-      <div class="invalid-feedback">Ingrese el correo</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Teléfono</label>
-      <input type="text" id="telefonoInstructor" class="form-control form-control-soft" required>
-      <div class="invalid-feedback">Ingrese el teléfono</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Estado</label>
-      <select id="estadoInstructor" class="form-select form-control-soft" required>
-        <option value="">Seleccione</option>
-        <option value="Activo">Activo</option>
-        <option value="Inactivo">Inactivo</option>
-      </select>
-      <div class="invalid-feedback">Seleccione el estado</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Área</label>
-      <select id="idAreaInstructor" class="form-select form-control-soft" required>
-        <option value="">Seleccione</option>
-      </select>
-      <div class="invalid-feedback">Seleccione el área</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Tipo Contrato</label>
-      <select id="idTipoContratoInstructor" class="form-select form-control-soft" required>
-        <option value="">Seleccione</option>
-      </select>
-      <div class="invalid-feedback">Seleccione el tipo contrato</div>
-    </div>
-
-    <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-      <button type="button" id="btnCancelarInstructor" class="btn btn-light btn-soft">
-        Cancelar
-      </button>
-      <button class="btn btn-primary btn-soft-primary" type="submit">
-        <i class="bi bi-save2 me-2"></i> Guardar
-      </button>
-    </div>
-
-  </form>
-
 </div>
 
 
-<!-- ========================= -->
-<!-- PANEL FORMULARIO EDITAR -->
-<!-- ========================= -->
-<div id="panelFormularioEditarInstructor" class="form-card" style="display:none;">
-
-  <div class="form-card-header">
-    <button id="btnRegresarInstructorEdit" type="button" class="btn-back">
-      <i class="bi bi-arrow-left"></i> Regresar
-    </button>
-
-    <div class="form-title">
-      <div class="form-title-icon">
-        <i class="bi bi-pencil-square"></i>
+<!-- FORMULARIO EDITAR -->
+<div id="panelFormularioEditarInstructor" style="display:none;">
+  <div style="max-width:760px; margin:0 auto;">
+    <div class="form-card">
+      <div class="form-card-header">
+        <button id="btnRegresarTablaInstructorEdit" type="button" class="btn-back">
+          <i class="bi bi-arrow-left"></i> Regresar
+        </button>
+        <div class="form-title">
+          <div class="form-title-icon"><i class="bi bi-pencil-square"></i></div>
+          <div>
+            <h2 class="form-title-text">Editar Instructor</h2>
+            <p class="form-subtitle-text">Actualiza la información</p>
+          </div>
+        </div>
       </div>
-      <div>
-        <h3 class="form-title-text">Editar Instructor</h3>
-        <p class="form-subtitle-text">Actualiza la información</p>
-      </div>
+
+      <form id="formEditarInstructor" novalidate>
+        <input type="hidden" id="idInstructorEdit">
+        <div class="row g-3">
+          <div class="col-md-10">
+            <label class="form-label">Nombre completo</label>
+            <input type="text" id="nombreInstructorEdit" class="form-control-soft w-100" required>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+          <div class="col-md-10">
+            <label class="form-label">Correo electrónico</label>
+            <input type="email" id="correoInstructorEdit" class="form-control-soft w-100" required>
+            <div class="invalid-feedback">Correo válido requerido</div>
+          </div>
+          <div class="col-md-10">
+            <label class="form-label">Teléfono</label>
+            <input type="text" id="telefonoInstructorEdit" class="form-control-soft w-100" required>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+          <div class="col-md-10">
+            <label class="form-label">Estado</label>
+            <select id="estadoInstructorEdit" class="form-control-soft w-100" required>
+              <option value="" disabled selected>Seleccione...</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+          <div class="col-md-10">
+            <label class="form-label">Área</label>
+            <select id="idAreaInstructorEdit" class="form-control-soft w-100" required>
+              <option value="" disabled selected>Cargando...</option>
+            </select>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+          <div class="col-md-10">
+            <label class="form-label">Tipo de Contrato</label>
+            <select id="idTipoContratoInstructorEdit" class="form-control-soft w-100" required>
+              <option value="" disabled selected>Cargando...</option>
+            </select>
+            <div class="invalid-feedback">Campo requerido</div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-end mt-4 gap-2">
+          <button type="button" id="btnCancelarEditarInstructor" class="btn btn-light">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
+        </div>
+      </form>
     </div>
   </div>
-
-  <form id="formEditarInstructor" class="row g-3 needs-validation" novalidate>
-
-    <input type="hidden" id="idInstructorEdit">
-
-    <div class="col-md-6">
-      <label class="form-label">Nombre</label>
-      <input type="text" id="nombreInstructorEdit" class="form-control form-control-soft" required>
-      <div class="invalid-feedback">Ingrese el nombre</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Correo</label>
-      <input type="email" id="correoInstructorEdit" class="form-control form-control-soft" required>
-      <div class="invalid-feedback">Ingrese el correo</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Teléfono</label>
-      <input type="text" id="telefonoInstructorEdit" class="form-control form-control-soft" required>
-      <div class="invalid-feedback">Ingrese el teléfono</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Estado</label>
-      <select id="estadoInstructorEdit" class="form-select form-control-soft" required>
-        <option value="">Seleccione</option>
-        <option value="Activo">Activo</option>
-        <option value="Inactivo">Inactivo</option>
-      </select>
-      <div class="invalid-feedback">Seleccione el estado</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Área</label>
-      <select id="idAreaInstructorEdit" class="form-select form-control-soft" required>
-        <option value="">Seleccione</option>
-      </select>
-      <div class="invalid-feedback">Seleccione el área</div>
-    </div>
-
-    <div class="col-md-6">
-      <label class="form-label">Tipo Contrato</label>
-      <select id="idTipoContratoInstructorEdit" class="form-select form-control-soft" required>
-        <option value="">Seleccione</option>
-      </select>
-      <div class="invalid-feedback">Seleccione el tipo contrato</div>
-    </div>
-
-    <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-      <button type="button" id="btnCancelarEditarInstructor" class="btn btn-light btn-soft">
-        Cancelar
-      </button>
-      <button class="btn btn-primary btn-soft-primary" type="submit">
-        <i class="bi bi-save2 me-2"></i> Guardar cambios
-      </button>
-    </div>
-
-  </form>
-
 </div>
 
 

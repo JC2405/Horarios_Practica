@@ -83,30 +83,20 @@ document.addEventListener('DOMContentLoaded',function () {
     e.preventDefault();
     e.stopPropagation();
 
-    const idAmbiente = $(this).data("id");
-    const codigo = $(this).data("codigo");
-    const numero = $(this).data("numero");
-    const capacidad = $(this).data("capacidad");
-    const ubicacion = $(this).data("ubicacion");
-    const estado = $(this).data("estado");
-    const descripcion = $(this).data("descripcion");
+    document.getElementById("idAmbienteEdit").value    = $(this).data("id");
+    document.getElementById("codigoEdit").value        = $(this).data("codigo");
+    document.getElementById("numeroEdit").value        = $(this).data("numero");
+    document.getElementById("capacidadEdit").value     = $(this).data("capacidad");
+    document.getElementById("bloqueEdit").value        = $(this).data("bloque");        
+    document.getElementById("estadoEdit").value        = $(this).data("estado");
+    document.getElementById("descripcionEdit").value   = $(this).data("descripcion");
+    document.getElementById("nombreEdit").value        = $(this).data("nombre");        
+    document.getElementById("tipoAmbienteEdit").value  = $(this).data("tipoambiente"); 
 
-    // llenar form editar
-    document.getElementById("idAmbienteEdit").value = idAmbiente;
-    document.getElementById("codigoEdit").value = codigo;
-    document.getElementById("numeroEdit").value = numero;
-    document.getElementById("capacidadEdit").value = capacidad;
-    document.getElementById("ubicacionEdit").value = ubicacion;
-    document.getElementById("estadoEdit").value = estado;
-    document.getElementById("descripcionEdit").value = descripcion;
-
-    // paneles
     $("#panelAmbientesSede").hide();
-    $("#panelFormularioAgregarAmbienteSede").hide();
     $("#panelFormularioEditarAmbienteSede").show();
-
     $("#formEditarAmbientePorSede").removeClass("was-validated");
-  });
+});
 
   // ====== SUBMIT EDITAR (validación bootstrap igual) ======
   const formEditar = document.getElementById("formEditarAmbientePorSede");

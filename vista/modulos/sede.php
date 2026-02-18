@@ -214,240 +214,396 @@
     </form>
   </div>
 
-  <!-- ===================== PANEL AMBIENTES DE LA SEDE ===================== -->
-  <div id="panelAmbientesSede" style="display:none;">
-    <div class="header-section">
-      <div class="header-content">
-        <div class="title-wrapper">
-          <div class="title-icon"><i class="bi bi-door-open"></i></div>
-          <div>
-            <h2 class="section-title">Ambientes</h2>
-            <p class="section-subtitle">
-              Sede: <strong id="nombreSedeActualListado">---</strong>
-            </p>
-          </div>
-        </div>
-      </div>
 
-      <div class="d-flex gap-2">
-        <button id="btnRegresarSedesDesdeAmbientes" class="btn btn-light btn-soft" type="button">
-          <i class="bi bi-arrow-left"></i> Volver
-        </button>
 
-        <button id="btnNuevoAmbiente" class="btn-add" type="button">
-          <span class="btn-glow"></span>
-          <i class="bi bi-plus-lg"></i>
-          <span>Nuevo Ambiente</span>
-        </button>
-      </div>
-    </div>
 
-    <input type="hidden" id="idSedeActualAmbientes">
 
-    <div class="table-wrapper">
-      <table id="tablaAmbientesSede" class="ultra-modern-table">
-        <thead>
-          <tr>
-            <th>
-              <div class="th-wrap">
-                <i class="bi bi-upc-scan"></i>
-                <span>Código</span>
-              </div>
-            </th>
-            <th>
-              <div class="th-wrap">
-                <i class="bi bi-hash"></i>
-                <span>Número</span>
-              </div>
-            </th>
-            <th>
-              <div class="th-wrap">
-                <i class="bi bi-people"></i>
-                <span>Capacidad</span>
-              </div>
-            </th>
-            <th>
-              <div class="th-wrap">
-                <i class="bi bi-geo-alt"></i>
-                <span>Ubicación</span>
-              </div>
-            </th>
-            <th>
-              <div class="th-wrap">
-                <i class="bi bi-circle-fill"></i>
-                <span>Estado</span>
-              </div>
-            </th>
-            <th>
-              <div class="th-wrap">
-                <i class="bi bi-file-text"></i>
-                <span>Descripción</span>
-              </div>
-            </th>
-            <th>
-              <div class="th-wrap">
-                <i class="bi bi-gear"></i>
-                <span>Acciones</span>
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div> <!-- ✅ cierre correcto panelAmbientesSede -->
 
-  <!-- ===================== PANEL FORMULARIO AGREGAR AMBIENTE ===================== -->
-  <div id="panelFormularioAgregarAmbienteSede" class="form-card" style="display:none;">
-    <div class="form-card-header">
-      <button id="btnRegresarAmbientes" type="button" class="btn-back">
-        <i class="bi bi-arrow-left"></i>
-        Regresar
-      </button>
 
-      <div class="form-title">
-        <div class="form-title-icon">
+
+
+
+
+  <!-- =====================================================
+     PANEL: TABLA AMBIENTES POR SEDE
+     ===================================================== -->
+<div id="panelAmbientesSede" style="display:none;">
+
+  <div class="header-section">
+    <div class="header-content">
+      <div class="title-wrapper">
+        <div class="title-icon">
           <i class="bi bi-door-open"></i>
         </div>
         <div>
-          <h3 class="form-title-text">Nuevo Ambiente</h3>
-          <p class="form-subtitle-text">
-            Sede: <strong id="nombreSedeActual">---</strong>
+          <h2 class="section-title">Ambientes</h2>
+          <p class="section-subtitle">
+            Sede: <strong id="nombreSedeActualListado">—</strong>
           </p>
         </div>
       </div>
     </div>
 
-    <form id="formAgregarAmbientePorSede" class="row g-3 needs-validation" novalidate>
-      <input type="hidden" id="idSedeAgregar" required>
-
-      <div class="col-md-4">
-        <label for="codigoAgregar" class="form-label">Código</label>
-        <input type="text" class="form-control form-control-soft" id="codigoAgregar"
-               placeholder="Ej: A101" required>
-        <div class="invalid-feedback">Ingrese el código</div>
-      </div>
-
-      <div class="col-md-4">
-        <label for="numeroAgregar" class="form-label">Número</label>
-        <input type="number" class="form-control form-control-soft" id="numeroAgregar"
-               placeholder="Ej: 101" required>
-        <div class="invalid-feedback">Ingrese el número</div>
-      </div>
-
-      <div class="col-md-4">
-        <label for="capacidadAgregar" class="form-label">Capacidad</label>
-        <input type="number" class="form-control form-control-soft" id="capacidadAgregar"
-               placeholder="Ej: 30" required>
-        <div class="invalid-feedback">Ingrese la capacidad</div>
-      </div>
-
-      <div class="col-md-6">
-        <label for="ubicacionAgregar" class="form-label">Ubicación</label>
-        <input type="text" class="form-control form-control-soft" id="ubicacionAgregar"
-               placeholder="Ej: Bloque A" required>
-        <div class="invalid-feedback">Ingrese la ubicación</div>
-      </div>
-
-      <div class="col-md-6">
-        <label for="estadoAgregar" class="form-label">Estado</label>
-        <select class="form-select form-control-soft" id="estadoAgregar" required>
-          <option value="" selected disabled>Seleccione...</option>
-          <option value="ACTIVO">ACTIVO</option>
-          <option value="INACTIVO">INACTIVO</option>
-        </select>
-        <div class="invalid-feedback">Seleccione el estado</div>
-      </div>
-
-      <div class="col-md-12">
-        <label for="descripcionAgregar" class="form-label">Descripción</label>
-        <textarea class="form-control form-control-soft" id="descripcionAgregar" rows="3"
-                  placeholder="Ej: Laboratorio / Aula / Sala..." required></textarea>
-        <div class="invalid-feedback">Ingrese la descripción</div>
-      </div>
-
-      <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-        <button type="button" id="btnCancelarAgregarAmbiente" class="btn btn-light btn-soft">
-          Cancelar
-        </button>
-        <button class="btn btn-primary btn-soft-primary" type="submit">
-          <i class="bi bi-save2 me-2"></i> Guardar
-        </button>
-      </div>
-    </form>
-  </div>
-
-  <!-- ===================== PANEL FORMULARIO EDITAR AMBIENTE ===================== -->
-  <div id="panelFormularioEditarAmbienteSede" class="form-card" style="display:none;">
-    <div class="form-card-header">
-      <button id="btnRegresarEditarAmbiente" type="button" class="btn-back">
-        <i class="bi bi-arrow-left"></i>
-        Regresar
+    <div class="d-flex gap-2">
+      <button id="btnRegresarSedesDesdeAmbientes" type="button" class="btn-back">
+        <i class="bi bi-arrow-left"></i> Regresar a Sedes
       </button>
-
-      <div class="form-title">
-        <div class="form-title-icon">
-          <i class="bi bi-pencil-square"></i>
-        </div>
-        <div>
-          <h3 class="form-title-text">Editar Ambiente</h3>    
-        </div>
-      </div>
+      <button id="btnNuevoAmbiente" type="button" class="btn-add">
+        <i class="bi bi-plus-lg"></i> Nuevo Ambiente
+      </button>
     </div>
-
-    <form id="formEditarAmbientePorSede" class="row g-3 needs-validation" novalidate>
-      <input type="hidden" id="idAmbienteEdit" required>
-
-      <div class="col-md-4">
-        <label for="codigoEdit" class="form-label">Código</label>
-        <input type="text" class="form-control form-control-soft" id="codigoEdit" required>
-        <div class="invalid-feedback">Ingrese el código</div>
-      </div>
-
-      <div class="col-md-4">
-        <label for="numeroEdit" class="form-label">Número</label>
-        <input type="number" class="form-control form-control-soft" id="numeroEdit" required>
-        <div class="invalid-feedback">Ingrese el número</div>
-      </div>
-
-      <div class="col-md-4">
-        <label for="capacidadEdit" class="form-label">Capacidad</label>
-        <input type="number" class="form-control form-control-soft" id="capacidadEdit" required>
-        <div class="invalid-feedback">Ingrese la capacidad</div>
-      </div>
-
-      <div class="col-md-6">
-        <label for="ubicacionEdit" class="form-label">Ubicación</label>
-        <input type="text" class="form-control form-control-soft" id="ubicacionEdit" required>
-        <div class="invalid-feedback">Ingrese la ubicación</div>
-      </div>
-
-      <div class="col-md-6">
-        <label for="estadoEdit" class="form-label">Estado</label>
-        <select class="form-select form-control-soft" id="estadoEdit" required>
-          <option value="" disabled>Seleccione...</option>
-          <option value="ACTIVO">ACTIVO</option>
-          <option value="INACTIVO">INACTIVO</option>
-        </select>
-        <div class="invalid-feedback">Seleccione el estado</div>
-      </div>
-
-      <div class="col-md-12">
-        <label for="descripcionEdit" class="form-label">Descripción</label>
-        <textarea class="form-control form-control-soft" id="descripcionEdit" rows="3" required></textarea>
-        <div class="invalid-feedback">Ingrese la descripción</div>
-      </div>
-
-      <div class="col-12 d-flex justify-content-end gap-2 mt-2">
-        <button type="button" id="btnCancelarEditarAmbiente" class="btn btn-light btn-soft">
-          Cancelar
-        </button>
-        <button class="btn btn-primary btn-soft-primary" type="submit">
-          <i class="bi bi-save2 me-2"></i> Guardar cambios
-        </button>
-      </div>
-    </form>
   </div>
+
+  <!-- Campo oculto para guardar idSede activo -->
+  <input type="hidden" id="idSedeActualAmbientes" />
+
+  <div class="table-wrapper">
+    <table id="tablaAmbientesSede" class="ultra-modern-table">
+      <thead>
+        <tr>
+          <th><div class="th-wrap"><i class="bi bi-upc"></i><span>Código</span></div></th>
+          <th><div class="th-wrap"><i class="bi bi-hash"></i><span>Número</span></div></th>
+          <th><div class="th-wrap"><i class="bi bi-tag"></i><span>Nombre</span></div></th>
+          <th><div class="th-wrap"><i class="bi bi-people"></i><span>Capacidad</span></div></th>
+          <th><div class="th-wrap"><i class="bi bi-building"></i><span>Bloque</span></div></th>
+          <th><div class="th-wrap"><i class="bi bi-grid"></i><span>Tipo Ambiente</span></div></th>
+          <th><div class="th-wrap"><i class="bi bi-toggle-on"></i><span>Estado</span></div></th>
+          <th><div class="th-wrap"><i class="bi bi-card-text"></i><span>Descripción</span></div></th>
+          <th><div class="th-wrap"><i class="bi bi-sliders"></i><span>Acciones</span></div></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- =====================================================
+     PANEL: FORMULARIO AGREGAR AMBIENTE
+     ===================================================== -->
+<div id="panelFormularioAgregarAmbienteSede" style="display:none;">
+  <div style="max-width: 860px; margin: 0 auto;">
+    <div class="form-card">
+
+      <!-- Cabecera -->
+      <div class="form-card-header">
+        <button id="btnRegresarAmbientes" type="button" class="btn-back">
+          <i class="bi bi-arrow-left"></i> Regresar
+        </button>
+        <div class="form-title">
+          <div class="form-title-icon">
+            <i class="bi bi-plus-circle"></i>
+          </div>
+          <div>
+            <h2 class="form-title-text">Nuevo Ambiente</h2>
+            <p class="form-subtitle-text">
+              Sede: <strong id="nombreSedeActual">—</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <form id="formAgregarAmbientePorSede" class="needs-validation" novalidate>
+
+        <!-- Campo oculto idSede -->
+        <input type="hidden" id="idSedeAgregar" />
+
+        <div class="row g-3">
+
+          <!-- Código -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-upc me-1"></i> Código <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              id="codigoAgregar"
+              class="form-control form-control-soft"
+              placeholder="Ej: A101"
+              required
+            />
+            <div class="invalid-feedback">El código es obligatorio.</div>
+          </div>
+
+          <!-- Número -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-hash me-1"></i> Número <span class="text-danger">*</span>
+            </label>
+            <input
+              type="number"
+              id="numeroAgregar"
+              class="form-control form-control-soft"
+              placeholder="Ej: 101"
+              min="1"
+              required
+            />
+            <div class="invalid-feedback">El número es obligatorio.</div>
+          </div>
+
+          <!-- Nombre -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-tag me-1"></i> Nombre
+            </label>
+            <input
+              type="text"
+              id="nombreAgregar"
+              class="form-control form-control-soft"
+              placeholder="Ej: Sala de Sistemas"
+            />
+          </div>
+
+          <!-- Capacidad -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-people me-1"></i> Capacidad <span class="text-danger">*</span>
+            </label>
+            <input
+              type="number"
+              id="capacidadAgregar"
+              class="form-control form-control-soft"
+              placeholder="Ej: 30"
+              min="1"
+              required
+            />
+            <div class="invalid-feedback">La capacidad es obligatoria.</div>
+          </div>
+
+          <!-- Bloque (antes Ubicación) -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-building me-1"></i> Bloque <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              id="bloqueAgregar"
+              class="form-control form-control-soft"
+              placeholder="Ej: Bloque A"
+              required
+            />
+            <div class="invalid-feedback">El bloque es obligatorio.</div>
+          </div>
+
+          <!-- Tipo Ambiente -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-grid me-1"></i> Tipo de Ambiente
+            </label>
+            <select id="tipoAmbienteAgregar" class="form-select form-control-soft">
+              <option value="">Seleccione...</option>
+              <option value="Aula">Taller</option>
+              <option value="Laboratorio">Ambiente Formación</option>
+              <option value="Taller">Bilinguismo</option>
+            </select>
+          </div>
+
+          <!-- Estado -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-toggle-on me-1"></i> Estado <span class="text-danger">*</span>
+            </label>
+            <select id="estadoAgregar" class="form-select form-control-soft" required>
+              <option value="">Seleccione...</option>
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO">INACTIVO</option>
+            </select>
+            <div class="invalid-feedback">Seleccione un estado.</div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-card-text me-1"></i> Descripción
+            </label>
+            <input
+              type="text"
+              id="descripcionAgregar"
+              class="form-control form-control-soft"
+              placeholder="Descripción opcional..."
+            />
+          </div>
+
+        </div><!-- /row -->
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button type="button" id="btnCancelarAgregarAmbiente" class="btn btn-light">
+            <i class="bi bi-x-circle me-1"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle me-1"></i> Guardar Ambiente
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- =====================================================
+     PANEL: FORMULARIO EDITAR AMBIENTE
+     ===================================================== -->
+<div id="panelFormularioEditarAmbienteSede" style="display:none;">
+  <div style="max-width: 860px; margin: 0 auto;">
+    <div class="form-card">
+
+      <!-- Cabecera -->
+      <div class="form-card-header">
+        <button id="btnRegresarEditarAmbiente" type="button" class="btn-back">
+          <i class="bi bi-arrow-left"></i> Regresar
+        </button>
+        <div class="form-title">
+          <div class="form-title-icon">
+            <i class="bi bi-pencil-square"></i>
+          </div>
+          <div>
+            <h2 class="form-title-text">Editar Ambiente</h2>
+            <p class="form-subtitle-text">Actualiza la información del ambiente</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulario -->
+      <form id="formEditarAmbientePorSede" class="needs-validation" novalidate>
+
+        <!-- Campos ocultos -->
+        <input type="hidden" id="idAmbienteEdit" />
+
+        <div class="row g-3">
+
+          <!-- Código -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-upc me-1"></i> Código <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              id="codigoEdit"
+              class="form-control form-control-soft"
+              placeholder="Ej: A101"
+              required
+            />
+            <div class="invalid-feedback">El código es obligatorio.</div>
+          </div>
+
+          <!-- Número -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-hash me-1"></i> Número <span class="text-danger">*</span>
+            </label>
+            <input
+              type="number"
+              id="numeroEdit"
+              class="form-control form-control-soft"
+              placeholder="Ej: 101"
+              min="1"
+              required
+            />
+            <div class="invalid-feedback">El número es obligatorio.</div>
+          </div>
+
+          <!-- Nombre -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-tag me-1"></i> Nombre
+            </label>
+            <input
+              type="text"
+              id="nombreEdit"
+              class="form-control form-control-soft"
+              placeholder="Ej: Sala de Sistemas"
+            />
+          </div>
+
+          <!-- Capacidad -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-people me-1"></i> Capacidad <span class="text-danger">*</span>
+            </label>
+            <input
+              type="number"
+              id="capacidadEdit"
+              class="form-control form-control-soft"
+              placeholder="Ej: 30"
+              min="1"
+              required
+            />
+            <div class="invalid-feedback">La capacidad es obligatoria.</div>
+          </div>
+
+          <!-- Bloque (antes Ubicación) -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-building me-1"></i> Bloque <span class="text-danger">*</span>
+            </label>
+            <input
+              type="text"
+              id="bloqueEdit"
+              class="form-control form-control-soft"
+              placeholder="Ej: Bloque A"
+              required
+            />
+            <div class="invalid-feedback">El bloque es obligatorio.</div>
+          </div>
+
+          <!-- Tipo Ambiente -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-grid me-1"></i> Tipo de Ambiente
+            </label>
+            <select id="tipoAmbienteEdit" class="form-select form-control-soft">
+              <option value="">Seleccione...</option>
+              <option value="Aula">Taller</option>
+              <option value="Laboratorio">Ambiente Formación</option>
+              <option value="Taller">Bilinguismo</option>
+            </select>
+          </div>
+
+          <!-- Estado -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-toggle-on me-1"></i> Estado <span class="text-danger">*</span>
+            </label>
+            <select id="estadoEdit" class="form-select form-control-soft" required>
+              <option value="">Seleccione...</option>
+              <option value="ACTIVO">ACTIVO</option>
+              <option value="INACTIVO">INACTIVO</option>
+            </select>
+            <div class="invalid-feedback">Seleccione un estado.</div>
+          </div>
+
+          <!-- Descripción -->
+          <div class="col-md-10">
+            <label class="form-label">
+              <i class="bi bi-card-text me-1"></i> Descripción
+            </label>
+            <input
+              type="text"
+              id="descripcionEdit"
+              class="form-control form-control-soft"
+              placeholder="Descripción opcional..."
+            />
+          </div>
+
+        </div><!-- /row -->
+
+        <!-- Botones -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button type="button" id="btnCancelarEditarAmbiente" class="btn btn-light">
+            <i class="bi bi-x-circle me-1"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-circle me-1"></i> Guardar Cambios
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>
 
 </div>
 

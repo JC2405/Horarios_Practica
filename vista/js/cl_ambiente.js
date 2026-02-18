@@ -24,33 +24,36 @@ class Ambiente {
       if (response["codigo"] == "200") {
         let dataSet = [];
 
-        response["ambientes"].forEach(item => {
-          let objBotones = '<div class="btn-group" role="group">';
-          objBotones += `
-            <button type="button" class="btn btn-info btnEditarAmbiente"
-              data-id="${item.idAmbiente || item.codigo}"
-              data-codigo="${item.codigo}"
-              data-numero="${item.numero}"
-              data-capacidad="${item.capacidad}"
-              data-ubicacion="${item.ubicacion}"
-              data-estado="${item.estado}"
-              data-descripcion="${item.descripcion || ''}">
-              <i class="bi bi-pen"></i>
-            </button>
-          `;
-          objBotones += "</div>";
+       response["ambientes"].forEach(item => {
+    let objBotones = '<div class="btn-group" role="group">';
+    objBotones += `
+        <button type="button" class="btn btn-info btnEditarAmbiente"
+            data-id="${item.idAmbiente}"
+            data-codigo="${item.codigo}"
+            data-numero="${item.numero}"
+            data-capacidad="${item.capacidad}"
+            data-bloque="${item.bloque}"
+            data-estado="${item.estado}"
+            data-descripcion="${item.descripcion || ''}"
+            data-nombre="${item.nombre || ''}"
+            data-tipoambiente="${item.tipoAmbiente || ''}">
+            <i class="bi bi-pen"></i>
+        </button>
+    `;
+    objBotones += "</div>";
 
-          dataSet.push([
-            item.codigo,
-            item.numero,
-            item.capacidad,
-            item.ubicacion,
-            item.estado,
-            item.descripcion  || "N/A",
-            objBotones
+    dataSet.push([
+        item.codigo,
+        item.numero,
+        item.nombre,   // NUEVO
+        item.capacidad,
+        item.bloque,               // antes: ubicacion
+        item.tipoAmbiente,// NUEVO
+        item.estado,
+        item.descripcion,
+        objBotones
           ]);
-        });
-
+      });
          $("#tablaAmbientesSede").DataTable({
                      buttons: [{
                        extend: "colvis",
@@ -78,15 +81,16 @@ class Ambiente {
     // ========== REGISTRAR AMBIENTE POR SEDE ==========
     registrarAmbientePorSede(){
         let objData = new FormData();
-        objData.append("registrarAmbientePorSede", "ok");
-
-        objData.append("codigo", document.getElementById("codigoAgregar").value);
-        objData.append("numero", document.getElementById("numeroAgregar").value);
-        objData.append("descripcion", document.getElementById("descripcionAgregar").value);
-        objData.append("capacidad", document.getElementById("capacidadAgregar").value);
-        objData.append("ubicacion", document.getElementById("ubicacionAgregar").value);
-        objData.append("estado", document.getElementById("estadoAgregar").value);
-        objData.append("idSede", document.getElementById("idSedeAgregar").value);
+         objData.append("registrarAmbientePorSede", "ok");
+         objData.append("codigo",document.getElementById("codigoAgregar").value);
+         objData.append("numero",document.getElementById("numeroAgregar").value);
+         objData.append("descripcion",document.getElementById("descripcionAgregar").value);
+         objData.append("capacidad",document.getElementById("capacidadAgregar").value);
+         objData.append("bloque",document.getElementById("bloqueAgregar").value);      // antes: ubicacion
+         objData.append("estado",document.getElementById("estadoAgregar").value);
+         objData.append("idSede",document.getElementById("idSedeAgregar").value);
+         objData.append("nombre",document.getElementById("nombreAgregar").value);       // NUEVO
+         objData.append("tipoAmbiente",document.getElementById("tipoAmbienteAgregar").value); // NUEVO
 
         fetch("controlador/ambienteControlador.php", {
             method: "POST",
@@ -136,16 +140,18 @@ class Ambiente {
 
 
       editarAmbientePorSede() {
-    const formData = new FormData();
+     const formData = new FormData();
     formData.append("editarAmbientePorSede", "ok");
-
-    formData.append("idAmbiente", document.getElementById("idAmbienteEdit").value);
-    formData.append("codigo", document.getElementById("codigoEdit").value);
-    formData.append("numero", document.getElementById("numeroEdit").value);
-    formData.append("descripcion", document.getElementById("descripcionEdit").value);
-    formData.append("capacidad", document.getElementById("capacidadEdit").value);
-    formData.append("ubicacion", document.getElementById("ubicacionEdit").value);
-    formData.append("estado", document.getElementById("estadoEdit").value);
+    formData.append("idAmbiente",document.getElementById("idAmbienteEdit").value);
+    formData.append("codigo",document.getElementById("codigoEdit").value);
+    formData.append("numero",document.getElementById("numeroEdit").value);
+    formData.append("descripcion",document.getElementById("descripcionEdit").value);
+    formData.append("capacidad",document.getElementById("capacidadEdit").value);
+    formData.append("bloque",document.getElementById("bloqueEdit").value);         // antes: ubicacion
+    formData.append("estado",document.getElementById("estadoEdit").value);
+    formData.append("nombre",document.getElementById("nombreEdit").value);          // NUEVO
+    formData.append("tipoAmbiente",document.getElementById("tipoAmbienteEdit").value);   // NUEVO
+    formData.append("idSede",document.getElementById("idSedeActualAmbientes").value);
 
     // importante para tu PHP (como lo hicimos)
     formData.append("idSede", document.getElementById("idSedeActualAmbientes").value);

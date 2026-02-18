@@ -21,75 +21,65 @@ class ambienteModelo {
 
     
     public static function mdlListarAmbientesPorSede($idSede) {
-        $mensaje = array();
-        try {
-             $objRespuesta = Conexion::Conectar()->prepare(
-            "SELECT 
-                a.*,
-                s.nombre AS sedeNombre,
-                m.nombreMunicipio AS sedeMunicipio
-             FROM ambiente a
-             INNER JOIN sede s ON a.idSede = s.idSede
-             LEFT JOIN municipio m ON s.idMunicipio = m.idMunicipio
-             WHERE a.idSede = :idSede
-             ORDER BY a.codigo");
-            $objRespuesta->execute([':idSede' => $idSede]);
-            $listarAmbientes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
-            $objRespuesta = null;
-            $mensaje = array("codigo" => "200", "ambientes" => $listarAmbientes);
+    $mensaje = array();
+    try {
+        $objRespuesta = Conexion::Conectar()->prepare(
+        "SELECT 
+            a.*,
+            s.nombre AS sedeNombre,
+            m.nombreMunicipio AS sedeMunicipio
+         FROM ambiente a
+         INNER JOIN sede s ON a.idSede = s.idSede
+         LEFT JOIN municipio m ON s.idMunicipio = m.idMunicipio
+         WHERE a.idSede = :idSede
+         ORDER BY a.codigo");
+        $objRespuesta->execute([':idSede' => $idSede]);
+        $listarAmbientes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
+        $objRespuesta = null;
+        $mensaje = array("codigo" => "200", "ambientes" => $listarAmbientes);
+
         } catch (Exception $e) {
-            $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
+         $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
         }
         return $mensaje;
     }
 
     
-    public static function mdlRegistrarAmbientePorSede($codigo,$numero,$descripcion,$capacidad,$ubicacion,$estado,$idSede){
-            $mensaje = array();
-
-           try {
+    public static function mdlRegistrarAmbientePorSede($codigo, $numero, $descripcion, $capacidad, $bloque, $estado, $idSede, $nombre, $tipoAmbiente){
+    $mensaje = array();
+    try {
         $objRespuesta = Conexion::Conectar()->prepare(
-            "INSERT INTO ambiente (codigo, capacidad, numero, descripcion, ubicacion, estado, idSede
-            ) VALUES (:codigo, :capacidad, :numero, :descripcion, :ubicacion, :estado, :idSede
-            )
-        ");
-
+            "INSERT INTO ambiente (codigo, capacidad, numero, descripcion, bloque, estado, idSede, nombre, tipoAmbiente)
+             VALUES (:codigo, :capacidad, :numero, :descripcion, :bloque, :estado, :idSede, :nombre, :tipoAmbiente)"
+        );
         $objRespuesta->bindParam(":codigo", $codigo);
         $objRespuesta->bindParam(":capacidad", $capacidad);
         $objRespuesta->bindParam(":numero", $numero);
         $objRespuesta->bindParam(":descripcion", $descripcion);
-        $objRespuesta->bindParam(":ubicacion", $ubicacion);
+        $objRespuesta->bindParam(":bloque", $bloque);
         $objRespuesta->bindParam(":estado", $estado);
         $objRespuesta->bindParam(":idSede", $idSede);
+        $objRespuesta->bindParam(":nombre", $nombre);
+        $objRespuesta->bindParam(":tipoAmbiente", $tipoAmbiente);
 
         if ($objRespuesta->execute()) {
             $mensaje = array("codigo" => "200", "mensaje" => "Ambiente registrado correctamente");
         } else {
             $mensaje = array("codigo" => "401", "mensaje" => "Error al registrar el ambiente");
         }
-
     } catch (Exception $e) {
         $mensaje = array("codigo" => "400", "mensaje" => $e->getMessage());
     }
-
     return $mensaje;
     }
 
 
-
-    public static function mdlEditarAmbientePorSede($idAmbiente,$codigo,$numero,$descripcion,$capacidad,$ubicacion,$estado,$idSede){
+    public static function mdlEditarAmbientePorSede($idAmbiente, $codigo, $numero, $descripcion, $capacidad, $bloque, $estado, $idSede, $nombre, $tipoAmbiente){
     $mensaje = array();
-
     try {
-
-        // (Opcional) validar duplicado: mismo codigo en la misma sede, pero otro idAmbiente
-        // Si no lo necesitas, puedes borrar este bloque completo.
         $validar = Conexion::Conectar()->prepare("
-            SELECT COUNT(*) as total
-            FROM ambiente
-            WHERE codigo = :codigo
-              AND idSede = :idSede
-              AND idAmbiente <> :idAmbiente
+            SELECT COUNT(*) as total FROM ambiente
+            WHERE codigo = :codigo AND idSede = :idSede AND idAmbiente <> :idAmbiente
         ");
         $validar->bindParam(":codigo", $codigo);
         $validar->bindParam(":idSede", $idSede);
@@ -107,17 +97,22 @@ class ambienteModelo {
                 capacidad = :capacidad,
                 numero = :numero,
                 descripcion = :descripcion,
-                ubicacion = :ubicacion,
+                bloque = :bloque,
                 estado = :estado,
-                idSede = :idSede
-            WHERE idAmbiente = :idAmbiente");
+                idSede = :idSede,
+                nombre = :nombre,
+                tipoAmbiente = :tipoAmbiente
+            WHERE idAmbiente = :idAmbiente"
+        );
         $objRespuesta->bindParam(":codigo", $codigo);
         $objRespuesta->bindParam(":capacidad", $capacidad);
         $objRespuesta->bindParam(":numero", $numero);
         $objRespuesta->bindParam(":descripcion", $descripcion);
-        $objRespuesta->bindParam(":ubicacion", $ubicacion);
+        $objRespuesta->bindParam(":bloque", $bloque);
         $objRespuesta->bindParam(":estado", $estado);
         $objRespuesta->bindParam(":idSede", $idSede);
+        $objRespuesta->bindParam(":nombre", $nombre);
+        $objRespuesta->bindParam(":tipoAmbiente", $tipoAmbiente);
         $objRespuesta->bindParam(":idAmbiente", $idAmbiente);
 
         if ($objRespuesta->execute()) {
@@ -125,11 +120,9 @@ class ambienteModelo {
         } else {
             $mensaje = array("codigo" => "401", "mensaje" => "Error al actualizar el ambiente");
         }
-
     } catch (Exception $e) {
         $mensaje = array("codigo"=>"400","mensaje"=>$e->getMessage());
     }
-
     return $mensaje;
     }
 

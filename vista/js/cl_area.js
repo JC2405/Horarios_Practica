@@ -63,4 +63,74 @@ class area{
         })
     }
 
+
+    registrarArea(){
+        const formData = new FormData();
+        formData.append("registrarArea" , "ok");
+        formData.append("nombreArea",document.getElementById("nombre_area").value);
+
+
+        fetch("controlador/areaControlador.php", {
+            method:"POST",
+            body:formData
+        })
+
+        .then(response => response.json())
+        .then(response => {
+            if(response.codigo == "200"){
+
+                $("#panelTablaArea").show();
+                $("#panelFormularioAgregarArea").hide();
+
+              
+                this.listarArea();
+                Swal.fire({
+                    position: "Center",
+                    icon: "success",
+                    title: response.mensaje,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                document.getElementById("formRegistrarArea").reset();
+            } else {
+                Swal.fire(response.mensaje);
+            }
+        })
+    }
+
+    editarArea(){
+        const formData = new FormData();
+        formData.append("editarArea" , "ok");
+        formData.append("idArea",document.getElementById("idAreaEdit").value);
+        formData.append("nombreArea",document.getElementById("nombreAreaEdit").value);
+
+
+        fetch("controlador/areaControlador.php",{
+            method:"POST",
+            body:formData
+        })
+         .then(response => response.json())
+        .then(response => {
+            if(response.codigo == "200"){
+
+                $("#panelTablaArea").show();
+                $("#panelFormularioEditarArea").hide();
+
+              
+                this.listarArea();
+                Swal.fire({
+                    position: "Center",
+                    icon: "success",
+                    title: response.mensaje,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                document.getElementById("formRegistrarArea").reset();
+            } else {
+                Swal.fire(response.mensaje);
+            }
+        })      
+
+    }
+
 }

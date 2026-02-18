@@ -39,6 +39,15 @@ $menus = [
   'coordinador' => [
     [
       'type' => 'tree',
+      'label' => 'Horario',
+      'icon' => 'bx bx-time',
+      'items' => [
+        ['label' => 'Horarios', 'href' => 'sedeVista'],
+
+      ]
+    ],
+    [
+       'type' => 'tree',
       'label' => 'Programa Formación',
       'icon' => 'bx bx-book',
       'items' => [
@@ -57,14 +66,6 @@ $menus = [
         ['label' => 'Tipo de contrato', 'href' => 'tipoContrato'],
         ['label' => 'Áreas', 'href' => 'area'],
         ['label' => 'Instructores', 'href' => 'instructor'],
-      ]
-    ],
-    [
-      'type' => 'tree',
-      'label' => 'Horario',
-      'icon' => 'bx bx-time',
-      'items' => [
-        ['label' => 'Horarios', 'href' => 'sedeVista'],
       ]
     ],
   ],

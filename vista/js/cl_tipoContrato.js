@@ -60,4 +60,74 @@ class tipoContrato{
         })
 
     }
+
+
+    agregarTipoContrato(){
+        const formData = new FormData();
+        formData.append("agregarTipoContrato" , "ok");
+        formData.append("tipoContrato",document.getElementById("tipo_contrato").value);
+
+
+        fetch("controlador/tipoContratoControlador.php",{
+            method:"POST",
+            body:formData
+        })
+        
+        .then(response => response.json())
+        .then(response => {
+            if(response.codigo == "200"){
+                $("#panelFormularioTipoContrato").hide();
+                $("#panelListar").show();
+                this.listarTipoContrato();
+                Swal.fire({
+                    position: "Center",
+                    icon: "success",
+                    title: response.mensaje,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                document.getElementById("formAgregarTipoContrato").reset();
+            } else {
+                Swal.fire(response.mensaje);
+            }
+        })
+    }
+
+
+        editarTipoContrato(){
+            const formData = new FormData();
+            formData.append("editarTipoContrato" , "ok");
+            formData.append("idTipoContrato",document.getElementById("idTipoCintratoEdit").value);
+            formData.append("tipoContrato",document.getElementById("tipoContratoEdit").value);
+
+
+            fetch("controlador/tipoContratoControlador.php",{
+                method:"POST",
+                body:formData
+
+            })
+            .then(response => response.json())
+            .then(response => {
+                if(response.codigo == "200"){
+
+                    $("#panelListar").show();
+                    $("#panelFormularioEditarTipoContrato").hide();
+
+                
+                    this.listarTipoContrato();
+                    Swal.fire({
+                        position: "Center",
+                        icon: "success",
+                        title: response.mensaje,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                    document.getElementById("formEditarTipoContrato").reset();
+                } else {
+                    Swal.fire(response.mensaje);
+                }
+            })      
+
+        }
+
 }

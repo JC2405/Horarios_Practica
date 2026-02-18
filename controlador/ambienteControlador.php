@@ -8,14 +8,19 @@ class ambienteControlador{
     public $numero;
     public $descripcion;
     public $capacidad;
-    public $bloque;      // antes: ubicacion
+    public $bloque;      
     public $estado; 
     public $idSede;
-    public $nombre;      // NUEVO
-    public $tipoAmbiente; // NUEVO
+    public $idArea;      
+    public $tipoAmbiente; 
 
     public function ctrListarAmbiente(){
         $objRespuesta = ambienteModelo::mdlListarAmbiente();
+        echo json_encode($objRespuesta);
+    }
+
+    public function ctrListarArea(){
+        $objRespuesta = ambienteModelo::mdlListarAreas();
         echo json_encode($objRespuesta);
     }
 
@@ -27,15 +32,16 @@ class ambienteControlador{
 
 
   public function ctrRegistrarAmbientePorSede(){
-        $objRespuesta = ambienteModelo::mdlRegistrarAmbientePorSede($this->codigo, $this->numero, $this->descripcion,$this->capacidad, $this->bloque, $this->estado,$this->idSede, $this->nombre, $this->tipoAmbiente
-        );
+        $objRespuesta = ambienteModelo::mdlRegistrarAmbientePorSede($this->codigo, $this->numero, $this->descripcion,$this->capacidad, $this->bloque, $this->estado,$this->idSede, $this->idArea, $this->tipoAmbiente);
         echo json_encode($objRespuesta);
     }
 
     public function ctrEditarAmbientePorSede(){
-        $objRespuesta = ambienteModelo::mdlEditarAmbientePorSede($this->idAmbiente, $this->codigo, $this->numero, $this->descripcion,$this->capacidad, $this->bloque, $this->estado,$this->idSede, $this->nombre, $this->tipoAmbiente);
+        $objRespuesta = ambienteModelo::mdlEditarAmbientePorSede($this->idAmbiente, $this->codigo, $this->numero, $this->descripcion,$this->capacidad, $this->bloque, $this->estado,$this->idSede, $this->idArea, $this->tipoAmbiente);
         echo json_encode($objRespuesta);
     }
+
+    
 
 }
 
@@ -59,7 +65,7 @@ if (isset($_POST["registrarAmbientePorSede"])) {
     $objRespuesta->bloque       = $_POST["bloque"];       // antes: ubicacion
     $objRespuesta->estado       = $_POST["estado"];
     $objRespuesta->idSede       = $_POST["idSede"];
-    $objRespuesta->nombre       = $_POST["nombre"];       // NUEVO
+    $objRespuesta->idArea    = $_POST["idArea"];       // NUEVO
     $objRespuesta->tipoAmbiente = $_POST["tipoAmbiente"]; // NUEVO
     $objRespuesta->ctrRegistrarAmbientePorSede();
 }
@@ -74,8 +80,13 @@ if (isset($_POST["editarAmbientePorSede"])) {
     $objRespuesta->bloque       = $_POST["bloque"];       // antes: ubicacion
     $objRespuesta->estado       = $_POST["estado"];
     $objRespuesta->idSede       = $_POST["idSede"];
-    $objRespuesta->nombre       = $_POST["nombre"];       // NUEVO
+    $objRespuesta->idArea       = $_POST["idArea"];       // NUEVO
     $objRespuesta->tipoAmbiente = $_POST["tipoAmbiente"]; // NUEVO
     $objRespuesta->ctrEditarAmbientePorSede();
 }
 
+
+if(isset($_POST["listarAreas"])){
+    $objRespuesta = new ambienteControlador();
+    $objRespuesta->ctrListarArea();
+}

@@ -19,20 +19,50 @@ class ambienteModelo {
         return $mensaje;
     }
 
+
+
+    public static function mdlListarAreas(){
+        $mensaje = array();
+
+        try {
+            $objRespuesta = Conexion::Conectar()->prepare(
+                "SELECT idArea,nombreArea
+                FROM area
+                ORDER BY nombreArea ASC");
+            $objRespuesta->execute();
+            $listarAreas = $objRespuesta->fetchAll();
+            $objRespuesta = null; 
+            $mensaje = array("codigo" => "200" , "listarAreas" => $listarAreas);
+        } catch(Exception $e){
+            $mensaje = array("codigo" => "400", "mensaje"=>$e->getMessage());
+        }
+        return $mensaje;
+    }
     
     public static function mdlListarAmbientesPorSede($idSede) {
     $mensaje = array();
     try {
         $objRespuesta = Conexion::Conectar()->prepare(
-        "SELECT 
-            a.*,
-            s.nombre AS sedeNombre,
-            m.nombreMunicipio AS sedeMunicipio
-         FROM ambiente a
-         INNER JOIN sede s ON a.idSede = s.idSede
-         LEFT JOIN municipio m ON s.idMunicipio = m.idMunicipio
-         WHERE a.idSede = :idSede
-         ORDER BY a.codigo");
+            "SELECT
+                a.idAmbiente,
+                a.codigo,
+                a.capacidad,
+                a.numero,
+                a.descripcion,
+                a.bloque,
+                a.estado,
+                a.idSede,
+                a.tipoAmbiente,
+                a.idArea,              
+                ar.nombreArea,
+                s.nombre AS sedeNombre,
+                m.nombreMunicipio AS sedeMunicipio
+            FROM ambiente a
+            INNER JOIN sede s ON a.idSede = s.idSede
+            LEFT JOIN area ar ON ar.idArea = a.idArea
+            LEFT JOIN municipio m ON s.idMunicipio = m.idMunicipio
+            WHERE a.idSede = :idSede
+            ORDER BY a.codigo;");
         $objRespuesta->execute([':idSede' => $idSede]);
         $listarAmbientes = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);
         $objRespuesta = null;
@@ -45,12 +75,12 @@ class ambienteModelo {
     }
 
     
-    public static function mdlRegistrarAmbientePorSede($codigo, $numero, $descripcion, $capacidad, $bloque, $estado, $idSede, $nombre, $tipoAmbiente){
+    public static function mdlRegistrarAmbientePorSede($codigo, $numero, $descripcion, $capacidad, $bloque, $estado, $idSede, $idArea, $tipoAmbiente){
     $mensaje = array();
     try {
         $objRespuesta = Conexion::Conectar()->prepare(
-            "INSERT INTO ambiente (codigo, capacidad, numero, descripcion, bloque, estado, idSede, nombre, tipoAmbiente)
-             VALUES (:codigo, :capacidad, :numero, :descripcion, :bloque, :estado, :idSede, :nombre, :tipoAmbiente)"
+                "INSERT INTO ambiente (codigo, capacidad, numero, descripcion, bloque, estado, idSede, idArea, tipoAmbiente)
+                VALUES (:codigo, :capacidad, :numero, :descripcion, :bloque, :estado, :idSede, :idArea, :tipoAmbiente)"
         );
         $objRespuesta->bindParam(":codigo", $codigo);
         $objRespuesta->bindParam(":capacidad", $capacidad);
@@ -59,7 +89,7 @@ class ambienteModelo {
         $objRespuesta->bindParam(":bloque", $bloque);
         $objRespuesta->bindParam(":estado", $estado);
         $objRespuesta->bindParam(":idSede", $idSede);
-        $objRespuesta->bindParam(":nombre", $nombre);
+        $objRespuesta->bindParam(":idArea", $idArea);
         $objRespuesta->bindParam(":tipoAmbiente", $tipoAmbiente);
 
         if ($objRespuesta->execute()) {
@@ -74,7 +104,7 @@ class ambienteModelo {
     }
 
 
-    public static function mdlEditarAmbientePorSede($idAmbiente, $codigo, $numero, $descripcion, $capacidad, $bloque, $estado, $idSede, $nombre, $tipoAmbiente){
+    public static function mdlEditarAmbientePorSede($idAmbiente, $codigo, $numero, $descripcion, $capacidad, $bloque, $estado, $idSede, $idArea, $tipoAmbiente){
     $mensaje = array();
     try {
         $validar = Conexion::Conectar()->prepare("
@@ -100,7 +130,7 @@ class ambienteModelo {
                 bloque = :bloque,
                 estado = :estado,
                 idSede = :idSede,
-                nombre = :nombre,
+                idArea = :idArea,
                 tipoAmbiente = :tipoAmbiente
             WHERE idAmbiente = :idAmbiente"
         );
@@ -111,7 +141,7 @@ class ambienteModelo {
         $objRespuesta->bindParam(":bloque", $bloque);
         $objRespuesta->bindParam(":estado", $estado);
         $objRespuesta->bindParam(":idSede", $idSede);
-        $objRespuesta->bindParam(":nombre", $nombre);
+        $objRespuesta->bindParam(":idArea", $idArea);
         $objRespuesta->bindParam(":tipoAmbiente", $tipoAmbiente);
         $objRespuesta->bindParam(":idAmbiente", $idAmbiente);
 

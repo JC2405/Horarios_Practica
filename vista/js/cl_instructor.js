@@ -57,7 +57,7 @@ class instructor{
                                 item.telefono,
                                 item.estado,
                                 item.correo,
-                                item.nombreArea,
+                                item.Areas,
                                 item.tipoContrato,
                                 item.nombreRol,
                                 objBotones
@@ -96,7 +96,7 @@ class instructor{
         formData.append("idArea", document.getElementById("idAreaInstructor").value);
         formData.append("idTipoContrato", document.getElementById("idTipoContratoInstructor").value);
         formData.append("password", document.getElementById("passwordInstructor").value);
-        
+
 
         fetch("controlador/instructorControlador.php", {
             method: "POST",

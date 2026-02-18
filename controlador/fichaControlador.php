@@ -47,8 +47,7 @@
 
 
         public function ctrRegistrarFicha(){
-        $objRespuesta = fichaModelo::mdlRegistrarFicha(
-            $this->codigoFicha,$this->idPrograma,$this->idAmbiente,$this->estado,$this->jornada,$this->fechaInicio,$this->fechaFin);
+        $objRespuesta = fichaModelo::mdlRegistrarFicha( $this->codigoFicha,$this->idPrograma,$this->idAmbiente,$this->estado,$this->jornada,$this->fechaInicio,$this->fechaFin);
         echo json_encode($objRespuesta);
         }
         

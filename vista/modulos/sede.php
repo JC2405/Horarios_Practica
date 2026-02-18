@@ -345,15 +345,15 @@
           <!-- Nombre -->
           <div class="col-md-10">
             <label class="form-label">
-              <i class="bi bi-tag me-1"></i> Nombre
+              <i class="bi bi-tag me-1"></i> Nombre Area
             </label>
-            <input
-              type="text"
-              id="nombreAgregar"
-              class="form-control form-control-soft"
-              placeholder="Ej: Sala de Sistemas"
-            />
-          </div>
+           <div class="select-wrapper">
+           <select class="form-select form-select-lg" id="selectAreas" required>
+             <option value="">Cargando Areas...</option>
+           </select>
+         </div>
+         <input type="hidden" id="idArea">
+       </div>
 
           <!-- Capacidad -->
           <div class="col-md-10">
@@ -505,18 +505,17 @@
             <div class="invalid-feedback">El número es obligatorio.</div>
           </div>
 
-          <!-- Nombre -->
-          <div class="col-md-10">
-            <label class="form-label">
-              <i class="bi bi-tag me-1"></i> Nombre
-            </label>
-            <input
-              type="text"
-              id="nombreEdit"
-              class="form-control form-control-soft"
-              placeholder="Ej: Sala de Sistemas"
-            />
+        <div class="col-md-10">
+          <label class="form-label">
+            <i class="bi bi-tag me-1"></i> Área
+          </label>
+        
+          <div class="select-wrapper">
+            <select class="form-select form-select-lg" id="selectAreasEdit" required>
+              <option value="">Cargando áreas...</option>
+            </select>
           </div>
+        </div>
 
           <!-- Capacidad -->
           <div class="col-md-10">

@@ -35,7 +35,8 @@ class Ambiente {
             data-bloque="${item.bloque}"
             data-estado="${item.estado}"
             data-descripcion="${item.descripcion || ''}"
-            data-nombre="${item.nombre || ''}"
+            data-idarea="${item.idArea || ''}"
+            data-nombreArea="${item.nombreArea || ''}"
             data-tipoambiente="${item.tipoAmbiente || ''}">
             <i class="bi bi-pen"></i>
         </button>
@@ -45,10 +46,10 @@ class Ambiente {
     dataSet.push([
         item.codigo,
         item.numero,
-        item.nombre,   // NUEVO
+        item.nombreArea,   
         item.capacidad,
-        item.bloque,               // antes: ubicacion
-        item.tipoAmbiente,// NUEVO
+        item.bloque,               
+        item.tipoAmbiente,
         item.estado,
         item.descripcion,
         objBotones
@@ -76,6 +77,21 @@ class Ambiente {
 
 
       
+    // Listar Areas 
+    listarAreas(){
+      let objData = new FormData();
+      objData.append("listarAreas",this._objData.listarAreas);
+
+      fetch("controlador/ambienteControlador.php",{
+        method:"POST",
+        body: objData
+      })
+      .then(r => r.json())
+      .catch(err => console.log(err))
+      .then(response => {
+        console.log("listarAreas",response);
+      })
+    }
 
 
     // ========== REGISTRAR AMBIENTE POR SEDE ==========
@@ -89,7 +105,7 @@ class Ambiente {
          objData.append("bloque",document.getElementById("bloqueAgregar").value);      // antes: ubicacion
          objData.append("estado",document.getElementById("estadoAgregar").value);
          objData.append("idSede",document.getElementById("idSedeAgregar").value);
-         objData.append("nombre",document.getElementById("nombreAgregar").value);       // NUEVO
+         objData.append("idArea",document.getElementById("selectAreas").value);       // NUEVO
          objData.append("tipoAmbiente",document.getElementById("tipoAmbienteAgregar").value); // NUEVO
 
         fetch("controlador/ambienteControlador.php", {
@@ -149,9 +165,9 @@ class Ambiente {
     formData.append("capacidad",document.getElementById("capacidadEdit").value);
     formData.append("bloque",document.getElementById("bloqueEdit").value);         // antes: ubicacion
     formData.append("estado",document.getElementById("estadoEdit").value);
-    formData.append("nombre",document.getElementById("nombreEdit").value);          // NUEVO
+    formData.append("idArea", document.getElementById("selectAreasEdit").value);          // NUEVO
     formData.append("tipoAmbiente",document.getElementById("tipoAmbienteEdit").value);   // NUEVO
-    formData.append("idSede",document.getElementById("idSedeActualAmbientes").value);
+    formData.append("idSede",       document.getElementById("idSedeActualAmbientes").value);
 
     // importante para tu PHP (como lo hicimos)
     formData.append("idSede", document.getElementById("idSedeActualAmbientes").value);

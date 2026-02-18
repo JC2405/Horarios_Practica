@@ -800,3 +800,38 @@ table.ultra-modern-table th{
 .form-card .d-flex:has(button.btn-regresar) {
   justify-content: flex-start !important;
 }
+
+
+/* ==============================
+   SELECT SOFT PERSONALIZADO
+   ============================== */
+
+.select-wrapper select {
+  font-size: 0.9rem;            /* letra más pequeña */
+  padding: 0.6rem 0.9rem;       /* menos alto */
+  border-radius: 12px;
+  border: 1px solid #dcdff1;
+  background-color: #f9faff;
+  transition: all 0.25s ease;
+  box-shadow: none;
+}
+
+.select-wrapper select:focus {
+  border-color: #7b6ef6;
+  box-shadow: 0 0 0 3px rgba(123, 110, 246, 0.15);
+  background-color: #ffffff;
+}
+
+.select-wrapper select option {
+  font-size: 0.85rem;
+}
+
+/* flecha más suave */
+.select-wrapper select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%237b6ef6' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 18px;
+  padding-right: 40px;
+}

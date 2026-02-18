@@ -126,9 +126,9 @@
                 "SELECT 
                 f.idFicha,
                 f.codigoFicha,
-                f.idAmbiente,         -- ✅ AGREGAR
+                f.idAmbiente,         
                 p.nombre AS programa,
-                s.idSede,             -- ✅ AGREGAR
+                s.idSede,             
                 s.nombre AS sede,
                 a.numero AS numeroAmbiente,
                 f.estado,

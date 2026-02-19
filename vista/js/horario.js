@@ -1,29 +1,17 @@
-/**
- * horario.js
- * Sigue el patrón de ficha.js, sede.js, instructor.js
- * del proyecto sena_formacion.
- *
- * Flujo principal:
- * 1. Listar horarios en tabla
- * 2. Crear horario → selector-bar + calendario visual
- * 3. Editar / Eliminar
- */
-
 document.addEventListener('DOMContentLoaded', function () {
 
   /* ============================================================
      ESTADO LOCAL
   ============================================================ */
   let horarioDataTable = null;
-  let diasDB = [];          // días de la BD [{idDia, diasSemanales}]
+  let diasDB = [];
+  let todasLasFichas = []; // Cache de todas las fichas para filtrar
 
-  // Mapa nombre→idDia (se llena cuando llegan los días de la BD)
   const DIAS_MAP = {
     'Lunes': 1, 'Martes': 2, 'Miércoles': 3, 'Miercoles': 3,
     'Jueves': 4, 'Viernes': 5, 'Sábado': 6, 'Sabado': 6, 'Domingo': 7
   };
 
-  // Nombre de columna calendario → id del día BD
   const COL_DIA = { 1: null, 2: null, 3: null, 4: null, 5: null, 6: null };
 
   /* ============================================================
@@ -33,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function () {
   cargarDiasDB();
   cargarInstructores();
   cargarSedes();
-  cargarFichas();
+  cargarTodasLasFichas(); // Carga todas las fichas al inicio y las guarda en cache
 
   /* ============================================================
      NAVEGACIÓN PANELES
@@ -46,51 +34,67 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  // Botón Nuevo
   document.getElementById('btnNuevoHorario')?.addEventListener('click', () => {
     resetFormCrear();
     mostrarPanel('panelFormularioHorario');
   });
 
-  // Regresar desde Crear
   document.getElementById('btnRegresarTablaHorario')?.addEventListener('click', () => mostrarPanel('panelTablaHorario'));
   document.getElementById('btnCancelarHorario')?.addEventListener('click', () => mostrarPanel('panelTablaHorario'));
-
-  // Regresar desde Editar
   document.getElementById('btnRegresarTablaHorarioEdit')?.addEventListener('click', () => mostrarPanel('panelTablaHorario'));
   document.getElementById('btnCancelarEditarHorario')?.addEventListener('click', () => mostrarPanel('panelTablaHorario'));
 
   /* ============================================================
-     CASCADA SEDE → AMBIENTES (formulario crear)
+     FIX 1: CASCADA SEDE → AMBIENTES + FICHAS FILTRADAS POR SEDE
+     Cuando cambia la sede, se cargan ambientes Y se re-filtran las fichas
   ============================================================ */
   document.getElementById('selectSedeHorario')?.addEventListener('change', function () {
     const idSede = this.value;
     const selAmb = document.getElementById('selectAmbienteHorario');
-    const selArea = document.getElementById('selectAreaAmbiente');
+    const selFicha = document.getElementById('selectFichaHorario');
 
-    resetSelect(selAmb, '—');
-    resetSelect(selArea, '—');
-    selArea.disabled = true;
+    resetSelect(selAmb, '— Seleccione ambiente —');
+
+    // Resetear ficha cuando cambia la sede
+    if (selFicha) {
+      selFicha.innerHTML = '<option value="">— Seleccione sede primero —</option>';
+      selFicha.disabled = true;
+    }
 
     if (!idSede) return;
 
     cargarAmbientesPorSede(idSede, 'selectAmbienteHorario');
+
+    // Filtrar fichas por sede (y jornada si ya está seleccionada)
+    const jornadaSeleccionada = document.getElementById('selectJornadaHorario')?.value || '';
+    filtrarFichasPorSedeYJornada(idSede, jornadaSeleccionada);
   });
 
-  // Cuando cambia el ambiente → actualizar campo área (read-only visual)
+  // Cuando cambia ambiente → actualizar preview
   document.getElementById('selectAmbienteHorario')?.addEventListener('change', function () {
-    const opt = this.options[this.selectedIndex];
-    const area = opt?.dataset.area || '—';
-    const selArea = document.getElementById('selectAreaAmbiente');
-    selArea.innerHTML = `<option value="${opt?.dataset.idarea || ''}">${area}</option>`;
     actualizarPreview();
   });
 
   /* ============================================================
-     CASCADA JORNADA → FICHAS (filtrar fichas por jornada)
+     FIX 1: JORNADA → FILTRA FICHAS POR SEDE + JORNADA
+     Antes filtraba todas las fichas de la jornada sin importar sede
   ============================================================ */
   document.getElementById('selectJornadaHorario')?.addEventListener('change', function () {
-    filtrarFichasPorJornada(this.value);
+    const jornada = this.value;
+    const idSede = document.getElementById('selectSedeHorario')?.value || '';
+
+    if (!idSede) {
+      // Si no hay sede seleccionada, avisar
+      const selFicha = document.getElementById('selectFichaHorario');
+      if (selFicha) {
+        selFicha.innerHTML = '<option value="">— Seleccione sede primero —</option>';
+        selFicha.disabled = true;
+      }
+      actualizarPreview();
+      return;
+    }
+
+    filtrarFichasPorSedeYJornada(idSede, jornada);
     actualizarPreview();
   });
 
@@ -100,21 +104,19 @@ document.addEventListener('DOMContentLoaded', function () {
     actualizarPreview();
   });
 
-  // Otros campos que afectan el preview
   ['horaInicioHorario', 'horaFinHorario', 'fechaInicioHorario', 'fechaFinHorario',
    'selectInstructorHorario', 'selectSedeHorario'].forEach(id => {
     document.getElementById(id)?.addEventListener('change', actualizarPreview);
   });
 
   /* ============================================================
-     CALENDARIO — clic en cabecera del día (toggle)
-  ============================================================ -->*/
+     CALENDARIO — clic en cabecera del día
+  ============================================================ */
   document.querySelectorAll('.dia-header').forEach(th => {
     th.addEventListener('click', function () {
       const dia = parseInt(this.dataset.dia);
       this.classList.toggle('dia-activo');
 
-      // Marcar / desmarcar celda
       const celda = document.querySelector(`.cal-preview-row .cal-cell[data-dia="${dia}"]`);
       if (celda) celda.classList.toggle('dia-seleccionado', this.classList.contains('dia-activo'));
 
@@ -152,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ============================================================
-     CLICK EDITAR (delegado desde tabla)
+     CLICK EDITAR (delegado)
   ============================================================ */
   $(document).on('click', '.btnEditarHorario', function (e) {
     e.preventDefault();
@@ -168,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const idAmb  = $(this).data('id-ambiente') || '';
     if (idSede) cargarAmbientesPorSedeEdit(idSede, idAmb);
 
-    // Marcar días en el edit
     const diasStr = String($(this).data('dias') || '');
     const diasArr = diasStr ? diasStr.split(',').map(d => d.trim()) : [];
     marcarDiasEdit(diasArr);
@@ -178,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ============================================================
-     CLICK ELIMINAR (delegado desde tabla)
+     CLICK ELIMINAR (delegado)
   ============================================================ */
   $(document).on('click', '.btnEliminarHorario', function (e) {
     e.preventDefault();
@@ -214,10 +215,9 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ============================================================
-     FUNCIONES CRUD
+     FIX 3: LISTAR HORARIOS — tabla compacta
+     Columnas: Sede | Área | Ficha | Jornada | Tipo Programa | Instructor | Acciones
   ============================================================ */
-
-  /** Listar horarios y construir DataTable */
   function listarHorarios() {
     const fd = new FormData();
     fd.append('listarHorarios', 'ok');
@@ -227,8 +227,8 @@ document.addEventListener('DOMContentLoaded', function () {
       .catch(err => console.error('listarHorarios:', err))
       .then(response => {
         if (!response || response.codigo !== '200') {
-          document.getElementById('tbodyHorarios').innerHTML =
-            `<tr><td colspan="13">${emptyState()}</td></tr>`;
+          const tbody = document.getElementById('tbodyHorarios');
+          if (tbody) tbody.innerHTML = `<tr><td colspan="7">${emptyState()}</td></tr>`;
           return;
         }
 
@@ -240,21 +240,25 @@ document.addEventListener('DOMContentLoaded', function () {
         const dataSet  = [];
 
         horarios.forEach(item => {
-          const nombre   = item.instructorNombre || '—';
+          const nombre    = item.instructorNombre || '—';
           const iniciales = nombre !== '—'
             ? nombre.trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
             : '?';
 
+          // Instructor con avatar
           const instructorHtml = `
             <div class="instructor-cell">
               <div class="instructor-avatar">${iniciales}</div>
               <span style="font-size:12px;font-weight:600;">${nombre}</span>
             </div>`;
 
+          // Jornada badge inferida de la hora
           const jornadaBadge = inferirJornadaBadge(item.hora_inicioClase);
-          const diasNombres  = item.diasNombres ? item.diasNombres.split(',') : [];
-          const diasHtml     = diasNombres.map(d =>
-            `<span class="dia-chip">${abreviarDia(d.trim())}</span>`).join('');
+
+          // Tipo programa (puede venir como campo o necesita join — mostramos lo disponible)
+          const tipoPrograma = item.tipoPrograma || item.tipoprograma || '—';
+          const sedeNombre   = item.sedeNombre   || item.sede         || '—';
+          const areaNombre   = item.areaNombre   || item.area         || '—';
 
           const botones = `
             <div class="action-group">
@@ -265,7 +269,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 data-fecha-inicio="${item.fecha_inicioHorario || ''}"
                 data-fecha-fin="${item.fecha_finHorario || ''}"
                 data-id-ambiente="${item.idAmbiente || ''}"
-                data-id-sede=""
+                data-id-sede="${item.idSede || ''}"
                 data-dias="${item.dias || ''}">
                 <i class="bi bi-pen"></i>
               </button>
@@ -274,19 +278,14 @@ document.addEventListener('DOMContentLoaded', function () {
               </button>
             </div>`;
 
+          // FIX 3: Solo 7 columnas: Sede, Área, Ficha, Jornada, Tipo Programa, Instructor, Acciones
           dataSet.push([
-            item.ambienteDescripcion || '—',
-            `<strong>${item.ambienteNumero || '—'}</strong>`,
-            '—',
+            sedeNombre,
+            areaNombre,
+            `<strong>${item.codigoFicha || '—'}</strong>`,
             jornadaBadge,
-            item.codigoFicha || '—',
-            '—',
+            tipoPrograma,
             instructorHtml,
-            `<span class="hora-display">${item.hora_inicioClase || '—'}</span>`,
-            `<span class="hora-display">${item.hora_finClase || '—'}</span>`,
-            formatFecha(item.fecha_inicioHorario),
-            formatFecha(item.fecha_finHorario),
-            `<div class="dias-badge">${diasHtml || '—'}</div>`,
             botones
           ]);
         });
@@ -309,7 +308,9 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  /** Crear horario */
+  /* ============================================================
+     CREAR / EDITAR HORARIO
+  ============================================================ */
   function crearHorario(diasSeleccionados) {
     Swal.fire({ title: 'Guardando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
@@ -322,8 +323,6 @@ document.addEventListener('DOMContentLoaded', function () {
     fd.append('hora_finClase',       document.getElementById('horaFinHorario').value);
     fd.append('fecha_inicioHorario', document.getElementById('fechaInicioHorario').value);
     fd.append('fecha_finHorario',    document.getElementById('fechaFinHorario').value);
-
-    // días como array numérico (IDs reales de la BD)
     diasSeleccionados.forEach(idDia => fd.append('dias[]', idDia));
 
     fetch('controlador/horarioControlador.php', { method: 'POST', body: fd })
@@ -331,10 +330,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(resp => {
         Swal.close();
         if (resp.codigo === '200') {
-          Swal.fire({
-            icon: 'success', title: '¡Horario creado!',
-            text: resp.mensaje, timer: 1800, showConfirmButton: false
-          });
+          Swal.fire({ icon: 'success', title: '¡Horario creado!', text: resp.mensaje, timer: 1800, showConfirmButton: false });
           mostrarPanel('panelTablaHorario');
           listarHorarios();
           resetFormCrear();
@@ -348,7 +344,6 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
-  /** Editar horario */
   function editarHorario(diasSeleccionados) {
     Swal.fire({ title: 'Guardando...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
@@ -383,7 +378,6 @@ document.addEventListener('DOMContentLoaded', function () {
   /* ============================================================
      CARGAR DATOS PARA SELECTS
   ============================================================ */
-
   function cargarDiasDB() {
     const fd = new FormData();
     fd.append('listarDias', 'ok');
@@ -392,7 +386,6 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(resp => {
         if (resp.codigo === '200') {
           diasDB = resp.dias || [];
-          // Mapear nombre a ID para el calendario
           diasDB.forEach(d => {
             const nombre = d.diasSemanales;
             if (DIAS_MAP[nombre] !== undefined) {
@@ -412,15 +405,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (resp.codigo !== '200') return;
         const sel = document.getElementById('selectInstructorHorario');
         if (!sel) return;
-        sel.innerHTML = '<option value="">Nombre / Área</option>';
-        resp.listarInstructor.forEach(i => {
+        sel.innerHTML = '<option value="">— Seleccione instructor —</option>';
+        (resp.listarInstructor || []).forEach(item => {
           const opt = document.createElement('option');
-          opt.value = i.idFuncionario;
-          opt.textContent = `${i.nombre}${i.nombreArea ? ' — ' + i.nombreArea : ''}`;
-          opt.dataset.area = i.nombreArea || '';
+          opt.value = item.idFuncionario;
+          opt.textContent = item.nombre;
           sel.appendChild(opt);
         });
-      });
+      })
+      .catch(console.error);
   }
 
   function cargarSedes() {
@@ -432,69 +425,22 @@ document.addEventListener('DOMContentLoaded', function () {
         if (resp.codigo !== '200') return;
         const sel = document.getElementById('selectSedeHorario');
         if (!sel) return;
-        sel.innerHTML = '<option value="">Nombre / Ciudad</option>';
-        (resp.listarSedes || []).forEach(s => {
-          sel.innerHTML += `<option value="${s.idSede}">${s.nombre} — ${s.nombreMunicipio || ''}</option>`;
+        sel.innerHTML = '<option value="">— Seleccione sede —</option>';
+        (resp.listarSedes || []).forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.idSede;
+          opt.textContent = item.nombre;
+          sel.appendChild(opt);
         });
-      });
+      })
+      .catch(console.error);
   }
 
-  function cargarAmbientesPorSede(idSede, selectId) {
-    const sel = document.getElementById(selectId);
-    if (!sel) return;
-    sel.innerHTML = '<option value="">Cargando...</option>';
-    sel.disabled = true;
-
-    const fd = new FormData();
-    fd.append('listarAmbientesPorSede', 'ok');
-    fd.append('idSede', idSede);
-
-    fetch('controlador/ambienteControlador.php', { method: 'POST', body: fd })
-      .then(r => r.json())
-      .then(resp => {
-        sel.innerHTML = '<option value="">—</option>';
-        if (resp.codigo === '200') {
-          (resp.ambientes || []).forEach(a => {
-            const opt = document.createElement('option');
-            opt.value       = a.idAmbiente;
-            opt.textContent = `${a.codigo} — N°${a.numero}`;
-            opt.dataset.area    = a.nombreArea || '';
-            opt.dataset.idarea  = a.idArea || '';
-            sel.appendChild(opt);
-          });
-        }
-        sel.disabled = false;
-      });
-  }
-
-  function cargarAmbientesPorSedeEdit(idSede, idAmbActual) {
-    const sel = document.getElementById('selectAmbienteEdit');
-    if (!sel) return;
-    sel.innerHTML = '<option value="">Cargando...</option>';
-    sel.disabled = true;
-
-    const fd = new FormData();
-    fd.append('listarAmbientesPorSede', 'ok');
-    fd.append('idSede', idSede);
-
-    fetch('controlador/ambienteControlador.php', { method: 'POST', body: fd })
-      .then(r => r.json())
-      .then(resp => {
-        sel.innerHTML = '<option value="">Seleccione...</option>';
-        if (resp.codigo === '200') {
-          (resp.ambientes || []).forEach(a => {
-            sel.innerHTML += `<option value="${a.idAmbiente}">${a.codigo} — N°${a.numero}</option>`;
-          });
-          if (idAmbActual) sel.value = idAmbActual;
-        }
-        sel.disabled = false;
-      });
-  }
-
-  // Fichas completas (se filtran en el cliente por jornada)
-  let todasLasFichas = [];
-
-  function cargarFichas() {
+  /* ============================================================
+     FIX 1: CARGAR TODAS LAS FICHAS EN CACHE
+     Las guardamos para filtrar localmente por sede + jornada
+  ============================================================ */
+  function cargarTodasLasFichas() {
     const fd = new FormData();
     fd.append('listarFicha', 'ok');
     fetch('controlador/fichaControlador.php', { method: 'POST', body: fd })
@@ -502,174 +448,198 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(resp => {
         if (resp.codigo === '200') {
           todasLasFichas = resp.listarFicha || [];
-          renderFichasEnSelect(todasLasFichas);
         }
-      });
-  }
-
-  function renderFichasEnSelect(fichas) {
-    const sel = document.getElementById('selectFichaHorario');
-    if (!sel) return;
-    sel.innerHTML = '<option value="">—</option>';
-    fichas.forEach(f => {
-      const opt = document.createElement('option');
-      opt.value = f.idFicha;
-      opt.textContent = `${f.codigoFicha} — ${f.programa || ''} (${f.jornada})`;
-      opt.dataset.jornada      = f.jornada || '';
-      opt.dataset.tipoprograma = f.tipoFormacion || f.programa || '';
-      sel.appendChild(opt);
-    });
-  }
-
-  function filtrarFichasPorJornada(jornada) {
-    const filtradas = jornada
-      ? todasLasFichas.filter(f => f.jornada === jornada)
-      : todasLasFichas;
-    renderFichasEnSelect(filtradas);
+      })
+      .catch(console.error);
   }
 
   /* ============================================================
-     CALENDARIO — PREVIEW
+     FIX 1: FILTRAR FICHAS POR SEDE + JORNADA
+     La ficha está amarrada a ambiente → ambiente está amarrado a sede
+     Por eso filtramos por idSede que viene en el listado de fichas
   ============================================================ */
+  function filtrarFichasPorSedeYJornada(idSede, jornada) {
+    const sel = document.getElementById('selectFichaHorario');
+    if (!sel) return;
 
-  /** Obtener IDs-BD de los días marcados en el calendario crear */
+    // Filtrar fichas que pertenecen a la sede seleccionada
+    let fichasFiltradas = todasLasFichas.filter(f => String(f.idSede) === String(idSede));
+
+    // Si además hay jornada seleccionada, filtrar también por jornada
+    if (jornada) {
+      fichasFiltradas = fichasFiltradas.filter(f =>
+        f.jornada && f.jornada.toUpperCase() === jornada.toUpperCase()
+      );
+    }
+
+    if (fichasFiltradas.length === 0) {
+      sel.innerHTML = `<option value="">— Sin fichas para esta sede${jornada ? '/jornada' : ''} —</option>`;
+      sel.disabled = true;
+      return;
+    }
+
+    sel.innerHTML = '<option value="">— Seleccione ficha —</option>';
+    fichasFiltradas.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f.idFicha;
+      opt.textContent = `${f.codigoFicha} — ${f.programa}`;
+      opt.dataset.tipoprograma = f.tipoPrograma || f.tipoprograma || '';
+      opt.dataset.jornada = f.jornada || '';
+      sel.appendChild(opt);
+    });
+    sel.disabled = false;
+  }
+
+  /* ============================================================
+     CARGAR AMBIENTES POR SEDE
+  ============================================================ */
+  function cargarAmbientesPorSede(idSede, selectId) {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">Cargando ambientes...</option>';
+    sel.disabled = true;
+
+    const fd = new FormData();
+    fd.append('listarAmbientesPorSede', 'ok');
+    fd.append('idSede', idSede);
+
+    fetch('controlador/ambienteControlador.php', { method: 'POST', body: fd })
+      .then(r => r.json())
+      .then(resp => {
+        if (resp.codigo !== '200') {
+          sel.innerHTML = '<option value="">— Sin ambientes —</option>';
+          return;
+        }
+        sel.innerHTML = '<option value="">— Seleccione ambiente —</option>';
+        (resp.ambientes || []).forEach(amb => {
+          const opt = document.createElement('option');
+          opt.value = amb.idAmbiente;
+          opt.textContent = `${amb.codigo} — No. ${amb.numero}`;
+          opt.dataset.area    = amb.nombreArea || '—';
+          opt.dataset.idarea  = amb.idArea || '';
+          sel.appendChild(opt);
+        });
+        sel.disabled = false;
+      })
+      .catch(console.error);
+  }
+
+  function cargarAmbientesPorSedeEdit(idSede, idAmbActual) {
+    cargarAmbientesPorSede(idSede, 'selectAmbienteEdit');
+    // Después de cargar, seleccionar el actual
+    setTimeout(() => {
+      const sel = document.getElementById('selectAmbienteEdit');
+      if (sel && idAmbActual) sel.value = idAmbActual;
+    }, 600);
+  }
+
+  /* ============================================================
+     HELPERS — CALENDARIO
+  ============================================================ */
   function getDiasSeleccionadosCalendario() {
     const activos = document.querySelectorAll('.dia-header.dia-activo');
     const ids = [];
     activos.forEach(th => {
-      const col  = parseInt(th.dataset.dia);  // 1=Lunes…6=Sábado
-      const idDB = COL_DIA[col];
-      if (idDB) ids.push(idDB);
+      const colIdx = parseInt(th.dataset.dia); // 1=Lun, 2=Mar...
+      const idDia  = COL_DIA[colIdx];
+      if (idDia) ids.push(idDia);
     });
-    // Si el mapa aún no está listo, usar el número de columna como fallback
-    if (ids.length === 0) {
-      activos.forEach(th => ids.push(parseInt(th.dataset.dia)));
-    }
     return ids;
   }
 
-  /** Días del formulario editar */
   function getDiasEditSeleccionados() {
-    return Array.from(
-      document.querySelectorAll('#formEditarHorario .dia-header.dia-activo')
-    ).map(th => {
-      const col  = parseInt(th.dataset.dia);
-      const idDB = COL_DIA[col];
-      return idDB || col;
+    const activos = document.querySelectorAll('.dia-toggle-edit:checked');
+    const ids = [];
+    activos.forEach(cb => ids.push(parseInt(cb.value)));
+    return ids;
+  }
+
+  function marcarDiasEdit(diasIds) {
+    document.querySelectorAll('.dia-toggle-edit').forEach(cb => {
+      cb.checked = diasIds.includes(String(cb.value)) || diasIds.includes(cb.value);
     });
   }
 
-  /** Marcar días en el panel editar (recibe array de nombres o números) */
-  function marcarDiasEdit(diasArr) {
-    // Desmarcar todos
-    document.querySelectorAll('#formEditarHorario .dia-header').forEach(th => {
-      th.classList.remove('dia-activo');
-    });
-    document.querySelectorAll('#formEditarHorario .cal-cell').forEach(td => {
-      td.classList.remove('dia-seleccionado');
-    });
+  function actualizarPreview() {
+    const horaInicio  = document.getElementById('horaInicioHorario')?.value || '';
+    const horaFin     = document.getElementById('horaFinHorario')?.value    || '';
+    const fichaNombre = document.getElementById('selectFichaHorario')?.options[
+      document.getElementById('selectFichaHorario')?.selectedIndex
+    ]?.text || '—';
+    const instructorNombre = document.getElementById('selectInstructorHorario')?.options[
+      document.getElementById('selectInstructorHorario')?.selectedIndex
+    ]?.text || '—';
 
-    diasArr.forEach(d => {
-      const col = parseInt(d);
-      if (!isNaN(col)) {
-        const th = document.querySelector(`#formEditarHorario .dia-header[data-dia="${col}"]`);
-        if (th) th.classList.add('dia-activo');
-        const td = document.querySelector(`#formEditarHorario .cal-cell[data-dia="${col}"]`);
-        if (td) td.classList.add('dia-seleccionado');
-      }
-    });
+    const previewHora = document.getElementById('previewHora');
+    const previewFicha = document.getElementById('previewFicha');
+    const previewInstructor = document.getElementById('previewInstructor');
+
+    if (previewHora && horaInicio) previewHora.textContent = `${horaInicio} - ${horaFin}`;
+    if (previewFicha) previewFicha.textContent = fichaNombre !== '— Seleccione ficha —' ? fichaNombre : '—';
+    if (previewInstructor) previewInstructor.textContent = instructorNombre !== '— Seleccione instructor —' ? instructorNombre : '—';
+
+    actualizarPreviewCalendario();
   }
 
-  /** Actualizar la vista previa dentro de las celdas del calendario */
   function actualizarPreviewCalendario() {
-    const horaInicio  = document.getElementById('horaInicioHorario').value;
-    const horaFin     = document.getElementById('horaFinHorario').value;
-    const fichaOpt    = document.getElementById('selectFichaHorario');
-    const codigoFicha = fichaOpt.options[fichaOpt.selectedIndex]?.textContent?.split('—')[0]?.trim() || '';
-    const instrOpt    = document.getElementById('selectInstructorHorario');
-    const instructor  = instrOpt.options[instrOpt.selectedIndex]?.text?.split('—')[0]?.trim() || '';
+    const activos = document.querySelectorAll('.dia-header.dia-activo');
+    const horaInicio = document.getElementById('horaInicioHorario')?.value || '';
+    const horaFin    = document.getElementById('horaFinHorario')?.value    || '';
+    const fichaTxt   = document.getElementById('selectFichaHorario')?.options[
+      document.getElementById('selectFichaHorario')?.selectedIndex
+    ]?.text || '';
 
-    // Limpiar todas las celdas
-    document.querySelectorAll('#calendarioSemanal .cal-cell-inner').forEach(ci => {
+    document.querySelectorAll('.cal-cell-inner').forEach(ci => {
       ci.innerHTML = '';
     });
 
-    if (!horaInicio || !horaFin) return;
+    if (!horaInicio) return;
 
-    // Pintar en cada día activo
-    document.querySelectorAll('#calendarioSemanal .dia-header.dia-activo').forEach(th => {
-      const col   = th.dataset.dia;
-      const celda = document.querySelector(`#calendarioSemanal .cal-cell[data-dia="${col}"] .cal-cell-inner`);
+    activos.forEach(th => {
+      const dia = parseInt(th.dataset.dia);
+      const celda = document.querySelector(`.cal-cell-inner[data-dia="${dia}"]`);
       if (!celda) return;
-
       celda.innerHTML = `
         <div class="horario-cal-card">
-          <div class="hc-hora"><i class="bi bi-clock-fill" style="font-size:9px"></i> ${horaInicio} – ${horaFin}</div>
-          ${codigoFicha ? `<div class="hc-ficha"><i class="bi bi-journals" style="font-size:9px"></i> ${codigoFicha}</div>` : ''}
-          ${instructor  ? `<div class="hc-instructor"><i class="bi bi-person-fill" style="font-size:9px"></i> ${instructor}</div>` : ''}
+          <div class="hc-hora">${horaInicio} – ${horaFin}</div>
+          <div class="hc-ficha">${fichaTxt.substring(0, 25) || '—'}</div>
         </div>`;
     });
   }
 
-  /** Actualizar panel de chips de preview inferior */
-  function actualizarPreview() {
-    actualizarPreviewCalendario();
-
-    const horaInicio = document.getElementById('horaInicioHorario').value;
-    const horaFin    = document.getElementById('horaFinHorario').value;
-    const fichaOpt   = document.getElementById('selectFichaHorario');
-    const sedeOpt    = document.getElementById('selectSedeHorario');
-    const instrOpt   = document.getElementById('selectInstructorHorario');
-
-    const fichaText  = fichaOpt.options[fichaOpt.selectedIndex]?.textContent  || '';
-    const sedeText   = sedeOpt.options[sedeOpt.selectedIndex]?.textContent    || '';
-    const instrText  = instrOpt.options[instrOpt.selectedIndex]?.textContent  || '';
-    const jornada    = document.getElementById('selectJornadaHorario')?.value || '';
-
-    if (!horaInicio) {
-      document.getElementById('horarioPreviewCard').style.display = 'none';
-      return;
-    }
-
-    document.getElementById('horarioPreviewCard').style.display = 'block';
-    document.getElementById('previewInfo').innerHTML = `
-      ${sedeText    ? chipHtml('bi-geo-alt',        sedeText.split('—')[0].trim())  : ''}
-      ${fichaText   ? chipHtml('bi-journals',        fichaText.split('—')[0].trim()) : ''}
-      ${jornada     ? chipHtml('bi-sun',             jornada)                        : ''}
-      ${horaInicio  ? chipHtml('bi-clock',           horaInicio + ' – ' + (horaFin || '?')) : ''}
-      ${instrText   ? chipHtml('bi-person-badge',    instrText.split('—')[0].trim()) : ''}
-    `;
-  }
-
-  function chipHtml(icon, texto) {
-    return `<span class="preview-chip"><i class="bi ${icon}"></i>${texto}</span>`;
-  }
-
   /* ============================================================
-     HELPERS
+     HELPERS — FORMATOS
   ============================================================ */
+  function inferirJornadaBadge(horaInicio) {
+    if (!horaInicio) return '<span class="badge-jornada">—</span>';
+    const h = parseInt(horaInicio.split(':')[0]);
+    if (h < 12) return '<span class="badge-jornada badge-manana">🌅 Mañana</span>';
+    if (h < 18) return '<span class="badge-jornada badge-tarde">☀️ Tarde</span>';
+    return '<span class="badge-jornada badge-noche">🌙 Noche</span>';
+  }
 
-  function resetFormCrear() {
-    document.getElementById('formCrearHorario')?.reset();
-    // Desmarcar días
-    document.querySelectorAll('#formCrearHorario .dia-header, #calendarioSemanal .dia-header').forEach(th => {
-      th.classList.remove('dia-activo');
-    });
-    document.querySelectorAll('#calendarioSemanal .cal-cell').forEach(td => {
-      td.classList.remove('dia-seleccionado');
-    });
-    document.querySelectorAll('#calendarioSemanal .cal-cell-inner').forEach(ci => {
-      ci.innerHTML = '';
-    });
-    document.getElementById('horarioPreviewCard').style.display = 'none';
-    document.getElementById('previewInfo').innerHTML = '';
-    document.getElementById('inputTipoPrograma').value = '';
+  function abreviarDia(nombre) {
+    const mapa = {
+      'Lunes': 'Lun', 'Martes': 'Mar', 'Miércoles': 'Mié', 'Miercoles': 'Mié',
+      'Jueves': 'Jue', 'Viernes': 'Vie', 'Sábado': 'Sáb', 'Sabado': 'Sáb', 'Domingo': 'Dom'
+    };
+    return mapa[nombre] || nombre.substring(0, 3);
+  }
 
-    // Deshabilitar selects en cascada
-    const selAmb  = document.getElementById('selectAmbienteHorario');
-    const selArea = document.getElementById('selectAreaAmbiente');
-    if (selAmb)  { selAmb.innerHTML  = '<option value="">—</option>'; selAmb.disabled  = true; }
-    if (selArea) { selArea.innerHTML = '<option value="">—</option>'; selArea.disabled = true; }
+  function formatFecha(fecha) {
+    if (!fecha) return '—';
+    try {
+      return new Date(fecha + 'T00:00:00').toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    } catch {
+      return fecha;
+    }
+  }
+
+  function emptyState() {
+    return `<div class="horario-empty">
+      <i class="bi bi-calendar-x"></i>
+      <p>No hay horarios registrados</p>
+    </div>`;
   }
 
   function resetSelect(sel, placeholder) {
@@ -678,37 +648,20 @@ document.addEventListener('DOMContentLoaded', function () {
     sel.disabled  = true;
   }
 
-  function abreviarDia(nombre) {
-    const mapa = {
-      'Lunes':'LUN','Martes':'MAR','Miércoles':'MIÉ','Miercoles':'MIE',
-      'Jueves':'JUE','Viernes':'VIE','Sábado':'SAB','Sabado':'SAB','Domingo':'DOM'
-    };
-    return mapa[nombre] || nombre.substring(0, 3).toUpperCase();
-  }
+  function resetFormCrear() {
+    document.getElementById('formCrearHorario')?.reset();
+    document.querySelectorAll('.dia-header').forEach(th => th.classList.remove('dia-activo'));
+    document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('dia-seleccionado'));
+    document.querySelectorAll('.cal-cell-inner').forEach(ci => ci.innerHTML = '');
 
-  function formatFecha(fecha) {
-    if (!fecha) return '—';
-    try {
-      return new Date(fecha + 'T00:00:00').toLocaleDateString('es-CO', {
-        day: '2-digit', month: 'short', year: 'numeric'
-      });
-    } catch { return fecha; }
-  }
+    const selAmb = document.getElementById('selectAmbienteHorario');
+    resetSelect(selAmb, '— Seleccione sede primero —');
 
-  function inferirJornadaBadge(horaInicio) {
-    if (!horaInicio) return '<span class="badge-jornada">—</span>';
-    const h = parseInt(horaInicio.split(':')[0]);
-    if (h >= 6 && h < 12)  return '<span class="badge-jornada badge-manana">🌅 Mañana</span>';
-    if (h >= 12 && h < 18) return '<span class="badge-jornada badge-tarde">☀️ Tarde</span>';
-    return '<span class="badge-jornada badge-noche">🌙 Noche</span>';
-  }
+    const selFicha = document.getElementById('selectFichaHorario');
+    resetSelect(selFicha, '— Seleccione sede primero —');
 
-  function emptyState() {
-    return `<div class="horario-empty">
-      <i class="bi bi-calendar3"></i>
-      <div style="font-weight:700;color:#1e293b;margin-bottom:4px;">Sin horarios registrados</div>
-      <div style="font-size:12px;">Crea el primer horario con el botón <strong>+ Nuevo Horario</strong></div>
-    </div>`;
+    const inputTipo = document.getElementById('inputTipoPrograma');
+    if (inputTipo) inputTipo.value = '';
   }
 
 });

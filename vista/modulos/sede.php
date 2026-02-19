@@ -387,17 +387,19 @@
           </div>
 
           <!-- Tipo Ambiente -->
-          <div class="col-md-10">
-            <label class="form-label">
-              <i class="bi bi-grid me-1"></i> Tipo de Ambiente
-            </label>
-            <select id="tipoAmbienteAgregar" class="form-select form-control-soft">
-              <option value="">Seleccione...</option>
-              <option value="Aula">Taller</option>
-              <option value="Laboratorio">Ambiente Formación</option>
-              <option value="Taller">Bilinguismo</option>
-            </select>
-          </div>
+         <div class="mb-3">
+          <label class="form-label fw-bold" for="tipoAmbienteAgregar">
+            <i class="bi bi-tag me-1"></i> Tipo de Ambiente <span class="text-danger">*</span>
+          </label>
+          <select id="tipoAmbienteAgregar" name="tipoAmbiente"
+                  class="form-control form-control-soft" required>
+            <option value="" disabled selected>— Seleccione tipo —</option>
+            <option value="Formacion">Formación</option>
+            <option value="Bilinguismo">Bilingüismo</option>
+            <option value="Taller">Taller</option>
+          </select>
+          <div class="invalid-feedback">Seleccione un tipo de ambiente.</div>
+        </div>
 
           <!-- Estado -->
           <div class="col-md-10">
@@ -509,7 +511,7 @@
           <label class="form-label">
             <i class="bi bi-tag me-1"></i> Área
           </label>
-        
+
           <div class="select-wrapper">
             <select class="form-select form-select-lg" id="selectAreasEdit" required>
               <option value="">Cargando áreas...</option>
@@ -549,17 +551,24 @@
           </div>
 
           <!-- Tipo Ambiente -->
-          <div class="col-md-10">
-            <label class="form-label">
-              <i class="bi bi-grid me-1"></i> Tipo de Ambiente
-            </label>
-            <select id="tipoAmbienteEdit" class="form-select form-control-soft">
-              <option value="">Seleccione...</option>
-              <option value="Aula">Taller</option>
-              <option value="Laboratorio">Ambiente Formación</option>
-              <option value="Taller">Bilinguismo</option>
-            </select>
-          </div>
+          <div class="mb-3">
+          <label class="form-label fw-bold" for="tipoAmbienteEdit">
+            <i class="bi bi-tag me-1"></i> Tipo de Ambiente <span class="text-danger">*</span>
+          </label>
+          <select id="tipoAmbienteEdit" name="tipoAmbiente"
+                  class="form-control form-control-soft" required>
+            <option value="" disabled>— Seleccione tipo —</option>
+            <option value="Formacion">Formación</option>
+            <option value="Bilinguismo">Bilingüismo</option>
+            <option value="Taller">Taller</option>
+          </select>
+          <div class="invalid-feedback">Seleccione un tipo de ambiente.</div>
+        </div>
+
+
+
+
+
 
           <!-- Estado -->
           <div class="col-md-10">

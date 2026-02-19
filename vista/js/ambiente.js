@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
 
-  
+
 
   //BOTÓN: Nuevo Ambiente 
   $(document).on("click", "#btnNuevoAmbiente", function (e) {
@@ -206,30 +206,51 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
 
+  // ──────────────────────────────────────────────
+  // HELPER: normalizar tipoAmbiente
+  // Acepta cualquier capitalización y retorna el
+  // valor exacto que coincide con las <option>
+  // ──────────────────────────────────────────────
+  function normalizarTipoAmbiente(valor) {
+    if (!valor) return '';
+    const v = valor.toString().trim().toLowerCase();
+    if (v === 'formacion' || v === 'formación') return 'Formacion';
+    if (v === 'bilinguismo' || v === 'bilingüismo') return 'Bilinguismo';
+    if (v === 'taller') return 'Taller';
+    return ''; // si no coincide, deja vacío (evita valores random)
+  }
+
+
+
 
 
   //  CLICK EDITAR AMBIENTE 
-  $(document).on("click", ".btnEditarAmbiente", function (e) {
-  e.preventDefault();
-  e.stopPropagation();
+ $(document).off('click', '.btnEditarAmbiente'); // remover listener anterior
 
-  document.getElementById("idAmbienteEdit").value= $(this).data("id");
-  document.getElementById("codigoEdit").value= $(this).data("codigo");
-  document.getElementById("numeroEdit").value= $(this).data("numero");
-  document.getElementById("capacidadEdit").value= $(this).data("capacidad");
-  document.getElementById("bloqueEdit").value= $(this).data("bloque");
-  document.getElementById("estadoEdit").value= $(this).data("estado");
-  document.getElementById("descripcionEdit").value= $(this).data("descripcion") || "";
-  document.getElementById("tipoAmbienteEdit").value= $(this).data("tipoambiente") || "";
+  $(document).on('click', '.btnEditarAmbiente', function (e) {
+    e.preventDefault();
+    e.stopPropagation();
 
-  
-  const idAreaActual = $(this).data("idarea");
-  cargarAreasEdit(idAreaActual);
+    document.getElementById('idAmbienteEdit').value    = $(this).data('id');
+    document.getElementById('codigoEdit').value        = $(this).data('codigo');
+    document.getElementById('numeroEdit').value        = $(this).data('numero');
+    document.getElementById('capacidadEdit').value     = $(this).data('capacidad');
+    document.getElementById('bloqueEdit').value        = $(this).data('bloque');
+    document.getElementById('estadoEdit').value        = $(this).data('estado');
+    document.getElementById('descripcionEdit').value   = $(this).data('descripcion') || '';
 
-  $("#panelAmbientesSede").hide();
-  $("#panelFormularioEditarAmbienteSede").show();
-  $("#formEditarAmbientePorSede").removeClass("was-validated");
-});
+    // FIX 4: normalizar tipoAmbiente antes de setearlo
+    const tipoRaw = $(this).data('tipoambiente') || '';
+    const tipoNormalizado = normalizarTipoAmbiente(tipoRaw);
+    document.getElementById('tipoAmbienteEdit').value = tipoNormalizado;
+
+    const idAreaActual = $(this).data('idarea');
+    cargarAreasEdit(idAreaActual);
+
+    $('#panelAmbientesSede').hide();
+    $('#panelFormularioEditarAmbienteSede').show();
+    $('#formEditarAmbientePorSede').removeClass('was-validated');
+  });
 
 
 

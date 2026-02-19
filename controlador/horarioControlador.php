@@ -46,10 +46,7 @@ if (isset($_POST["listarHorarios"])) {
 
 // ========== CREAR HORARIO ==========
 if (isset($_POST["crearHorario"])) {
-    // Procesar días como array
     $dias = isset($_POST['dias']) ? $_POST['dias'] : [];
-    
-    // Si viene como string JSON, decodificar
     if (is_string($dias)) {
         $dias = json_decode($dias, true);
     }

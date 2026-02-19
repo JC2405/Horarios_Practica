@@ -110,21 +110,48 @@ class horarioModelo {
         $mensaje = array();
         try {
             $objRespuesta = Conexion::Conectar()->prepare(
-                "SELECT h.idHorario, h.hora_inicioClase, h.hora_finClase,
-                        f.nombre as instructorNombre, h.idFuncionario, h.idAmbiente, h.idFicha,
-                        h.fecha_inicioHorario, h.fecha_finHorario,
-                        a.codigo as ambienteNumero, a.ubicacion as ambienteDescripcion,
-                        fi.codigoFicha,
-                        GROUP_CONCAT(d.idDia) as dias,
-                        GROUP_CONCAT(d.diasSemanales) as diasNombres
-                 FROM horario h
-                 LEFT JOIN funcionario f ON h.idFuncionario = f.idFuncionario
-                 LEFT JOIN ambiente a ON h.idAmbiente = a.idAmbiente
-                 LEFT JOIN ficha fi ON h.idFicha = fi.idFicha
-                 LEFT JOIN horariodia hd ON h.idHorario = hd.id_horarios
-                 LEFT JOIN dia d ON hd.id_dias = d.idDia
-                 GROUP BY h.idHorario
-                 ORDER BY h.hora_inicioClase, f.nombre"
+                " SELECT
+                    h.idHorario,
+                    h.hora_inicioClase,
+                    h.hora_finClase,
+                    h.fecha_inicioHorario,
+                    h.fecha_finHorario,
+                    h.idFuncionario,
+                    h.idAmbiente,
+                    h.idFicha,
+
+                    -- Instructor
+                    CONCAT(func.nombre) AS instructorNombre,
+
+                    -- Ambiente → Área → Sede
+                    a.codigo            AS ambienteCodigo,
+                    s.idSede,
+                    s.nombre            AS sedeNombre,
+                    ar.nombreArea       AS areaNombre,
+
+                    -- Ficha → Programa → Tipo Programa
+                    fi.codigoFicha,
+                    fi.jornada,
+                    p.nombre            AS programaNombre,
+                    tp.tipoFormacion    AS tipoPrograma,
+
+                    -- Días (IDs y nombres)
+                    GROUP_CONCAT(DISTINCT d.idDia        ORDER BY d.idDia SEPARATOR ',') AS dias,
+                    GROUP_CONCAT(DISTINCT d.diasSemanales ORDER BY d.idDia SEPARATOR ',') AS diasNombres
+
+                FROM horario h
+                LEFT JOIN funcionario  func ON h.idFuncionario   = func.idFuncionario
+                LEFT JOIN ambiente     a    ON h.idAmbiente      = a.idAmbiente
+                LEFT JOIN sede         s    ON a.idSede          = s.idSede
+                LEFT JOIN area         ar   ON a.idArea          = ar.idArea
+                LEFT JOIN ficha        fi   ON h.idFicha         = fi.idFicha
+                LEFT JOIN programa     p    ON fi.idPrograma     = p.idPrograma
+                LEFT JOIN tipoprograma tp   ON p.idTipoFormacion = tp.idTipoPrograma
+                LEFT JOIN horariodia   hd   ON h.idHorario       = hd.id_horarios
+                LEFT JOIN dia          d    ON hd.id_dias        = d.idDia
+
+                GROUP  BY h.idHorario
+                ORDER  BY s.nombre, h.hora_inicioClase, func.nombre"
             );
             $objRespuesta->execute();
             $listarHorarios = $objRespuesta->fetchAll(PDO::FETCH_ASSOC);

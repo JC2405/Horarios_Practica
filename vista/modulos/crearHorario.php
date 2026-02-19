@@ -1,396 +1,306 @@
 <?php
-// vista/modulos/crearHorario.php
+/**
+ * crearHorario.php
+ *
+ * Layout 3×2 según imagen:
+ *  Fila 1: [Sede]      [Ficha (Jornada · Código · Tipo Prog)]   [Hora inicio/fin]
+ *  Fila 2: [Ambiente]  [Instructor]                              [Fecha inicio/fin]
+ *
+ * - Ambiente: SIN selector de área (se eliminó)
+ * - Headers de listar y crear con diseño mejorado
+ */
 ?>
-
-<link href="vista/css/styles.css" rel="stylesheet">
-<link href="vista/css/tablaCompacta.css" rel="stylesheet">
-<link href="vista/css/horario.css" rel="stylesheet">
+<link rel="stylesheet" href="vista/css/horario.css">
 
 <div class="horario-wrap">
 
-  <!-- ============================================================
-       PANEL PRINCIPAL - TABLA DE HORARIOS CREADOS
-  ============================================================ -->
+  <!-- ══════════════════════════════════════════════════
+       PANEL: TABLA LISTADO
+  ══════════════════════════════════════════════════ -->
   <div id="panelTablaHorario">
 
-    <div class="header-section">
-      <div class="header-content">
-        <div class="title-wrapper">
-          <div class="title-icon">
-            <i class="bi bi-calendar3-week"></i>
-          </div>
-          <div>
-            <h2 class="section-title">Horarios</h2>
-            <p class="section-subtitle">Gestiona los horarios de clase</p>
-          </div>
+    <!-- HEADER LISTADO -->
+    <div class="ph-header">
+      <div class="ph-header-left">
+        <div class="ph-icon"><i class="bi bi-calendar-week-fill"></i></div>
+        <div>
+          <h1 class="ph-title">Gestión de Horarios</h1>
+          <p class="ph-subtitle">Administra los horarios de formación por sede</p>
         </div>
       </div>
-      <button id="btnNuevoHorario" class="btn-add" type="button">
-        <i class="bi bi-plus-lg"></i>
-        Nuevo Horario
+      <button id="btnNuevoHorario" class="ph-btn-add">
+        <i class="bi bi-plus-circle-fill"></i> Nuevo Horario
       </button>
     </div>
 
-    <!-- TABLA DE HORARIOS REGISTRADOS -->
-    <div class="table-wrapper">
-      <table id="tablaHorarios" class="ultra-modern-table">
+    <!-- TABLA 7 columnas: Sede | Área | Ficha | Jornada | Tipo Programa | Instructor | Acciones -->
+    <div class="ph-table-card">
+      <table id="tablaHorarios" class="table table-hover w-100">
         <thead>
           <tr>
-            <th><div class="th-wrap"><i class="bi bi-geo-alt"></i><span>Sede</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-door-open"></i><span>Cód. Ambiente</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-diagram-3"></i><span>Área</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-sun"></i><span>Jornada</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-file-earmark-text"></i><span>Cód. Ficha</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-mortarboard"></i><span>Tipo Programa</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-person-badge"></i><span>Instructor</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-clock"></i><span>Hora Inicio</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-clock-history"></i><span>Hora Fin</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-calendar-event"></i><span>F. Inicio</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-calendar-x"></i><span>F. Fin</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-calendar-week"></i><span>Días</span></div></th>
-            <th><div class="th-wrap"><i class="bi bi-sliders"></i><span>Acciones</span></div></th>
+            <th><i class="bi bi-building me-1"></i>Sede</th>
+            <th><i class="bi bi-diagram-3 me-1"></i>Área</th>
+            <th><i class="bi bi-file-earmark-text me-1"></i>Ficha</th>
+            <th><i class="bi bi-sun me-1"></i>Jornada</th>
+            <th><i class="bi bi-mortarboard me-1"></i>Tipo Programa</th>
+            <th><i class="bi bi-person-fill me-1"></i>Instructor</th>
+            <th><i class="bi bi-gear-fill me-1"></i>Acciones</th>
           </tr>
         </thead>
-        <tbody id="tbodyHorarios">
-          <tr>
-            <td colspan="13" class="text-center py-4 text-muted" style="font-size:13px;">
-              <i class="bi bi-calendar3" style="font-size:1.8rem;display:block;margin-bottom:8px;opacity:.3"></i>
-              Cargando horarios...
-            </td>
-          </tr>
-        </tbody>
+        <tbody id="tbodyHorarios"></tbody>
       </table>
     </div>
+
   </div><!-- /panelTablaHorario -->
 
 
-  <!-- ============================================================
-       PANEL CREAR HORARIO - Layout según mockup
-  ============================================================ -->
+  <!-- ══════════════════════════════════════════════════
+       PANEL: CREAR HORARIO
+  ══════════════════════════════════════════════════ -->
   <div id="panelFormularioHorario" style="display:none;">
 
-    <div class="form-card">
-
-      <!-- Header -->
-      <div class="form-card-header">
-        <button id="btnRegresarTablaHorario" type="button" class="btn-back">
-          <i class="bi bi-arrow-left"></i> Regresar
-        </button>
-        <div class="form-title">
-          <div class="form-title-icon">
-            <i class="bi bi-calendar-plus"></i>
-          </div>
-          <div>
-            <h2 class="form-title-text">Crear Horario</h2>
-            <p class="form-subtitle-text">Configura los datos del nuevo horario</p>
-          </div>
+    <!-- HEADER CREAR -->
+    <div class="ph-crear-header">
+      <button type="button" id="btnRegresarTablaHorario" class="ph-btn-back">
+        <i class="bi bi-arrow-left"></i> Regresar
+      </button>
+      <div class="ph-crear-title">
+        <div class="ph-icon ph-icon-sm"><i class="bi bi-calendar-plus-fill"></i></div>
+        <div>
+          <h2 class="ph-title">Nuevo Horario</h2>
+          <p class="ph-subtitle">Configura los datos del horario y selecciona los días</p>
         </div>
       </div>
+    </div>
 
+    <div class="ph-form-card">
       <form id="formCrearHorario" novalidate>
 
-        <!-- =====================================================
-             FILA SUPERIOR DE FILTROS / SELECTORES
-             Orden: SEDE | AMBIENTE(Codi+Area) | FICHA(Jornada+CodFicha+TipProgra) | INSTRUCTORES | HORA INICIO/FIN | FECHA INICIO/FIN
-        ====================================================== -->
-        <div class="selector-bar">
+        <!-- ═══════════ GRID 3×2 ═══════════ -->
+        <div class="ph-grid">
 
-          <!-- 1. SEDE -->
-          <div class="selector-group selector-sede">
-            <div class="selector-label">
-              <i class="bi bi-geo-alt-fill"></i> SEDE
-            </div>
-            <div class="selector-inner">
-              <select id="selectSedeHorario" class="sel-input sel-full" required>
-                <option value="">Nombre / Ciudad</option>
-              </select>
-            </div>
+          <!-- ── FILA 1 ── -->
+
+          <!-- 1/A  SEDE -->
+          <div class="ph-block">
+            <div class="ph-block-label"><i class="bi bi-building"></i> SEDE</div>
+            <select id="selectSedeHorario" class="ph-sel" required>
+              <option value="">— Seleccione sede —</option>
+            </select>
           </div>
 
-          <!-- 2. AMBIENTE (Codi + Area) -->
-          <div class="selector-group selector-ambiente">
-            <div class="selector-label">
-              <i class="bi bi-door-open"></i> AMBIENTE
-            </div>
-            <div class="selector-inner sel-row">
-              <div class="sel-col">
-                <span class="sel-sublabel">CODI</span>
-                <select id="selectAmbienteHorario" class="sel-input" required>
-                  <option value="">—</option>
+          <!-- 1/B  FICHA (span 1 columna extra en el grid para que sea más ancha) -->
+          <div class="ph-block ph-block-ficha">
+            <div class="ph-block-label"><i class="bi bi-file-earmark-person"></i> FICHA</div>
+            <div class="ph-ficha-row">
+              <div class="ph-ficha-col">
+                <span class="ph-sublabel">JORNADA</span>
+                <select id="selectJornadaHorario" class="ph-sel" required>
+                  <option value="">— Jornada —</option>
+                  <option value="MAÑANA">🌅 Mañana</option>
+                  <option value="TARDE">☀️ Tarde</option>
+                  <option value="NOCHE">🌙 Noche</option>
+                  <option value="SABADO">📅 Sábado</option>
                 </select>
               </div>
-              <div class="sel-col">
-                <span class="sel-sublabel">ÁREA</span>
-                <select id="selectAreaAmbiente" class="sel-input" disabled>
-                  <option value="">—</option>
+              <div class="ph-ficha-col ph-ficha-grow">
+                <span class="ph-sublabel">CÓDIGO FICHA</span>
+                <select id="selectFichaHorario" class="ph-sel" disabled required>
+                  <option value="">— Seleccione sede primero —</option>
                 </select>
               </div>
-            </div>
-          </div>
-
-          <!-- 3. FICHA (Jornada + CodFicha + TipPrograma) -->
-          <div class="selector-group selector-ficha">
-            <div class="selector-label">
-              <i class="bi bi-journals"></i> FICHA
-            </div>
-            <div class="selector-inner sel-row">
-              <div class="sel-col">
-                <span class="sel-sublabel">JORNADA</span>
-                <select id="selectJornadaHorario" class="sel-input" required>
-                  <option value="">—</option>
-                  <option value="MAÑANA">Mañana</option>
-                  <option value="TARDE">Tarde</option>
-                  <option value="NOCHE">Noche</option>
-                </select>
-              </div>
-              <div class="sel-col">
-                <span class="sel-sublabel">COD.FICHA</span>
-                <select id="selectFichaHorario" class="sel-input" required>
-                  <option value="">—</option>
-                </select>
-              </div>
-              <div class="sel-col">
-                <span class="sel-sublabel">TIP.PROGRA</span>
-                <input id="inputTipoPrograma" class="sel-input" type="text" readonly placeholder="—">
+              <div class="ph-ficha-col">
+                <span class="ph-sublabel">TIPO PROGRAMA</span>
+                <input id="inputTipoPrograma" class="ph-sel" readonly placeholder="Auto">
               </div>
             </div>
           </div>
 
-          <!-- 4. INSTRUCTORES -->
-          <div class="selector-group selector-instructor">
-            <div class="selector-label">
-              <i class="bi bi-person-badge"></i> INSTRUCTORES
-            </div>
-            <div class="selector-inner">
-              <select id="selectInstructorHorario" class="sel-input sel-full" required>
-                <option value="">Nombre / Área</option>
-              </select>
-              <div class="instructor-hint">
-                <span>IGUAL ÁREA</span>
-                <span>AMBIENTE</span>
+          <!-- 1/C  HORA INICIO / FIN -->
+          <div class="ph-block">
+            <div class="ph-block-label"><i class="bi bi-clock"></i> HORA INICIO / FIN</div>
+            <div class="ph-stack">
+              <div class="ph-stack-item">
+                <span class="ph-sublabel">INICIO</span>
+                <input type="time" id="horaInicioHorario" class="ph-sel" required>
+              </div>
+              <div class="ph-stack-item">
+                <span class="ph-sublabel">FIN</span>
+                <input type="time" id="horaFinHorario" class="ph-sel" required>
               </div>
             </div>
           </div>
 
-          <!-- 5. HORA INICIO / FIN -->
-          <div class="selector-group selector-horas">
-            <div class="hora-field">
-              <div class="selector-label"><i class="bi bi-clock"></i> HORA INICIO</div>
-              <input type="time" id="horaInicioHorario" class="sel-input hora-input" required>
-            </div>
-            <div class="hora-field">
-              <div class="selector-label"><i class="bi bi-clock-history"></i> HORA FIN</div>
-              <input type="time" id="horaFinHorario" class="sel-input hora-input" required>
+          <!-- ── FILA 2 ── -->
+
+          <!-- 2/A  AMBIENTE (SIN área) -->
+          <div class="ph-block">
+            <div class="ph-block-label"><i class="bi bi-door-open"></i> AMBIENTE</div>
+            <select id="selectAmbienteHorario" class="ph-sel" disabled required>
+              <option value="">— Seleccione sede primero —</option>
+            </select>
+          </div>
+
+          <!-- 2/B  INSTRUCTOR -->
+          <div class="ph-block ph-block-ficha">
+            <div class="ph-block-label"><i class="bi bi-person-badge"></i> INSTRUCTOR</div>
+            <select id="selectInstructorHorario" class="ph-sel" required>
+              <option value="">— Seleccione instructor —</option>
+            </select>
+          </div>
+
+          <!-- 2/C  FECHA INICIO / FIN -->
+          <div class="ph-block">
+            <div class="ph-block-label"><i class="bi bi-calendar-range"></i> FECHA INICIO / FIN</div>
+            <div class="ph-stack">
+              <div class="ph-stack-item">
+                <span class="ph-sublabel">INICIO</span>
+                <input type="date" id="fechaInicioHorario" class="ph-sel">
+              </div>
+              <div class="ph-stack-item">
+                <span class="ph-sublabel">FIN</span>
+                <input type="date" id="fechaFinHorario" class="ph-sel">
+              </div>
             </div>
           </div>
 
-          <!-- 6. FECHA INICIO / FIN -->
-          <div class="selector-group selector-fechas">
-            <div class="hora-field">
-              <div class="selector-label"><i class="bi bi-calendar-event"></i> FECHA INICIO</div>
-              <input type="date" id="fechaInicioHorario" class="sel-input hora-input">
-            </div>
-            <div class="hora-field">
-              <div class="selector-label"><i class="bi bi-calendar-x"></i> FECHA FIN</div>
-              <input type="date" id="fechaFinHorario" class="sel-input hora-input">
-            </div>
+        </div><!-- /ph-grid -->
+
+
+        <!-- ═══════════ CALENDARIO SEMANAL ═══════════ -->
+        <div class="ph-calendario">
+          <div class="ph-cal-header">
+            <span class="ph-cal-title"><i class="bi bi-grid-3x2-gap"></i> Días de la semana</span>
+            <span class="ph-cal-hint">Haz clic en un día para activarlo</span>
           </div>
-
-        </div><!-- /selector-bar -->
-
-
-        <!-- =====================================================
-             CALENDARIO SEMANAL
-        ====================================================== -->
-        <div class="calendario-wrapper">
-          <div class="calendario-header-bar">
-            <span class="cal-title"><i class="bi bi-calendar3-week"></i> Días de clase — selecciona los días en los que aplica este horario</span>
-            <span class="cal-hint">Haz clic en una celda para marcarla</span>
-          </div>
-
-          <div class="calendario-table-wrap">
-            <table class="calendario-table" id="calendarioSemanal">
+          <div class="ph-cal-scroll">
+            <table class="ph-cal-table">
               <thead>
                 <tr>
-                  <th data-dia="1" class="dia-header">
+                  <?php
+                  $dias  = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+                  $abrev = ['Lun',  'Mar',   'Mié',      'Jue',   'Vie',    'Sáb'];
+                  foreach ($dias as $i => $dia): ?>
+                  <th class="dia-header" data-dia="<?= $i+1 ?>">
                     <div class="dia-header-inner">
-                      <span class="dia-nombre">Lunes</span>
-                      <span class="dia-abrev">LUN</span>
-                      <input type="checkbox" class="dia-toggle" data-dia="1" id="chkLunes">
+                      <span class="dia-nombre"><?= $dia ?></span>
+                      <span class="dia-abrev"><?= $abrev[$i] ?></span>
                     </div>
                   </th>
-                  <th data-dia="2" class="dia-header">
-                    <div class="dia-header-inner">
-                      <span class="dia-nombre">Martes</span>
-                      <span class="dia-abrev">MAR</span>
-                      <input type="checkbox" class="dia-toggle" data-dia="2" id="chkMartes">
-                    </div>
-                  </th>
-                  <th data-dia="3" class="dia-header">
-                    <div class="dia-header-inner">
-                      <span class="dia-nombre">Miércoles</span>
-                      <span class="dia-abrev">MIÉ</span>
-                      <input type="checkbox" class="dia-toggle" data-dia="3" id="chkMiercoles">
-                    </div>
-                  </th>
-                  <th data-dia="4" class="dia-header">
-                    <div class="dia-header-inner">
-                      <span class="dia-nombre">Jueves</span>
-                      <span class="dia-abrev">JUE</span>
-                      <input type="checkbox" class="dia-toggle" data-dia="4" id="chkJueves">
-                    </div>
-                  </th>
-                  <th data-dia="5" class="dia-header">
-                    <div class="dia-header-inner">
-                      <span class="dia-nombre">Viernes</span>
-                      <span class="dia-abrev">VIE</span>
-                      <input type="checkbox" class="dia-toggle" data-dia="5" id="chkViernes">
-                    </div>
-                  </th>
-                  <th data-dia="6" class="dia-header">
-                    <div class="dia-header-inner">
-                      <span class="dia-nombre">Sábado</span>
-                      <span class="dia-abrev">SAB</span>
-                      <input type="checkbox" class="dia-toggle" data-dia="6" id="chkSabado">
-                    </div>
-                  </th>
+                  <?php endforeach; ?>
                 </tr>
               </thead>
               <tbody>
-                <tr class="cal-preview-row">
-                  <td class="cal-cell" data-dia="1"><div class="cal-cell-inner" id="preview-lunes"></div></td>
-                  <td class="cal-cell" data-dia="2"><div class="cal-cell-inner" id="preview-martes"></div></td>
-                  <td class="cal-cell" data-dia="3"><div class="cal-cell-inner" id="preview-miercoles"></div></td>
-                  <td class="cal-cell" data-dia="4"><div class="cal-cell-inner" id="preview-jueves"></div></td>
-                  <td class="cal-cell" data-dia="5"><div class="cal-cell-inner" id="preview-viernes"></div></td>
-                  <td class="cal-cell" data-dia="6"><div class="cal-cell-inner" id="preview-sabado"></div></td>
+                <tr>
+                  <?php for ($i = 1; $i <= 6; $i++): ?>
+                  <td class="cal-cell" data-dia="<?= $i ?>">
+                    <div class="cal-cell-inner" data-dia="<?= $i ?>"></div>
+                  </td>
+                  <?php endfor; ?>
                 </tr>
               </tbody>
             </table>
           </div>
-
-          <!-- Preview del horario en el calendario -->
-          <div class="horario-preview-card" id="horarioPreviewCard" style="display:none;">
-            <div class="preview-badge"><i class="bi bi-eye"></i> Vista previa del horario</div>
-            <div class="preview-info" id="previewInfo"></div>
+          <div class="ph-preview">
+            <div class="ph-preview-label"><i class="bi bi-eye"></i> Vista previa</div>
+            <div class="ph-preview-chips">
+              <span class="ph-chip"><i class="bi bi-clock"></i> <span id="previewHora">—</span></span>
+              <span class="ph-chip"><i class="bi bi-file-text"></i> <span id="previewFicha">—</span></span>
+              <span class="ph-chip"><i class="bi bi-person"></i> <span id="previewInstructor">—</span></span>
+            </div>
           </div>
-        </div><!-- /calendario-wrapper -->
+        </div>
 
-
-        <!-- BOTONES ACCIÓN -->
-        <div class="form-actions">
+        <!-- Acciones -->
+        <div class="ph-actions">
           <button type="button" id="btnCancelarHorario" class="btn btn-secondary">
             <i class="bi bi-x-lg"></i> Cancelar
           </button>
-          <button type="submit" class="btn btn-primary" id="btnGuardarHorario">
+          <button type="submit" class="btn btn-primary">
             <i class="bi bi-check-lg"></i> Guardar Horario
           </button>
         </div>
 
       </form>
-    </div>
+    </div><!-- /ph-form-card -->
   </div><!-- /panelFormularioHorario -->
 
 
-  <!-- ============================================================
-       PANEL EDITAR HORARIO
-  ============================================================ -->
+  <!-- ══════════════════════════════════════════════════
+       PANEL: EDITAR HORARIO
+  ══════════════════════════════════════════════════ -->
   <div id="panelEditarHorario" style="display:none;">
-    <div class="form-card">
 
-      <div class="form-card-header">
-        <button id="btnRegresarTablaHorarioEdit" type="button" class="btn-back">
-          <i class="bi bi-arrow-left"></i> Regresar
-        </button>
-        <div class="form-title">
-          <div class="form-title-icon"><i class="bi bi-calendar-check"></i></div>
-          <div>
-            <h2 class="form-title-text">Editar Horario</h2>
-            <p class="form-subtitle-text">Modifica el horario seleccionado</p>
-          </div>
+    <div class="ph-crear-header">
+      <button type="button" id="btnRegresarTablaHorarioEdit" class="ph-btn-back">
+        <i class="bi bi-arrow-left"></i> Regresar
+      </button>
+      <div class="ph-crear-title">
+        <div class="ph-icon ph-icon-sm"><i class="bi bi-calendar-check-fill"></i></div>
+        <div>
+          <h2 class="ph-title">Editar Horario</h2>
+          <p class="ph-subtitle">Modifica los datos del horario seleccionado</p>
         </div>
       </div>
+    </div>
 
+    <div class="ph-form-card">
       <form id="formEditarHorario" novalidate>
         <input type="hidden" id="idHorarioEdit">
 
-        <div class="selector-bar">
-
-          <!-- AMBIENTE -->
-          <div class="selector-group selector-ambiente">
-            <div class="selector-label"><i class="bi bi-door-open"></i> AMBIENTE</div>
-            <div class="selector-inner">
-              <select id="selectAmbienteEdit" class="sel-input sel-full" required>
-                <option value="">Seleccione...</option>
-              </select>
-            </div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-bold">Ambiente</label>
+            <select id="selectAmbienteEdit" class="form-control" required>
+              <option value="">— Seleccione —</option>
+            </select>
           </div>
-
-          <!-- HORAS -->
-          <div class="selector-group selector-horas">
-            <div class="hora-field">
-              <div class="selector-label"><i class="bi bi-clock"></i> HORA INICIO</div>
-              <input type="time" id="horaInicioEdit" class="sel-input hora-input" required>
-            </div>
-            <div class="hora-field">
-              <div class="selector-label"><i class="bi bi-clock-history"></i> HORA FIN</div>
-              <input type="time" id="horaFinEdit" class="sel-input hora-input" required>
-            </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Hora inicio</label>
+            <input type="time" id="horaInicioEdit" class="form-control" required>
           </div>
-
-          <!-- FECHAS -->
-          <div class="selector-group selector-fechas">
-            <div class="hora-field">
-              <div class="selector-label"><i class="bi bi-calendar-event"></i> FECHA INICIO</div>
-              <input type="date" id="fechaInicioEdit" class="sel-input hora-input">
-            </div>
-            <div class="hora-field">
-              <div class="selector-label"><i class="bi bi-calendar-x"></i> FECHA FIN</div>
-              <input type="date" id="fechaFinEdit" class="sel-input hora-input">
-            </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Hora fin</label>
+            <input type="time" id="horaFinEdit" class="form-control" required>
           </div>
-        </div>
-
-        <!-- Días edit -->
-        <div class="calendario-wrapper" style="margin-top:16px;">
-          <div class="calendario-table-wrap">
-            <table class="calendario-table">
-              <thead>
-                <tr>
-                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Lunes</span><input type="checkbox" class="dia-toggle-edit" data-dia="1"></div></th>
-                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Martes</span><input type="checkbox" class="dia-toggle-edit" data-dia="2"></div></th>
-                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Miércoles</span><input type="checkbox" class="dia-toggle-edit" data-dia="3"></div></th>
-                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Jueves</span><input type="checkbox" class="dia-toggle-edit" data-dia="4"></div></th>
-                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Viernes</span><input type="checkbox" class="dia-toggle-edit" data-dia="5"></div></th>
-                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Sábado</span><input type="checkbox" class="dia-toggle-edit" data-dia="6"></div></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr class="cal-preview-row">
-                  <td class="cal-cell" data-dia="1"><div class="cal-cell-inner"></div></td>
-                  <td class="cal-cell" data-dia="2"><div class="cal-cell-inner"></div></td>
-                  <td class="cal-cell" data-dia="3"><div class="cal-cell-inner"></div></td>
-                  <td class="cal-cell" data-dia="4"><div class="cal-cell-inner"></div></td>
-                  <td class="cal-cell" data-dia="5"><div class="cal-cell-inner"></div></td>
-                  <td class="cal-cell" data-dia="6"><div class="cal-cell-inner"></div></td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Fecha inicio</label>
+            <input type="date" id="fechaInicioEdit" class="form-control">
+          </div>
+          <div class="col-md-3">
+            <label class="form-label fw-bold">Fecha fin</label>
+            <input type="date" id="fechaFinEdit" class="form-control">
+          </div>
+          <div class="col-12">
+            <label class="form-label fw-bold">Días de clase</label>
+            <div class="ph-dias-group">
+              <?php foreach ([
+                ['Lunes',1],['Martes',2],['Miércoles',3],
+                ['Jueves',4],['Viernes',5],['Sábado',6]
+              ] as [$label, $id]): ?>
+              <label class="ph-dia-chip">
+                <input type="checkbox" class="dia-toggle-edit" value="<?= $id ?>">
+                <span><?= $label ?></span>
+              </label>
+              <?php endforeach; ?>
+            </div>
           </div>
         </div>
 
-        <div class="form-actions">
+        <div class="ph-actions">
           <button type="button" id="btnCancelarEditarHorario" class="btn btn-secondary">
             <i class="bi bi-x-lg"></i> Cancelar
           </button>
           <button type="submit" class="btn btn-primary">
-            <i class="bi bi-check-lg"></i> Guardar Cambios
+            <i class="bi bi-check-lg"></i> Actualizar
           </button>
         </div>
       </form>
     </div>
-  </div>
+
+  </div><!-- /panelEditarHorario -->
 
 </div><!-- /horario-wrap -->
 
+<script src="vista/js/cl_ambiente.js"></script>
 <script src="vista/js/horario.js"></script>

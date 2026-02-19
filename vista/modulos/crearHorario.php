@@ -1,809 +1,396 @@
-<div class="container-fluid py-4">
-    <!-- Panel de selección de ficha y configuración -->
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="card shadow-sm">
-                <div class="card-header card-header-custom text-white">
-                    <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Configuración del Horario</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row align-items-end">
-                        <!-- Información de la ficha -->
-                        <div class="col-md-12">
-                            <div id="infoFicha" class="alert alert-info mb-3 py-2">
-                                <div class="row">
-                                    <div class="col-md-3"><small><strong>Código:</strong> <span id="fichaCodigo"></span></small></div>
-                                    <div class="col-md-3"><small><strong>Ciudad:</strong> <span id="fichaCiudad"></span></small></div>
-                                    <div class="col-md-3"><small><strong>Sede:</strong> <span id="fichaSede"></span></small></div>
-                                    <div class="col-md-3"><small><strong>Programa:</strong> <span id="fichaPrograma"></span></small></div>
-                                    <div class="col-md-3"><small><strong>Jornada:</strong> <span id="fichaJornada"></span></small></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Rango de fechas -->
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Rango del Horario:</label>
-                            <div class="input-group">
-                                <input type="date" id="fechaInicio" class="form-control">
-                                <span class="input-group-text">hasta</span>
-                                <input type="date" id="fechaFin" class="form-control">
-                            </div>
-                        </div>
+<?php
+// vista/modulos/crearHorario.php
+?>
 
-                        <!-- Selector de días de la semana -->
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label fw-bold">Días de la Semana:</label>
-                            <div id="selectorDias" class="dias-selector">
-                                <!-- Se llena dinámicamente -->
-                            </div>
-                        </div>
-
-                        <!-- Botones de acción -->
-                        <div class="col-md-4 text-end mb-3">
-                            <button type="button" class="btn btn-primary-custom btn-lg" id="btnGuardarHorario">
-                                <i class="fas fa-save me-2"></i>Guardar Horario
-                            </button>
-                            <button type="button" class="btn btn-secondary-custom btn-lg ms-2" id="btnLimpiarHorario">
-                                <i class="fas fa-trash me-2"></i>Limpiar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <!-- Panel lateral con Instructores y Ambientes -->
-        <div class="col-md-3">
-            <!-- Sección de Instructores -->
-            <div class="card shadow-sm mb-3">
-                <div class="card-header card-header-custom text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-users me-2"></i>Instructores</h5>
-                    <span class="badge bg-light text-primary" id="countInstructores">0</span>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <input type="text" id="buscarInstructor" class="form-control" 
-                               placeholder="Buscar instructor...">
-                    </div>
-                    <div id="listaInstructores" class="element-list"></div>
-                </div>
-            </div>
-
-            <!-- Sección de Ambientes -->
-            <div class="card shadow-sm">
-                <div class="card-header card-header-success-custom text-white d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-door-open me-2"></i>Ambientes</h5>
-                    <span class="badge bg-light text-success" id="countAmbientes">0</span>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <input type="text" id="buscarAmbiente" class="form-control" 
-                               placeholder="Buscar ambiente...">
-                    </div>
-                    <div id="listaAmbientes" class="element-list">
-                        <div class="text-muted text-center py-3">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Selecciona una ficha para ver los ambientes disponibles
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Calendario -->
-        <div class="col-md-9">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <!-- Contador de eventos pendientes -->
-                    <div class="alert alert-warning mb-3" id="alertEventosPendientes" style="display: none;">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Eventos pendientes:</strong> <span id="countEventosPendientes">0</span> horarios sin guardar
-                    </div>
-                    <div id="calendario"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para ver detalles del horario -->
-<div class="modal fade" id="modalDetalleHorario" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="background: linear-gradient(135deg, var(--primary-color) 0%, #9d8fff 100%); color: white;">
-                <h5 class="modal-title">Detalle del Horario</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div id="detalleHorarioContent"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- CSS Consolidado -->
 <link href="vista/css/styles.css" rel="stylesheet">
+<link href="vista/css/tablaCompacta.css" rel="stylesheet">
+<link href="vista/css/horario.css" rel="stylesheet">
 
-<!-- Estilos adicionales -->
-<style>
-    /* Solo estilos específicos que no están en styles.css */
-</style>
+<div class="horario-wrap">
 
-<!-- CSS de FullCalendar -->
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+  <!-- ============================================================
+       PANEL PRINCIPAL - TABLA DE HORARIOS CREADOS
+  ============================================================ -->
+  <div id="panelTablaHorario">
 
-<!-- Scripts -->
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
-<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.10/index.global.min.js'></script>
+    <div class="header-section">
+      <div class="header-content">
+        <div class="title-wrapper">
+          <div class="title-icon">
+            <i class="bi bi-calendar3-week"></i>
+          </div>
+          <div>
+            <h2 class="section-title">Horarios</h2>
+            <p class="section-subtitle">Gestiona los horarios de clase</p>
+          </div>
+        </div>
+      </div>
+      <button id="btnNuevoHorario" class="btn-add" type="button">
+        <i class="bi bi-plus-lg"></i>
+        Nuevo Horario
+      </button>
+    </div>
 
-<script>
-function obtenerParametroUrl(nombre) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(nombre);
-}
+    <!-- TABLA DE HORARIOS REGISTRADOS -->
+    <div class="table-wrapper">
+      <table id="tablaHorarios" class="ultra-modern-table">
+        <thead>
+          <tr>
+            <th><div class="th-wrap"><i class="bi bi-geo-alt"></i><span>Sede</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-door-open"></i><span>Cód. Ambiente</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-diagram-3"></i><span>Área</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-sun"></i><span>Jornada</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-file-earmark-text"></i><span>Cód. Ficha</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-mortarboard"></i><span>Tipo Programa</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-person-badge"></i><span>Instructor</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-clock"></i><span>Hora Inicio</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-clock-history"></i><span>Hora Fin</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-calendar-event"></i><span>F. Inicio</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-calendar-x"></i><span>F. Fin</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-calendar-week"></i><span>Días</span></div></th>
+            <th><div class="th-wrap"><i class="bi bi-sliders"></i><span>Acciones</span></div></th>
+          </tr>
+        </thead>
+        <tbody id="tbodyHorarios">
+          <tr>
+            <td colspan="13" class="text-center py-4 text-muted" style="font-size:13px;">
+              <i class="bi bi-calendar3" style="font-size:1.8rem;display:block;margin-bottom:8px;opacity:.3"></i>
+              Cargando horarios...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div><!-- /panelTablaHorario -->
 
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Iniciando sistema de horarios con días de la semana...');
-    
-    if (typeof FullCalendar === 'undefined') {
-        console.error('❌ FullCalendar no está cargado');
-        return;
-    }
-    
-    // ========== VARIABLES GLOBALES ==========
-    let calendario;
-    let instructores = [];
-    let ambientes = [];
-    let diasSemana = [];
-    let fichaSeleccionada = null;
-    let ambienteSeleccionado = null;
-    let diasSeleccionados = [];
-    let eventosPendientes = [];
-    let draggableInstance = null;
-    const colores = ['#667eea', '#f5576c', '#4facfe', '#43e97b', '#fa709a', '#ff6b6b', '#4ecdc4', '#45b7d1'];
-    
-    // ========== CARGAR DÍAS DE LA SEMANA ==========
-    function cargarDiasSemana() {
-        return new Promise((resolve, reject) => {
-            fetch('controlador/horarioControlador.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'listarDias=ok'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.codigo === "200") {
-                    diasSemana = data.dias;
-                    renderizarSelectorDias(diasSemana);
-                    resolve();
-                } else {
-                    reject('Error al cargar días');
-                }
-            })
-            .catch(error => {
-                console.error('❌ Error al cargar días:', error);
-                reject(error);
-            });
-        });
-    }
-    
-    // ========== RENDERIZAR SELECTOR DE DÍAS ==========
-    function renderizarSelectorDias(dias) {
-        const contenedor = document.getElementById('selectorDias');
-        contenedor.innerHTML = '';
-        
-        const nombresCortos = {
-            'Lunes': 'L',
-            'Martes': 'M',
-            'Miércoles': 'X',
-            'Miercoles': 'X',
-            'Jueves': 'J',
-            'Viernes': 'V',
-            'Sábado': 'S',
-            'Sabado': 'S',
-            'Domingo': 'D'
-        };
-        
-        dias.forEach(dia => {
-            const nombreCorto = nombresCortos[dia.diasSemanales] || dia.diasSemanales.charAt(0);
-            
-            const wrapper = document.createElement('div');
-            wrapper.innerHTML = `
-                <input type="checkbox" 
-                       class="dia-checkbox" 
-                       id="dia-${dia.idDia}" 
-                       value="${dia.idDia}">
-                <label class="dia-label" 
-                       for="dia-${dia.idDia}" 
-                       title="${dia.diasSemanales}">
-                    ${nombreCorto}
-                </label>
-            `;
-            
-            contenedor.appendChild(wrapper);
-            
-            const checkbox = wrapper.querySelector('.dia-checkbox');
-            checkbox.addEventListener('change', function() {
-                actualizarDiasSeleccionados();
-            });
-        });
-    }
-    
-    // ========== ACTUALIZAR DÍAS SELECCIONADOS ==========
-    function actualizarDiasSeleccionados() {
-        diasSeleccionados = Array.from(document.querySelectorAll('.dia-checkbox:checked'))
-            .map(cb => parseInt(cb.value));
-        
-        console.log('📅 Días seleccionados:', diasSeleccionados);
-    }
-    
-    // ========== CARGAR FICHA DESDE URL ==========
-    function cargarFichaDesdeUrl() {
-        const fichaParam = obtenerParametroUrl('ficha');
-        if (!fichaParam) {
-            return Promise.resolve();
-        }
-        
-        return new Promise((resolve, reject) => {
-            fetch('controlador/fichaControlador.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'listarTecnologos=ok'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.codigo === "200") {
-                    const fichaEncontrada = data.listarTecnologos.find(f => f.codigoFicha === fichaParam);
-                    if (fichaEncontrada) {
-                        fichaSeleccionada = {
-                            id: fichaEncontrada.idFicha,
-                            codigo: fichaEncontrada.codigoFicha,
-                            programa: fichaEncontrada.programa,
-                            jornada: fichaEncontrada.jornada,
-                            municipio: fichaEncontrada.municipio,
-                            sede: fichaEncontrada.sede,
-                            idSede: fichaEncontrada.idSede
-                        };
-                        
-                        document.getElementById('infoFicha').style.display = 'block';
-                        document.getElementById('fichaCodigo').textContent = fichaSeleccionada.codigo;
-                        document.getElementById('fichaCiudad').textContent = fichaSeleccionada.municipio;
-                        document.getElementById('fichaSede').textContent = fichaSeleccionada.sede || 'No especificada';
-                        document.getElementById('fichaPrograma').textContent = fichaSeleccionada.programa;
-                        document.getElementById('fichaJornada').textContent = fichaSeleccionada.jornada;
-                        
-                        cargarAmbientesPorSede(fichaSeleccionada.idSede);
-                        resolve();
-                    } else {
-                        reject('Ficha no encontrada');
-                    }
-                } else {
-                    reject('Error al cargar fichas');
-                }
-            })
-            .catch(reject);
-        });
-    }
-    
-    // ========== CARGAR INSTRUCTORES ==========
-    function cargarInstructores() {
-        return new Promise((resolve, reject) => {
-            fetch('controlador/instructorControlador.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'listarInstructor=ok'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.codigo === "200") {
-                    instructores = data.listarInstructor;
-                    renderizarInstructores(instructores);
-                    inicializarDraggable();
-                    resolve();
-                } else {
-                    reject('Error al cargar instructores');
-                }
-            })
-            .catch(reject);
-        });
-    }
-    
-    // ========== CARGAR AMBIENTES POR SEDE ==========
-    function cargarAmbientesPorSede(idSede) {
-        fetch('controlador/ambienteControlador.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: 'listarAmbientesPorSede=ok&idSede=' + encodeURIComponent(idSede)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.codigo === "200") {
-                ambientes = data.ambientes;
-                renderizarAmbientes(ambientes);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    }
-    
-    // ========== RENDERIZAR INSTRUCTORES ==========
-    function renderizarInstructores(lista) {
-        const contenedor = document.getElementById('listaInstructores');
-        contenedor.innerHTML = '';
-        
-        lista.forEach((instructor, index) => {
-            const colorIndex = (index % 8) + 1;
-            const div = document.createElement('div');
-            div.className = 'instructor-item fc-event';
-            div.setAttribute('data-type', 'instructor');
-            div.setAttribute('data-id', instructor.idFuncionario || instructor.idInstructor);
-            div.setAttribute('data-nombre', instructor.nombre);
-            div.setAttribute('data-color', colores[index % colores.length]);
-            div.setAttribute('data-color-index', colorIndex);
-            div.innerHTML = `<i class="fas fa-user-tie me-2"></i>${instructor.nombre}`;
-            contenedor.appendChild(div);
-        });
-        
-        document.getElementById('countInstructores').textContent = lista.length;
-    }
-    
-    // ========== RENDERIZAR AMBIENTES ==========
-    function renderizarAmbientes(lista) {
-        const contenedor = document.getElementById('listaAmbientes');
-        contenedor.innerHTML = '';
-        
-        if (lista.length === 0) {
-            contenedor.innerHTML = '<div class="text-muted text-center py-3">No hay ambientes disponibles</div>';
-            return;
-        }
-        
-        lista.forEach((ambiente, index) => {
-            const div = document.createElement('div');
-            div.className = 'ambiente-item';
-            div.setAttribute('data-id', ambiente.idAmbiente);
-            div.setAttribute('data-nombre', `Ambiente ${ambiente.codigo}`);
-            div.innerHTML = `
-                <i class="fas fa-door-open me-2"></i>
-                <strong>${ambiente.codigo}</strong>
-                <br><small>${ambiente.descripcion || ''}</small>
-            `;
-            
-            div.addEventListener('click', function() {
-                document.querySelectorAll('.ambiente-item').forEach(item => item.classList.remove('selected'));
-                div.classList.add('selected');
-                ambienteSeleccionado = {
-                    idAmbiente: ambiente.idAmbiente,
-                    codigo: ambiente.codigo
-                };
-            });
-            contenedor.appendChild(div);
-        });
-        
-        document.getElementById('countAmbientes').textContent = lista.length;
-    }
-    
-    // ========== INICIALIZAR DRAGGABLE ==========
-    function inicializarDraggable() {
-        if (draggableInstance) {
-            draggableInstance.destroy();
-            draggableInstance = null;
-        }
-        
-        const contenedorInstructores = document.getElementById('listaInstructores');
-        
-        draggableInstance = new FullCalendar.Draggable(contenedorInstructores, {
-            itemSelector: '.instructor-item',
-            eventData: function(eventEl) {
-                return {
-                    title: eventEl.getAttribute('data-nombre'),
-                    backgroundColor: eventEl.getAttribute('data-color'),
-                    borderColor: eventEl.getAttribute('data-color'),
-                    duration: '01:00',
-                    extendedProps: {
-                        type: 'instructor',
-                        idFuncionario: eventEl.getAttribute('data-id'),
-                        idAmbiente: ambienteSeleccionado?.idAmbiente || null,
-                        idFicha: fichaSeleccionada?.id || null,
-                        nombreInstructor: eventEl.getAttribute('data-nombre'),
-                        dias: [...diasSeleccionados],
-                        pendiente: true
-                    }
-                };
-            }
-        });
-    }
-    
-    // ========== BUSCAR INSTRUCTOR ==========
-    document.getElementById('buscarInstructor').addEventListener('input', function(e) {
-        const termino = e.target.value.toLowerCase();
-        document.querySelectorAll('.instructor-item').forEach(item => {
-            const nombre = item.getAttribute('data-nombre').toLowerCase();
-            item.classList.toggle('oculto', !nombre.includes(termino));
-        });
-    });
-    
-    // ========== BUSCAR AMBIENTE ==========
-    document.getElementById('buscarAmbiente').addEventListener('input', function(e) {
-        const termino = e.target.value.toLowerCase();
-        document.querySelectorAll('.ambiente-item').forEach(item => {
-            const nombre = item.getAttribute('data-nombre').toLowerCase();
-            item.classList.toggle('oculto', !nombre.includes(termino));
-        });
-    });
-    
-    // ========== ACTUALIZAR CONTADOR PENDIENTES ==========
-    function actualizarContadorPendientes() {
-        const contador = eventosPendientes.length;
-        document.getElementById('countEventosPendientes').textContent = contador;
-        document.getElementById('alertEventosPendientes').style.display = contador > 0 ? 'block' : 'none';
-    }
-    
-    // ========== INICIALIZAR CALENDARIO ==========
-    const calendarEl = document.getElementById('calendario');
-    calendario = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridWeek',
-        locale: 'es',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        buttonText: {
-            today: 'Hoy',
-            month: 'Mes',
-            week: 'Semana',
-            day: 'Día'
-        },
-        slotMinTime: '06:00:00',
-        slotMaxTime: '22:00:00',
-        allDaySlot: false,
-        editable: true,
-        droppable: true,
-        selectable: true,
-        selectMirror: true,
-        nowIndicator: true,
-        slotDuration: '00:30:00',
-        weekends: true,
-        
-        eventReceive: function(info) {
-            if (!fichaSeleccionada) {
-                info.event.remove();
-                mostrarNotificacion('Selecciona una ficha primero', 'warning');
-                return;
-            }
-            
-            // 🔥 Validar que haya días seleccionados
-            if (!info.event.extendedProps.dias || info.event.extendedProps.dias.length === 0) {
-                info.event.remove();
-                mostrarNotificacion('Debes seleccionar al menos un día de la semana', 'warning');
-                return;
-            }
-            
-            // 🔥 Validar que haya ambiente seleccionado
-            if (!info.event.extendedProps.idAmbiente) {
-                info.event.remove();
-                mostrarNotificacion('Debes seleccionar un ambiente antes de arrastrar el instructor', 'warning');
-                return;
-            }
-            
-            const eventData = {
-                tempId: 'temp_' + Date.now(),
-                title: info.event.title,
-                start: info.event.start,
-                end: info.event.end,
-                extendedProps: info.event.extendedProps,
-                backgroundColor: info.event.backgroundColor,
-                borderColor: info.event.borderColor
-            };
-            
-            eventosPendientes.push(eventData);
-            info.event.setProp('classNames', ['pendiente']);
-            info.event.setExtendedProp('tempId', eventData.tempId);
-            actualizarContadorPendientes();
-            
-            console.log('✅ Evento agregado. Días:', info.event.extendedProps.dias);
-        },
-        
-        eventDrop: function(info) {
-            if (info.event.extendedProps.pendiente) {
-                const index = eventosPendientes.findIndex(e => e.tempId === info.event.extendedProps.tempId);
-                if (index !== -1) {
-                    eventosPendientes[index].start = info.event.start;
-                    eventosPendientes[index].end = info.event.end;
-                }
-            }
-        },
-        
-        eventResize: function(info) {
-            if (info.event.extendedProps.pendiente) {
-                const index = eventosPendientes.findIndex(e => e.tempId === info.event.extendedProps.tempId);
-                if (index !== -1) {
-                    eventosPendientes[index].end = info.event.end;
-                }
-            }
-        },
-        
-        eventClick: function(info) {
-            mostrarDetalleHorario(info.event);
-        },
-        
-        events: function(fetchInfo, successCallback, failureCallback) {
-            fetch('controlador/horarioControlador.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: 'listarHorarios=ok'
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.codigo === "200") {
-                    const eventos = data.horarios.map(h => {
-                        const diasArray = h.dias ? h.dias.split(',').map(d => parseInt(d)) : [];
-                        
-                        return {
-                            id: h.idHorario,
-                            title: h.instructorNombre || `Ambiente ${h.ambienteNumero}` || 'Evento',
-                            start: h.fecha_inicioClase || h.hora_inicioClase,
-                            end: h.hora_finClase,
-                            backgroundColor: '#3788d8',
-                            borderColor: '#3788d8',
-                            extendedProps: {
-                                idFuncionario: h.idFuncionario,
-                                idAmbiente: h.idAmbiente,
-                                idFicha: h.idFicha,
-                                instructor: h.instructorNombre,
-                                ambiente: h.ambienteNumero,
-                                codigoFicha: h.codigoFicha,
-                                dias: diasArray,
-                                diasNombres: h.diasNombres,
-                                pendiente: false
-                            }
-                        };
-                    });
-                    successCallback(eventos);
-                } else {
-                    successCallback([]);
-                }
-            })
-            .catch(error => {
-                console.error('❌ Error:', error);
-                failureCallback(error);
-            });
-        }
-    });
-    
-    // ========== BOTÓN GUARDAR HORARIO (CORREGIDO) ==========
-    document.getElementById('btnGuardarHorario').addEventListener('click', async function() {
-        if (eventosPendientes.length === 0) {
-            mostrarNotificacion('No hay eventos para guardar', 'warning');
-            return;
-        }
-        
-        // 🔥 VALIDAR QUE TODOS LOS EVENTOS TENGAN AMBIENTE SELECCIONADO
-        const eventosSinAmbiente = eventosPendientes.filter(e => !e.extendedProps.idAmbiente);
-        if (eventosSinAmbiente.length > 0) {
-            mostrarNotificacion(`⚠️ Hay ${eventosSinAmbiente.length} eventos sin ambiente asignado. Selecciona un ambiente antes de arrastrar el instructor.`, 'warning');
-            return;
-        }
-        
-        // 🔥 VALIDAR QUE TODOS LOS EVENTOS TENGAN DÍAS SELECCIONADOS
-        const eventosSinDias = eventosPendientes.filter(e => !e.extendedProps.dias || e.extendedProps.dias.length === 0);
-        if (eventosSinDias.length > 0) {
-            mostrarNotificacion(`⚠️ Hay ${eventosSinDias.length} eventos sin días seleccionados. Selecciona al menos un día antes de arrastrar.`, 'warning');
-            return;
-        }
-        
-        if (!confirm(`¿Guardar ${eventosPendientes.length} horarios?`)) {
-            return;
-        }
-        
-        const fechaInicio = document.getElementById('fechaInicio').value || null;
-        const fechaFin = document.getElementById('fechaFin').value || null;
-        
-        let guardados = 0;
-        let errores = 0;
-        const erroresDetallados = [];
-        
-        // 🔥 GUARDAR UNO POR UNO EN SECUENCIA (no en paralelo)
-        // Esto evita problemas de validación de conflictos
-        for (const eventData of eventosPendientes) {
-            const horaInicio = formatearHoraMySQL(new Date(eventData.start));
-            const horaFin = eventData.end ? formatearHoraMySQL(new Date(eventData.end)) : null;
-            
-            const datos = new URLSearchParams({
-                crearHorario: 'ok',
-                idFuncionario: eventData.extendedProps.idFuncionario || '',
-                idAmbiente: eventData.extendedProps.idAmbiente || '',
-                idFicha: fichaSeleccionada.id,
-                hora_inicioClase: horaInicio,
-                hora_finClase: horaFin,
-                fecha_inicioHorario: fechaInicio || '',
-                fecha_finHorario: fechaFin || '',
-                dias: JSON.stringify(eventData.extendedProps.dias)
-            });
 
-            try {
-                const response = await fetch('controlador/horarioControlador.php', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: datos
-                });
-                
-                const data = await response.json();
-                
-                if (data.codigo === "200") {
-                    guardados++;
-                    const eventoCalendario = calendario.getEvents().find(e => 
-                        e.extendedProps.tempId === eventData.tempId
-                    );
-                    if (eventoCalendario) {
-                        eventoCalendario.setProp('id', data.idHorario);
-                        eventoCalendario.setExtendedProp('pendiente', false);
-                        eventoCalendario.setProp('classNames', []);
-                    }
-                } else {
-                    errores++;
-                    erroresDetallados.push({
-                        instructor: eventData.extendedProps.nombreInstructor,
-                        mensaje: data.mensaje
-                    });
-                    console.error('❌ Error al guardar:', data.mensaje);
-                }
-            } catch (error) {
-                errores++;
-                erroresDetallados.push({
-                    instructor: eventData.extendedProps.nombreInstructor,
-                    mensaje: 'Error de conexión'
-                });
-                console.error('❌ Error de red:', error);
-            }
-        }
-        
-        // Limpiar eventos pendientes
-        eventosPendientes = [];
-        actualizarContadorPendientes();
-        
-        // Mostrar resultados
-        if (errores === 0) {
-            mostrarNotificacion(`✅ ${guardados} horarios guardados exitosamente`, 'success');
-        } else {
-            let mensajeError = `⚠️ ${guardados} guardados, ${errores} con errores:\n\n`;
-            erroresDetallados.slice(0, 3).forEach(e => {
-                mensajeError += `• ${e.instructor}: ${e.mensaje}\n`;
-            });
-            if (erroresDetallados.length > 3) {
-                mensajeError += `\n... y ${erroresDetallados.length - 3} más`;
-            }
-            
-            Swal.fire({
-                icon: 'warning',
-                title: 'Algunos horarios no se guardaron',
-                html: `<pre style="text-align: left; font-size: 12px; max-height: 300px; overflow-y: auto;">${mensajeError}</pre>`,
-                confirmButtonText: 'Entendido'
-            });
-        }
-        
-        // Recargar calendario
-        calendario.refetchEvents();
-    });
-    
-    // ========== BOTÓN LIMPIAR ==========
-    document.getElementById('btnLimpiarHorario').addEventListener('click', function() {
-        if (eventosPendientes.length === 0) {
-            mostrarNotificacion('No hay eventos para limpiar', 'warning');
-            return;
-        }
-        
-        if (!confirm(`¿Eliminar ${eventosPendientes.length} eventos pendientes?`)) {
-            return;
-        }
-        
-        eventosPendientes.forEach(eventData => {
-            const eventoCalendario = calendario.getEvents().find(e => 
-                e.extendedProps.tempId === eventData.tempId
-            );
-            if (eventoCalendario) {
-                eventoCalendario.remove();
-            }
-        });
-        
-        eventosPendientes = [];
-        actualizarContadorPendientes();
-        mostrarNotificacion('🗑️ Eventos eliminados', 'success');
-    });
-    
-    // ========== FORMATEAR HORA MYSQL ==========
-    function formatearHoraMySQL(fecha) {
-        const hours = String(fecha.getHours()).padStart(2, '0');
-        const minutes = String(fecha.getMinutes()).padStart(2, '0');
-        return `${hours}:${minutes}:00`;
-    }
-    
-    // ========== MOSTRAR DETALLE HORARIO ==========
-    function mostrarDetalleHorario(evento) {
-        const props = evento.extendedProps;
-        let contenido = `
-            <div class="mb-3">
-                <strong><i class="fas fa-heading me-2"></i>Evento:</strong> ${evento.title}
+  <!-- ============================================================
+       PANEL CREAR HORARIO - Layout según mockup
+  ============================================================ -->
+  <div id="panelFormularioHorario" style="display:none;">
+
+    <div class="form-card">
+
+      <!-- Header -->
+      <div class="form-card-header">
+        <button id="btnRegresarTablaHorario" type="button" class="btn-back">
+          <i class="bi bi-arrow-left"></i> Regresar
+        </button>
+        <div class="form-title">
+          <div class="form-title-icon">
+            <i class="bi bi-calendar-plus"></i>
+          </div>
+          <div>
+            <h2 class="form-title-text">Crear Horario</h2>
+            <p class="form-subtitle-text">Configura los datos del nuevo horario</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="formCrearHorario" novalidate>
+
+        <!-- =====================================================
+             FILA SUPERIOR DE FILTROS / SELECTORES
+             Orden: SEDE | AMBIENTE(Codi+Area) | FICHA(Jornada+CodFicha+TipProgra) | INSTRUCTORES | HORA INICIO/FIN | FECHA INICIO/FIN
+        ====================================================== -->
+        <div class="selector-bar">
+
+          <!-- 1. SEDE -->
+          <div class="selector-group selector-sede">
+            <div class="selector-label">
+              <i class="bi bi-geo-alt-fill"></i> SEDE
             </div>
-            <div class="mb-3">
-                <strong><i class="fas fa-clock me-2"></i>Hora:</strong> 
-                ${evento.start.toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit'})} - 
-                ${evento.end ? evento.end.toLocaleTimeString('es-CO', {hour: '2-digit', minute: '2-digit'}) : 'N/A'}
+            <div class="selector-inner">
+              <select id="selectSedeHorario" class="sel-input sel-full" required>
+                <option value="">Nombre / Ciudad</option>
+              </select>
             </div>
-        `;
-        
-        if (props.diasNombres) {
-            contenido += `
-                <div class="mb-3">
-                    <strong><i class="fas fa-calendar-week me-2"></i>Días:</strong> 
-                    ${props.diasNombres}
-                </div>
-            `;
-        }
-        
-        if (props.pendiente) {
-            contenido += `
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    Este evento está <strong>pendiente de guardar</strong>
-                </div>
-            `;
-        }
-        
-        if (props.instructor) {
-            contenido += `
-                <div class="mb-3">
-                    <strong><i class="fas fa-user me-2"></i>Instructor:</strong> ${props.instructor}
-                </div>
-            `;
-        }
-        
-        if (props.ambiente) {
-            contenido += `
-                <div class="mb-3">
-                    <strong><i class="fas fa-door-open me-2"></i>Ambiente:</strong> ${props.ambiente}
-                </div>
-            `;
-        }
-        
-        document.getElementById('detalleHorarioContent').innerHTML = contenido;
-        new bootstrap.Modal(document.getElementById('modalDetalleHorario')).show();
-    }
-    
-    // ========== NOTIFICACIONES ==========
-    function mostrarNotificacion(mensaje, tipo) {
-        const toast = document.createElement('div');
-        toast.className = `alert alert-${tipo === 'success' ? 'success' : tipo === 'warning' ? 'warning' : 'danger'} position-fixed`;
-        toast.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px; animation: slideIn 0.3s ease;';
-        toast.innerHTML = `
-            <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'warning' ? 'exclamation-triangle' : 'times-circle'} me-2"></i>
-            ${mensaje}
-        `;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
-    }
-    
-    // ========== INICIALIZACIÓN ==========
-    calendario.render();
-    
-    cargarDiasSemana().then(() => {
-        return cargarInstructores();
-    }).then(() => {
-        return cargarFichaDesdeUrl();
-    }).catch(error => {
-        console.error('❌ Error en inicialización:', error);
-    });
-});
-</script>
+          </div>
 
-<style>
-@keyframes slideIn {
-    from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-}
-</style>
+          <!-- 2. AMBIENTE (Codi + Area) -->
+          <div class="selector-group selector-ambiente">
+            <div class="selector-label">
+              <i class="bi bi-door-open"></i> AMBIENTE
+            </div>
+            <div class="selector-inner sel-row">
+              <div class="sel-col">
+                <span class="sel-sublabel">CODI</span>
+                <select id="selectAmbienteHorario" class="sel-input" required>
+                  <option value="">—</option>
+                </select>
+              </div>
+              <div class="sel-col">
+                <span class="sel-sublabel">ÁREA</span>
+                <select id="selectAreaAmbiente" class="sel-input" disabled>
+                  <option value="">—</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 3. FICHA (Jornada + CodFicha + TipPrograma) -->
+          <div class="selector-group selector-ficha">
+            <div class="selector-label">
+              <i class="bi bi-journals"></i> FICHA
+            </div>
+            <div class="selector-inner sel-row">
+              <div class="sel-col">
+                <span class="sel-sublabel">JORNADA</span>
+                <select id="selectJornadaHorario" class="sel-input" required>
+                  <option value="">—</option>
+                  <option value="MAÑANA">Mañana</option>
+                  <option value="TARDE">Tarde</option>
+                  <option value="NOCHE">Noche</option>
+                </select>
+              </div>
+              <div class="sel-col">
+                <span class="sel-sublabel">COD.FICHA</span>
+                <select id="selectFichaHorario" class="sel-input" required>
+                  <option value="">—</option>
+                </select>
+              </div>
+              <div class="sel-col">
+                <span class="sel-sublabel">TIP.PROGRA</span>
+                <input id="inputTipoPrograma" class="sel-input" type="text" readonly placeholder="—">
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. INSTRUCTORES -->
+          <div class="selector-group selector-instructor">
+            <div class="selector-label">
+              <i class="bi bi-person-badge"></i> INSTRUCTORES
+            </div>
+            <div class="selector-inner">
+              <select id="selectInstructorHorario" class="sel-input sel-full" required>
+                <option value="">Nombre / Área</option>
+              </select>
+              <div class="instructor-hint">
+                <span>IGUAL ÁREA</span>
+                <span>AMBIENTE</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5. HORA INICIO / FIN -->
+          <div class="selector-group selector-horas">
+            <div class="hora-field">
+              <div class="selector-label"><i class="bi bi-clock"></i> HORA INICIO</div>
+              <input type="time" id="horaInicioHorario" class="sel-input hora-input" required>
+            </div>
+            <div class="hora-field">
+              <div class="selector-label"><i class="bi bi-clock-history"></i> HORA FIN</div>
+              <input type="time" id="horaFinHorario" class="sel-input hora-input" required>
+            </div>
+          </div>
+
+          <!-- 6. FECHA INICIO / FIN -->
+          <div class="selector-group selector-fechas">
+            <div class="hora-field">
+              <div class="selector-label"><i class="bi bi-calendar-event"></i> FECHA INICIO</div>
+              <input type="date" id="fechaInicioHorario" class="sel-input hora-input">
+            </div>
+            <div class="hora-field">
+              <div class="selector-label"><i class="bi bi-calendar-x"></i> FECHA FIN</div>
+              <input type="date" id="fechaFinHorario" class="sel-input hora-input">
+            </div>
+          </div>
+
+        </div><!-- /selector-bar -->
+
+
+        <!-- =====================================================
+             CALENDARIO SEMANAL
+        ====================================================== -->
+        <div class="calendario-wrapper">
+          <div class="calendario-header-bar">
+            <span class="cal-title"><i class="bi bi-calendar3-week"></i> Días de clase — selecciona los días en los que aplica este horario</span>
+            <span class="cal-hint">Haz clic en una celda para marcarla</span>
+          </div>
+
+          <div class="calendario-table-wrap">
+            <table class="calendario-table" id="calendarioSemanal">
+              <thead>
+                <tr>
+                  <th data-dia="1" class="dia-header">
+                    <div class="dia-header-inner">
+                      <span class="dia-nombre">Lunes</span>
+                      <span class="dia-abrev">LUN</span>
+                      <input type="checkbox" class="dia-toggle" data-dia="1" id="chkLunes">
+                    </div>
+                  </th>
+                  <th data-dia="2" class="dia-header">
+                    <div class="dia-header-inner">
+                      <span class="dia-nombre">Martes</span>
+                      <span class="dia-abrev">MAR</span>
+                      <input type="checkbox" class="dia-toggle" data-dia="2" id="chkMartes">
+                    </div>
+                  </th>
+                  <th data-dia="3" class="dia-header">
+                    <div class="dia-header-inner">
+                      <span class="dia-nombre">Miércoles</span>
+                      <span class="dia-abrev">MIÉ</span>
+                      <input type="checkbox" class="dia-toggle" data-dia="3" id="chkMiercoles">
+                    </div>
+                  </th>
+                  <th data-dia="4" class="dia-header">
+                    <div class="dia-header-inner">
+                      <span class="dia-nombre">Jueves</span>
+                      <span class="dia-abrev">JUE</span>
+                      <input type="checkbox" class="dia-toggle" data-dia="4" id="chkJueves">
+                    </div>
+                  </th>
+                  <th data-dia="5" class="dia-header">
+                    <div class="dia-header-inner">
+                      <span class="dia-nombre">Viernes</span>
+                      <span class="dia-abrev">VIE</span>
+                      <input type="checkbox" class="dia-toggle" data-dia="5" id="chkViernes">
+                    </div>
+                  </th>
+                  <th data-dia="6" class="dia-header">
+                    <div class="dia-header-inner">
+                      <span class="dia-nombre">Sábado</span>
+                      <span class="dia-abrev">SAB</span>
+                      <input type="checkbox" class="dia-toggle" data-dia="6" id="chkSabado">
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="cal-preview-row">
+                  <td class="cal-cell" data-dia="1"><div class="cal-cell-inner" id="preview-lunes"></div></td>
+                  <td class="cal-cell" data-dia="2"><div class="cal-cell-inner" id="preview-martes"></div></td>
+                  <td class="cal-cell" data-dia="3"><div class="cal-cell-inner" id="preview-miercoles"></div></td>
+                  <td class="cal-cell" data-dia="4"><div class="cal-cell-inner" id="preview-jueves"></div></td>
+                  <td class="cal-cell" data-dia="5"><div class="cal-cell-inner" id="preview-viernes"></div></td>
+                  <td class="cal-cell" data-dia="6"><div class="cal-cell-inner" id="preview-sabado"></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Preview del horario en el calendario -->
+          <div class="horario-preview-card" id="horarioPreviewCard" style="display:none;">
+            <div class="preview-badge"><i class="bi bi-eye"></i> Vista previa del horario</div>
+            <div class="preview-info" id="previewInfo"></div>
+          </div>
+        </div><!-- /calendario-wrapper -->
+
+
+        <!-- BOTONES ACCIÓN -->
+        <div class="form-actions">
+          <button type="button" id="btnCancelarHorario" class="btn btn-secondary">
+            <i class="bi bi-x-lg"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary" id="btnGuardarHorario">
+            <i class="bi bi-check-lg"></i> Guardar Horario
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div><!-- /panelFormularioHorario -->
+
+
+  <!-- ============================================================
+       PANEL EDITAR HORARIO
+  ============================================================ -->
+  <div id="panelEditarHorario" style="display:none;">
+    <div class="form-card">
+
+      <div class="form-card-header">
+        <button id="btnRegresarTablaHorarioEdit" type="button" class="btn-back">
+          <i class="bi bi-arrow-left"></i> Regresar
+        </button>
+        <div class="form-title">
+          <div class="form-title-icon"><i class="bi bi-calendar-check"></i></div>
+          <div>
+            <h2 class="form-title-text">Editar Horario</h2>
+            <p class="form-subtitle-text">Modifica el horario seleccionado</p>
+          </div>
+        </div>
+      </div>
+
+      <form id="formEditarHorario" novalidate>
+        <input type="hidden" id="idHorarioEdit">
+
+        <div class="selector-bar">
+
+          <!-- AMBIENTE -->
+          <div class="selector-group selector-ambiente">
+            <div class="selector-label"><i class="bi bi-door-open"></i> AMBIENTE</div>
+            <div class="selector-inner">
+              <select id="selectAmbienteEdit" class="sel-input sel-full" required>
+                <option value="">Seleccione...</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- HORAS -->
+          <div class="selector-group selector-horas">
+            <div class="hora-field">
+              <div class="selector-label"><i class="bi bi-clock"></i> HORA INICIO</div>
+              <input type="time" id="horaInicioEdit" class="sel-input hora-input" required>
+            </div>
+            <div class="hora-field">
+              <div class="selector-label"><i class="bi bi-clock-history"></i> HORA FIN</div>
+              <input type="time" id="horaFinEdit" class="sel-input hora-input" required>
+            </div>
+          </div>
+
+          <!-- FECHAS -->
+          <div class="selector-group selector-fechas">
+            <div class="hora-field">
+              <div class="selector-label"><i class="bi bi-calendar-event"></i> FECHA INICIO</div>
+              <input type="date" id="fechaInicioEdit" class="sel-input hora-input">
+            </div>
+            <div class="hora-field">
+              <div class="selector-label"><i class="bi bi-calendar-x"></i> FECHA FIN</div>
+              <input type="date" id="fechaFinEdit" class="sel-input hora-input">
+            </div>
+          </div>
+        </div>
+
+        <!-- Días edit -->
+        <div class="calendario-wrapper" style="margin-top:16px;">
+          <div class="calendario-table-wrap">
+            <table class="calendario-table">
+              <thead>
+                <tr>
+                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Lunes</span><input type="checkbox" class="dia-toggle-edit" data-dia="1"></div></th>
+                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Martes</span><input type="checkbox" class="dia-toggle-edit" data-dia="2"></div></th>
+                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Miércoles</span><input type="checkbox" class="dia-toggle-edit" data-dia="3"></div></th>
+                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Jueves</span><input type="checkbox" class="dia-toggle-edit" data-dia="4"></div></th>
+                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Viernes</span><input type="checkbox" class="dia-toggle-edit" data-dia="5"></div></th>
+                  <th class="dia-header"><div class="dia-header-inner"><span class="dia-nombre">Sábado</span><input type="checkbox" class="dia-toggle-edit" data-dia="6"></div></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="cal-preview-row">
+                  <td class="cal-cell" data-dia="1"><div class="cal-cell-inner"></div></td>
+                  <td class="cal-cell" data-dia="2"><div class="cal-cell-inner"></div></td>
+                  <td class="cal-cell" data-dia="3"><div class="cal-cell-inner"></div></td>
+                  <td class="cal-cell" data-dia="4"><div class="cal-cell-inner"></div></td>
+                  <td class="cal-cell" data-dia="5"><div class="cal-cell-inner"></div></td>
+                  <td class="cal-cell" data-dia="6"><div class="cal-cell-inner"></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" id="btnCancelarEditarHorario" class="btn btn-secondary">
+            <i class="bi bi-x-lg"></i> Cancelar
+          </button>
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-check-lg"></i> Guardar Cambios
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div><!-- /horario-wrap -->
+
+<script src="vista/js/horario.js"></script>

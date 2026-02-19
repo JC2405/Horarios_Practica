@@ -426,3 +426,211 @@
   .cal-cell { height: 100px; }
   .cal-cell-inner { min-height: 100px; }
 }
+
+
+
+/* ============================================================
+   HORARIO.CSS — ADICIONES
+   Agrega al final de tu horario.css existente
+============================================================ */
+
+/* ── Variables (en caso que no estén ya definidas) ── */
+:root {
+  --primary:        #7c6bff;
+  --primary-hover:  #6b5ce7;
+  --primary-light:  #f0f2ff;
+  --primary-soft:   rgba(124, 107, 255, 0.12);
+}
+
+/* ══════════════════════════════════════════════════════
+   BOTÓN GUARDAR HORARIO — paleta morada
+══════════════════════════════════════════════════════ */
+#formCrearHorario .btn-primary,
+#formEditarHorario .btn-primary,
+.ph-actions .btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, #9d8fff 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600;
+  padding: 11px 28px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(124, 107, 255, 0.28);
+  transition: all 0.25s ease;
+}
+
+#formCrearHorario .btn-primary:hover,
+#formEditarHorario .btn-primary:hover,
+.ph-actions .btn-primary:hover {
+  background: linear-gradient(135deg, var(--primary-hover) 0%, #8a7aee 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(124, 107, 255, 0.38);
+}
+
+#formCrearHorario .btn-primary:active,
+.ph-actions .btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 10px rgba(124, 107, 255, 0.25);
+}
+
+/* ── Botón cancelar: outline morado ── */
+#formCrearHorario .btn-secondary,
+#formEditarHorario .btn-secondary,
+.ph-actions .btn-secondary {
+  background: #fff !important;
+  border: 2px solid rgba(124, 107, 255, 0.45) !important;
+  color: var(--primary) !important;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+}
+
+#formCrearHorario .btn-secondary:hover,
+.ph-actions .btn-secondary:hover {
+  background: var(--primary-light) !important;
+  border-color: var(--primary) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   HINT DE ÁREA DEBAJO DEL SELECTOR INSTRUCTOR
+══════════════════════════════════════════════════════ */
+.ph-instructor-hint {
+  display: none;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 500;
+  line-height: 1.4;
+  padding: 6px 12px;
+  border-radius: 8px;
+  margin-bottom: 6px;
+  /* estado normal: ok */
+  background: #f0eeff;
+  border: 1px solid #c4b5fd;
+  color: #5b3fd8;
+}
+
+.ph-instructor-hint::before {
+  content: '📍';
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* estado warn */
+.ph-instructor-hint.ph-hint-warn {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #92400e;
+}
+
+.ph-instructor-hint.ph-hint-warn::before {
+  content: '⚠️';
+}
+
+/* ══════════════════════════════════════════════════════
+   INPUT BÚSQUEDA DE INSTRUCTOR
+══════════════════════════════════════════════════════ */
+.ph-instructor-search {
+  margin-bottom: 6px;
+}
+
+.ph-search-input {
+  width: 100%;
+  background: #fafafa !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px;
+  font-size: 12.5px !important;
+  padding: 7px 12px !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ph-search-input:focus {
+  background: #fff !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px var(--primary-soft) !important;
+  outline: none;
+}
+
+.ph-search-input::placeholder {
+  color: #c4c4c4;
+  font-style: italic;
+}
+
+/* ══════════════════════════════════════════════════════
+   OPTGROUPS EN EL SELECT DE INSTRUCTOR
+   Muestra claramente el grupo "del área" vs "otros"
+══════════════════════════════════════════════════════ */
+#selectInstructorHorario optgroup {
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b7280;
+  background: #f9fafb;
+}
+
+/* Grupo del área: color morado */
+#selectInstructorHorario optgroup[label*="📍"] {
+  color: #5b21b6;
+  background: #f5f3ff;
+}
+
+#selectInstructorHorario option {
+  font-size: 13px;
+  padding: 3px 6px;
+}
+
+/* ══════════════════════════════════════════════════════
+   TIPO PROGRAMA — readonly auto-rellenado
+══════════════════════════════════════════════════════ */
+.ph-input-readonly {
+  background-color: #f5f3ff !important;
+  border-color: #c4b5fd !important;
+  color: #5b21b6 !important;
+  font-weight: 600;
+  cursor: default;
+}
+
+.ph-input-readonly::placeholder {
+  color: #a5b4fc;
+  font-weight: 400;
+}
+
+@keyframes fillFlash {
+  0%   { background-color: #f5f3ff; }
+  35%  { background-color: #ddd6fe; }
+  100% { background-color: #f5f3ff; }
+}
+
+.ph-input-readonly.input-filled {
+  animation: fillFlash 0.75s ease;
+}
+
+/* ══════════════════════════════════════════════════════
+   BOTÓN REGRESAR — paleta morada
+══════════════════════════════════════════════════════ */
+.ph-btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  background: #fff;
+  color: var(--primary);
+  border: 2px solid rgba(124, 107, 255, 0.45);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.ph-btn-back:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary-hover);
+}
+
+.ph-btn-back i {
+  transition: transform 0.25s ease;
+}
+
+.ph-btn-back:hover i {
+  transform: translateX(-3px);
+}

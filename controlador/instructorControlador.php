@@ -20,50 +20,59 @@ class instructorControlador{
         echo json_encode($objRespuesta);
     }
 
-    
+    // NUEVO: instructores filtrados por área del ambiente seleccionado en horarios
+    public function ctrListarInstructoresPorArea($idArea){
+        $objRespuesta = instructorModelo::mdlListarInstructoresPorArea($idArea);
+        echo json_encode($objRespuesta);
+    }
+
     public function ctrAgregarInstructor(){
         $objRespuesta = instructorModelo::mdlRegistrarInstructor($this->nombre,$this->correo,$this->telefono,$this->estado,$this->idArea,$this->idTipoContrato,$this->password);
         echo json_encode($objRespuesta);
     }
 
-
-   public function ctrEditarInstructor(){
-    $objRespuesta = instructorModelo::mdlEditarInstructor($this->idInstructor,$this->nombre,$this->correo,$this->telefono,$this->estado,$this->idArea,$this->idTipoContrato);
-    echo json_encode($objRespuesta);
-}
-
-
+    public function ctrEditarInstructor(){
+        $objRespuesta = instructorModelo::mdlEditarInstructor($this->idInstructor,$this->nombre,$this->correo,$this->telefono,$this->estado,$this->idArea,$this->idTipoContrato);
+        echo json_encode($objRespuesta);
+    }
 }
 
 
     if(isset($_POST["listarInstructor"])){
         $objRespuesta = new instructorControlador();
-        $objRespuesta ->ctrListarInstructor();
+        $objRespuesta->ctrListarInstructor();
     }
 
+    // NUEVO: llamado desde horario.js al seleccionar un ambiente con área
+    if(isset($_POST["listarInstructoresPorArea"])){
+        if(!empty($_POST['idArea'])){
+            $objControlador = new instructorControlador();
+            $objControlador->ctrListarInstructoresPorArea((int)$_POST['idArea']);
+        } else {
+            echo json_encode(["codigo" => "400", "mensaje" => "idArea requerido"]);
+        }
+    }
 
-    
     if(isset($_POST["agregarInstructor"])){
-    $objRespuesta = new instructorControlador();
-    $objRespuesta->nombre = $_POST["nombre"];
-    $objRespuesta->correo = $_POST["correo"];
-    $objRespuesta->telefono = $_POST["telefono"];
-    $objRespuesta->estado = $_POST["estado"];
-    $objRespuesta->idArea = $_POST["idArea"];
-    $objRespuesta->idTipoContrato = $_POST["idTipoContrato"];
-    $objRespuesta->password = $_POST["password"];
-    $objRespuesta->ctrAgregarInstructor();
+        $objRespuesta = new instructorControlador();
+        $objRespuesta->nombre = $_POST['nombre'];
+        $objRespuesta->correo = $_POST['correo'];
+        $objRespuesta->telefono = $_POST['telefono'];
+        $objRespuesta->estado = $_POST['estado'];
+        $objRespuesta->idArea = $_POST['idArea'];
+        $objRespuesta->idTipoContrato = $_POST['idTipoContrato'];
+        $objRespuesta->password = $_POST['password'];
+        $objRespuesta->ctrAgregarInstructor();
     }
 
-
-   if(isset($_POST["editarInstructor"])){
-    $objRespuesta = new instructorControlador();
-    $objRespuesta->idInstructor = $_POST["idFuncionario"]; // <-- aquí
-    $objRespuesta->nombre = $_POST["nombre"];
-    $objRespuesta->correo = $_POST["correo"];
-    $objRespuesta->telefono = $_POST["telefono"];
-    $objRespuesta->estado = $_POST["estado"];
-    $objRespuesta->idArea = $_POST["idArea"];
-    $objRespuesta->idTipoContrato = $_POST["idTipoContrato"];
-    $objRespuesta->ctrEditarInstructor();
+    if(isset($_POST["editarInstructor"])){
+        $objRespuesta = new instructorControlador();
+        $objRespuesta->idInstructor = $_POST['idInstructor'];
+        $objRespuesta->nombre = $_POST['nombre'];
+        $objRespuesta->correo = $_POST['correo'];
+        $objRespuesta->telefono = $_POST['telefono'];
+        $objRespuesta->estado = $_POST['estado'];
+        $objRespuesta->idArea = $_POST['idArea'];
+        $objRespuesta->idTipoContrato = $_POST['idTipoContrato'];
+        $objRespuesta->ctrEditarInstructor();
     }

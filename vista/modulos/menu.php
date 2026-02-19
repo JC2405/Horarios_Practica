@@ -19,7 +19,7 @@ $menus = [
       'label' => 'Aprendiz',
       'icon' => 'bx bx-user',
       'items' => [
-        ['label' => 'Horarios', 'href' => 'horarios'],
+        ['label' => 'Horarios', 'href' => 'Horarios Titulada'],
       ]
     ],
   ],

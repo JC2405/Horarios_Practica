@@ -55,14 +55,6 @@
               <span>Estado</span>
             </div>
           </th>
-
-           <th>
-            <div class="th-wrap">
-              <i class="bi bi-circle-fill"></i>
-              <span>Email</span>
-            </div>
-          </th>  
-
           <th>
             <div class="th-wrap">
               <i class="bi bi-building"></i>

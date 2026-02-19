@@ -9,78 +9,69 @@ class instructor{
     
 
     listarInstructor(){
-        let objData = new FormData();
-        objData.append("listarInstructor",this._objData.listarInstructor);
+  let objData = new FormData();
+  objData.append("listarInstructor", this._objData.listarInstructor);
 
+  fetch("controlador/instructorControlador.php", {
+    method: "POST",
+    body: objData
+  })
+  .then(r => r.json())
+  .then(response => {
 
-        fetch("controlador/instructorControlador.php",{
-            method:"POST",
-            body:objData
+    if(response.codigo === "200"){
 
-        }).then(response=>response.json()).catch(error=>{
-            console.log(error)
-        }).then(response=>{
-            console.log(response)
-     
+      let dataSet = [];
 
-            if (response["codigo"] == "200") {
-            
+      response.listarInstructor.forEach(item => {
 
-                let dataSet = [];
+        let objBotones = `
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-info btnEditarInstructor"
+              data-id="${item.idFuncionario}"
+              data-nombre="${item.nombre}"
+              data-correo="${item.correo}"
+              data-telefono="${item.telefono}"
+              data-estado="${item.estado}"
+              data-nombre-area="${item.nombreArea || ''}"
+              data-tipo-contrato="${item.tipoContrato}"
+              data-nombrerol="${item.nombreRol}">
+              <i class="bi bi-pen"></i>
+            </button>
+          </div>
+        `;
 
+        dataSet.push([
+          item.nombre,
+          item.correo,
+          item.telefono,
+          item.estado,
+          item.nombreArea || "Sin área",
+          item.tipoContrato,
+          item.nombreRol,
+          objBotones
+        ]);
+      });
 
-                response ["listarInstructor"].forEach(item => {
+      // ✅ limpiar si ya existe
+      if ($.fn.DataTable.isDataTable("#tablaInstructores")) {
+        $("#tablaInstructores").DataTable().clear().destroy();
+      }
 
-
-                            let objBotones = '<div class="btn-group" role="group">';
-                               objBotones += '<button type="button" class="btn btn-info btnEditarInstructor" ' +
-                                   'data-id="' + item.idFuncionario + '" ' +
-                                   'data-nombre="' + item.nombre + '" ' +
-                                   'data-correo="' + item.correo + '" ' +
-                                   'data-telefono="' + item.telefono + '" ' +
-                                   'data-estado="' + item.estado + '" ' +
-                                   'data-correo="' + item.correo + '" ' +
-                                    'data-nombre-area="' + item.nombreArea + '" ' +
-                                    'data-tipo-contrato="' + item.tipoContrato + '" ' +
-                                   'data-nombreRol="' + item.nombreRol + '" ' +
-
-                               '><i class="bi bi-pen"></i></button>';
-                               objBotones += '</div>';
-
-
-                              objBotones += '</div>';
-
-                              
-                              dataSet.push([    
-                                item.nombre,
-                                item.correo,
-                                item.telefono,
-                                item.estado,
-                                item.correo,
-                                item.Areas,
-                                item.tipoContrato,
-                                item.nombreRol,
-                                objBotones
-                              ]);
-                            });
-                        
-                            $("#tablaInstructores").DataTable({
-                              buttons: [{
-                                extend: "colvis",
-                                text: "Columnas"
-                              },
-                              "excel",
-                              "pdf",
-                              "print"
-                              ],
-                              dom: "Bfrtip",
-                              responsive: true,
-                              destroy: true,
-                              data: dataSet, 
-              })               
-            }
-        })
+      $("#tablaInstructores").DataTable({
+        buttons: [
+          { extend:"colvis", text:"Columnas" },
+          "excel", "pdf", "print"
+        ],
+        dom: "Bfrtip",
+        responsive: true,
+        data: dataSet
+      });
     }
+  })
+  .catch(console.error);
+}
+
 
    
 

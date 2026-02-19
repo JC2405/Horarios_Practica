@@ -2,12 +2,13 @@
 /**
  * crearHorario.php
  *
- * Layout 3×2 según imagen:
+ * Layout 3×2:
  *  Fila 1: [Sede]      [Ficha (Jornada · Código · Tipo Prog)]   [Hora inicio/fin]
- *  Fila 2: [Ambiente]  [Instructor]                              [Fecha inicio/fin]
+ *  Fila 2: [Ambiente]  [Instructor + búsqueda por nombre]        [Fecha inicio/fin]
  *
- * - Ambiente: SIN selector de área (se eliminó)
- * - Headers de listar y crear con diseño mejorado
+ * FIX 1: Ambiente muestra el área en el texto del option
+ * FIX 2: Tipo programa se auto-rellena al seleccionar ficha
+ * FIX 3: Instructor se filtra por área del ambiente + búsqueda libre por nombre
  */
 ?>
 <link rel="stylesheet" href="vista/css/horario.css">
@@ -33,7 +34,7 @@
       </button>
     </div>
 
-    <!-- TABLA 7 columnas: Sede | Área | Ficha | Jornada | Tipo Programa | Instructor | Acciones -->
+    <!-- TABLA 7 columnas -->
     <div class="ph-table-card">
       <table id="tablaHorarios" class="table table-hover w-100">
         <thead>
@@ -89,7 +90,7 @@
             </select>
           </div>
 
-          <!-- 1/B  FICHA (span 1 columna extra en el grid para que sea más ancha) -->
+          <!-- 1/B  FICHA -->
           <div class="ph-block ph-block-ficha">
             <div class="ph-block-label"><i class="bi bi-file-earmark-person"></i> FICHA</div>
             <div class="ph-ficha-row">
@@ -108,10 +109,6 @@
                 <select id="selectFichaHorario" class="ph-sel" disabled required>
                   <option value="">— Seleccione sede primero —</option>
                 </select>
-              </div>
-              <div class="ph-ficha-col">
-                <span class="ph-sublabel">TIPO PROGRAMA</span>
-                <input id="inputTipoPrograma" class="ph-sel" readonly placeholder="Auto">
               </div>
             </div>
           </div>
@@ -133,7 +130,7 @@
 
           <!-- ── FILA 2 ── -->
 
-          <!-- 2/A  AMBIENTE (SIN área) -->
+          <!-- 2/A  AMBIENTE (FIX 1: muestra área en el texto) -->
           <div class="ph-block">
             <div class="ph-block-label"><i class="bi bi-door-open"></i> AMBIENTE</div>
             <select id="selectAmbienteHorario" class="ph-sel" disabled required>
@@ -141,9 +138,23 @@
             </select>
           </div>
 
-          <!-- 2/B  INSTRUCTOR -->
+          <!-- 2/B  INSTRUCTOR (FIX 3: filtrado por área + búsqueda) -->
           <div class="ph-block ph-block-ficha">
             <div class="ph-block-label"><i class="bi bi-person-badge"></i> INSTRUCTOR</div>
+
+            <!-- Hint de área activa -->
+            <div id="instructorAreaHint" class="ph-instructor-hint" style="display:none;"></div>
+
+            <!-- Búsqueda por nombre -->
+            <div class="ph-instructor-search">
+              <input
+                type="text"
+                id="inputBuscarInstructor"
+                class="ph-sel ph-search-input"
+                placeholder="Buscar instructor por nombre...">
+            </div>
+
+            <!-- Select de instructor -->
             <select id="selectInstructorHorario" class="ph-sel" required>
               <option value="">— Seleccione instructor —</option>
             </select>

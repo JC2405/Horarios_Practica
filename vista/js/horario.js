@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function () {
   ============================================================ */
   let horarioDataTable = null;
   let diasDB = [];
-  let todasLasFichas = []; // Cache de todas las fichas para filtrar
+  let todasLasFichas = [];
+  let todosLosInstructores = []; // FIX 3: Cache de instructores para filtrar por área
 
   const DIAS_MAP = {
     'Lunes': 1, 'Martes': 2, 'Miércoles': 3, 'Miercoles': 3,
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
   cargarDiasDB();
   cargarInstructores();
   cargarSedes();
-  cargarTodasLasFichas(); // Carga todas las fichas al inicio y las guarda en cache
+  cargarTodasLasFichas();
 
   /* ============================================================
      NAVEGACIÓN PANELES
@@ -45,8 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
   document.getElementById('btnCancelarEditarHorario')?.addEventListener('click', () => mostrarPanel('panelTablaHorario'));
 
   /* ============================================================
-     FIX 1: CASCADA SEDE → AMBIENTES + FICHAS FILTRADAS POR SEDE
-     Cuando cambia la sede, se cargan ambientes Y se re-filtran las fichas
+     FIX 1 + FIX 3: CASCADA SEDE → AMBIENTES + FICHAS + INSTRUCTORES RESET
   ============================================================ */
   document.getElementById('selectSedeHorario')?.addEventListener('change', function () {
     const idSede = this.value;
@@ -55,36 +55,48 @@ document.addEventListener('DOMContentLoaded', function () {
 
     resetSelect(selAmb, '— Seleccione ambiente —');
 
-    // Resetear ficha cuando cambia la sede
     if (selFicha) {
       selFicha.innerHTML = '<option value="">— Seleccione sede primero —</option>';
       selFicha.disabled = true;
     }
 
+    // Resetear instructores al estado completo cuando cambia la sede
+    renderInstructores(todosLosInstructores, null, null);
+
     if (!idSede) return;
 
     cargarAmbientesPorSede(idSede, 'selectAmbienteHorario');
 
-    // Filtrar fichas por sede (y jornada si ya está seleccionada)
     const jornadaSeleccionada = document.getElementById('selectJornadaHorario')?.value || '';
     filtrarFichasPorSedeYJornada(idSede, jornadaSeleccionada);
   });
 
-  // Cuando cambia ambiente → actualizar preview
+  /* ============================================================
+     FIX 3: AMBIENTE → FILTRAR INSTRUCTORES POR ÁREA
+  ============================================================ */
   document.getElementById('selectAmbienteHorario')?.addEventListener('change', function () {
+    const opt = this.options[this.selectedIndex];
+    const idArea    = opt?.dataset.idarea   || '';
+    const areaNombre = opt?.dataset.area    || '';
+
     actualizarPreview();
+
+    if (idArea) {
+      filtrarInstructoresPorArea(idArea, areaNombre);
+    } else {
+      // Sin ambiente seleccionado → mostrar todos
+      renderInstructores(todosLosInstructores, null, null);
+    }
   });
 
   /* ============================================================
      FIX 1: JORNADA → FILTRA FICHAS POR SEDE + JORNADA
-     Antes filtraba todas las fichas de la jornada sin importar sede
   ============================================================ */
   document.getElementById('selectJornadaHorario')?.addEventListener('change', function () {
     const jornada = this.value;
     const idSede = document.getElementById('selectSedeHorario')?.value || '';
 
     if (!idSede) {
-      // Si no hay sede seleccionada, avisar
       const selFicha = document.getElementById('selectFichaHorario');
       if (selFicha) {
         selFicha.innerHTML = '<option value="">— Seleccione sede primero —</option>';
@@ -98,15 +110,50 @@ document.addEventListener('DOMContentLoaded', function () {
     actualizarPreview();
   });
 
+  /* ============================================================
+     FIX 2: FICHA → AUTO-RELLENAR TIPO PROGRAMA
+  ============================================================ */
   document.getElementById('selectFichaHorario')?.addEventListener('change', function () {
     const opt = this.options[this.selectedIndex];
-    document.getElementById('inputTipoPrograma').value = opt?.dataset.tipoprograma || '';
+    const tipoprograma = opt?.dataset.tipoprograma || opt?.dataset.tipoformacion || '';
+    const inputTipo = document.getElementById('inputTipoPrograma');
+    if (inputTipo) {
+      inputTipo.value = tipoprograma;
+      // Efecto visual para confirmar que se cargó
+      inputTipo.classList.add('input-filled');
+      setTimeout(() => inputTipo.classList.remove('input-filled'), 800);
+    }
     actualizarPreview();
   });
 
   ['horaInicioHorario', 'horaFinHorario', 'fechaInicioHorario', 'fechaFinHorario',
    'selectInstructorHorario', 'selectSedeHorario'].forEach(id => {
     document.getElementById(id)?.addEventListener('change', actualizarPreview);
+  });
+
+  /* ============================================================
+     FIX 3: BUSQUEDA DE INSTRUCTOR POR NOMBRE (input de búsqueda)
+  ============================================================ */
+  document.getElementById('inputBuscarInstructor')?.addEventListener('input', function () {
+    const query = this.value.trim().toLowerCase();
+    if (!query) {
+      // Si borra la búsqueda, volver al estado previo (filtrado por área si hay ambiente)
+      const selAmb = document.getElementById('selectAmbienteHorario');
+      const opt = selAmb?.options[selAmb.selectedIndex];
+      const idArea = opt?.dataset.idarea || '';
+      const areaNombre = opt?.dataset.area || '';
+      if (idArea) {
+        filtrarInstructoresPorArea(idArea, areaNombre);
+      } else {
+        renderInstructores(todosLosInstructores, null, null);
+      }
+      return;
+    }
+
+    const filtrados = todosLosInstructores.filter(i =>
+      i.nombre.toLowerCase().includes(query)
+    );
+    renderInstructores(filtrados, null, null, true);
   });
 
   /* ============================================================
@@ -215,8 +262,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ============================================================
-     FIX 3: LISTAR HORARIOS — tabla compacta
-     Columnas: Sede | Área | Ficha | Jornada | Tipo Programa | Instructor | Acciones
+     LISTAR HORARIOS
   ============================================================ */
   function listarHorarios() {
     const fd = new FormData();
@@ -245,17 +291,13 @@ document.addEventListener('DOMContentLoaded', function () {
             ? nombre.trim().split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
             : '?';
 
-          // Instructor con avatar
           const instructorHtml = `
             <div class="instructor-cell">
               <div class="instructor-avatar">${iniciales}</div>
               <span style="font-size:12px;font-weight:600;">${nombre}</span>
             </div>`;
 
-          // Jornada badge inferida de la hora
           const jornadaBadge = inferirJornadaBadge(item.hora_inicioClase);
-
-          // Tipo programa (puede venir como campo o necesita join — mostramos lo disponible)
           const tipoPrograma = item.tipoPrograma || item.tipoprograma || '—';
           const sedeNombre   = item.sedeNombre   || item.sede         || '—';
           const areaNombre   = item.areaNombre   || item.area         || '—';
@@ -278,7 +320,6 @@ document.addEventListener('DOMContentLoaded', function () {
               </button>
             </div>`;
 
-          // FIX 3: Solo 7 columnas: Sede, Área, Ficha, Jornada, Tipo Programa, Instructor, Acciones
           dataSet.push([
             sedeNombre,
             areaNombre,
@@ -396,6 +437,10 @@ document.addEventListener('DOMContentLoaded', function () {
       });
   }
 
+  /* ============================================================
+     FIX 3: CARGAR INSTRUCTORES — guarda en cache todosLosInstructores
+     El backend debe devolver idArea por cada instructor
+  ============================================================ */
   function cargarInstructores() {
     const fd = new FormData();
     fd.append('listarInstructor', 'ok');
@@ -403,17 +448,91 @@ document.addEventListener('DOMContentLoaded', function () {
       .then(r => r.json())
       .then(resp => {
         if (resp.codigo !== '200') return;
-        const sel = document.getElementById('selectInstructorHorario');
-        if (!sel) return;
-        sel.innerHTML = '<option value="">— Seleccione instructor —</option>';
-        (resp.listarInstructor || []).forEach(item => {
+        todosLosInstructores = resp.listarInstructor || [];
+        renderInstructores(todosLosInstructores, null, null);
+      })
+      .catch(console.error);
+  }
+
+  /* ============================================================
+     FIX 3: RENDER DE INSTRUCTORES EN EL SELECT
+     Soporta: todos, filtrados por área (con grupo), o búsqueda libre
+  ============================================================ */
+  function renderInstructores(instructores, idAreaActiva, areaNombre, esBusqueda = false) {
+    const sel = document.getElementById('selectInstructorHorario');
+    if (!sel) return;
+
+    sel.innerHTML = '<option value="">— Seleccione instructor —</option>';
+
+    if (esBusqueda) {
+      // Modo búsqueda: lista plana sin grupos
+      if (instructores.length === 0) {
+        sel.innerHTML += '<option disabled>— Sin resultados —</option>';
+        return;
+      }
+      instructores.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.idFuncionario;
+        opt.textContent = item.nombre;
+        sel.appendChild(opt);
+      });
+      return;
+    }
+
+    if (idAreaActiva) {
+      // Modo área: primero del área, luego el resto
+      const delArea  = instructores.filter(i => String(i.idArea) === String(idAreaActiva));
+      const delResto = instructores.filter(i => String(i.idArea) !== String(idAreaActiva));
+
+      if (delArea.length > 0) {
+        const grpArea = document.createElement('optgroup');
+        grpArea.label = `📍 Área: ${areaNombre} (${delArea.length})`;
+        delArea.forEach(item => {
           const opt = document.createElement('option');
           opt.value = item.idFuncionario;
           opt.textContent = item.nombre;
-          sel.appendChild(opt);
+          grpArea.appendChild(opt);
         });
-      })
-      .catch(console.error);
+        sel.appendChild(grpArea);
+      }
+
+      if (delResto.length > 0) {
+        const grpResto = document.createElement('optgroup');
+        grpResto.label = '── Otros instructores ──';
+        delResto.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.idFuncionario;
+          opt.textContent = item.nombre;
+          grpResto.appendChild(opt);
+        });
+        sel.appendChild(grpResto);
+      }
+    } else {
+      // Sin área activa: lista plana con todos
+      instructores.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.idFuncionario;
+        opt.textContent = item.nombre;
+        sel.appendChild(opt);
+      });
+    }
+  }
+
+  /* ============================================================
+     FIX 3: FILTRAR INSTRUCTORES POR ÁREA DEL AMBIENTE
+  ============================================================ */
+  function filtrarInstructoresPorArea(idArea, areaNombre) {
+    renderInstructores(todosLosInstructores, idArea, areaNombre);
+
+    // Mostrar/actualizar el hint de búsqueda
+    const hint = document.getElementById('instructorAreaHint');
+    if (hint) {
+      const count = todosLosInstructores.filter(i => String(i.idArea) === String(idArea)).length;
+      hint.textContent = count > 0
+        ? `${count} instructor${count > 1 ? 'es' : ''} del área "${areaNombre}" aparecen primero`
+        : `Sin instructores en el área "${areaNombre}" — mostrando todos`;
+      hint.style.display = 'block';
+    }
   }
 
   function cargarSedes() {
@@ -438,7 +557,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ============================================================
      FIX 1: CARGAR TODAS LAS FICHAS EN CACHE
-     Las guardamos para filtrar localmente por sede + jornada
   ============================================================ */
   function cargarTodasLasFichas() {
     const fd = new FormData();
@@ -454,18 +572,15 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   /* ============================================================
-     FIX 1: FILTRAR FICHAS POR SEDE + JORNADA
-     La ficha está amarrada a ambiente → ambiente está amarrado a sede
-     Por eso filtramos por idSede que viene en el listado de fichas
+     FIX 1 + FIX 2: FILTRAR FICHAS POR SEDE + JORNADA
+     Mapea todos los posibles nombres del campo tipo programa
   ============================================================ */
   function filtrarFichasPorSedeYJornada(idSede, jornada) {
     const sel = document.getElementById('selectFichaHorario');
     if (!sel) return;
 
-    // Filtrar fichas que pertenecen a la sede seleccionada
     let fichasFiltradas = todasLasFichas.filter(f => String(f.idSede) === String(idSede));
 
-    // Si además hay jornada seleccionada, filtrar también por jornada
     if (jornada) {
       fichasFiltradas = fichasFiltradas.filter(f =>
         f.jornada && f.jornada.toUpperCase() === jornada.toUpperCase()
@@ -475,6 +590,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (fichasFiltradas.length === 0) {
       sel.innerHTML = `<option value="">— Sin fichas para esta sede${jornada ? '/jornada' : ''} —</option>`;
       sel.disabled = true;
+      const inputTipo = document.getElementById('inputTipoPrograma');
+      if (inputTipo) inputTipo.value = '';
       return;
     }
 
@@ -482,16 +599,21 @@ document.addEventListener('DOMContentLoaded', function () {
     fichasFiltradas.forEach(f => {
       const opt = document.createElement('option');
       opt.value = f.idFicha;
-      opt.textContent = `${f.codigoFicha} — ${f.programa}`;
-      opt.dataset.tipoprograma = f.tipoPrograma || f.tipoprograma || '';
-      opt.dataset.jornada = f.jornada || '';
+      opt.textContent = `${f.codigoFicha} — ${f.programa || f.programaNombre || ''}`;
+
+      // FIX 2: Mapear todos los posibles nombres del campo tipo programa
+      const tipoVal = f.tipoPrograma || f.tipoprograma || f.tipoFormacion || f.tipoformacion || '';
+      opt.dataset.tipoprograma  = tipoVal;
+      opt.dataset.tipoformacion = tipoVal;
+      opt.dataset.jornada       = f.jornada || '';
       sel.appendChild(opt);
     });
     sel.disabled = false;
   }
 
   /* ============================================================
-     CARGAR AMBIENTES POR SEDE
+     FIX 1: CARGAR AMBIENTES POR SEDE
+     Muestra: código — No. número | Área
   ============================================================ */
   function cargarAmbientesPorSede(idSede, selectId) {
     const sel = document.getElementById(selectId);
@@ -514,19 +636,26 @@ document.addEventListener('DOMContentLoaded', function () {
         (resp.ambientes || []).forEach(amb => {
           const opt = document.createElement('option');
           opt.value = amb.idAmbiente;
-          opt.textContent = `${amb.codigo} — No. ${amb.numero}`;
-          opt.dataset.area    = amb.nombreArea || '—';
-          opt.dataset.idarea  = amb.idArea || '';
+
+          // FIX 1: Incluir el área en el texto del option
+          const areaTxt = amb.nombreArea ? ` | ${amb.nombreArea}` : '';
+          opt.textContent = `${amb.codigo} — No. ${amb.numero}${areaTxt}`;
+
+          opt.dataset.area   = amb.nombreArea || '—';
+          opt.dataset.idarea = amb.idArea     || '';
           sel.appendChild(opt);
         });
         sel.disabled = false;
+
+        // Resetear hint de instructor al cambiar ambientes disponibles
+        const hint = document.getElementById('instructorAreaHint');
+        if (hint) hint.style.display = 'none';
       })
       .catch(console.error);
   }
 
   function cargarAmbientesPorSedeEdit(idSede, idAmbActual) {
     cargarAmbientesPorSede(idSede, 'selectAmbienteEdit');
-    // Después de cargar, seleccionar el actual
     setTimeout(() => {
       const sel = document.getElementById('selectAmbienteEdit');
       if (sel && idAmbActual) sel.value = idAmbActual;
@@ -540,7 +669,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const activos = document.querySelectorAll('.dia-header.dia-activo');
     const ids = [];
     activos.forEach(th => {
-      const colIdx = parseInt(th.dataset.dia); // 1=Lun, 2=Mar...
+      const colIdx = parseInt(th.dataset.dia);
       const idDia  = COL_DIA[colIdx];
       if (idDia) ids.push(idDia);
     });
@@ -563,20 +692,18 @@ document.addEventListener('DOMContentLoaded', function () {
   function actualizarPreview() {
     const horaInicio  = document.getElementById('horaInicioHorario')?.value || '';
     const horaFin     = document.getElementById('horaFinHorario')?.value    || '';
-    const fichaNombre = document.getElementById('selectFichaHorario')?.options[
-      document.getElementById('selectFichaHorario')?.selectedIndex
-    ]?.text || '—';
-    const instructorNombre = document.getElementById('selectInstructorHorario')?.options[
-      document.getElementById('selectInstructorHorario')?.selectedIndex
-    ]?.text || '—';
+    const fichaSelect = document.getElementById('selectFichaHorario');
+    const fichaNombre = fichaSelect?.options[fichaSelect?.selectedIndex]?.text || '—';
+    const instrSelect = document.getElementById('selectInstructorHorario');
+    const instructorNombre = instrSelect?.options[instrSelect?.selectedIndex]?.text || '—';
 
     const previewHora = document.getElementById('previewHora');
     const previewFicha = document.getElementById('previewFicha');
     const previewInstructor = document.getElementById('previewInstructor');
 
     if (previewHora && horaInicio) previewHora.textContent = `${horaInicio} - ${horaFin}`;
-    if (previewFicha) previewFicha.textContent = fichaNombre !== '— Seleccione ficha —' ? fichaNombre : '—';
-    if (previewInstructor) previewInstructor.textContent = instructorNombre !== '— Seleccione instructor —' ? instructorNombre : '—';
+    if (previewFicha) previewFicha.textContent = (fichaNombre && fichaNombre !== '— Seleccione ficha —') ? fichaNombre : '—';
+    if (previewInstructor) previewInstructor.textContent = (instructorNombre && instructorNombre !== '— Seleccione instructor —') ? instructorNombre : '—';
 
     actualizarPreviewCalendario();
   }
@@ -585,9 +712,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const activos = document.querySelectorAll('.dia-header.dia-activo');
     const horaInicio = document.getElementById('horaInicioHorario')?.value || '';
     const horaFin    = document.getElementById('horaFinHorario')?.value    || '';
-    const fichaTxt   = document.getElementById('selectFichaHorario')?.options[
-      document.getElementById('selectFichaHorario')?.selectedIndex
-    ]?.text || '';
+    const fichaSelect = document.getElementById('selectFichaHorario');
+    const fichaTxt = fichaSelect?.options[fichaSelect?.selectedIndex]?.text || '';
 
     document.querySelectorAll('.cal-cell-inner').forEach(ci => {
       ci.innerHTML = '';
@@ -618,23 +744,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return '<span class="badge-jornada badge-noche">🌙 Noche</span>';
   }
 
-  function abreviarDia(nombre) {
-    const mapa = {
-      'Lunes': 'Lun', 'Martes': 'Mar', 'Miércoles': 'Mié', 'Miercoles': 'Mié',
-      'Jueves': 'Jue', 'Viernes': 'Vie', 'Sábado': 'Sáb', 'Sabado': 'Sáb', 'Domingo': 'Dom'
-    };
-    return mapa[nombre] || nombre.substring(0, 3);
-  }
-
-  function formatFecha(fecha) {
-    if (!fecha) return '—';
-    try {
-      return new Date(fecha + 'T00:00:00').toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    } catch {
-      return fecha;
-    }
-  }
-
   function emptyState() {
     return `<div class="horario-empty">
       <i class="bi bi-calendar-x"></i>
@@ -662,6 +771,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const inputTipo = document.getElementById('inputTipoPrograma');
     if (inputTipo) inputTipo.value = '';
+
+    // Limpiar búsqueda de instructor y resetear select
+    const buscar = document.getElementById('inputBuscarInstructor');
+    if (buscar) buscar.value = '';
+    renderInstructores(todosLosInstructores, null, null);
+
+    const hint = document.getElementById('instructorAreaHint');
+    if (hint) hint.style.display = 'none';
   }
 
 });

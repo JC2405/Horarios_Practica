@@ -2,25 +2,15 @@
 
 include_once "conexion.php";
 
-/**
- * VERSIÓN: Validación Inteligente por Ficha
- * 
- * PERMITE:
- * - Múltiples instructores en el mismo ambiente (misma ficha)
- * - Duplicados dentro de la misma ficha
- * 
- * VALIDA:
- * - Un instructor NO puede estar en dos FICHAS diferentes al mismo tiempo
- * - Evita conflictos de horario de instructores entre fichas
- */
+
 
 class horarioModelo {
 
-    // ========== VALIDAR CONFLICTOS ENTRE FICHAS ==========
+    
     private static function validarConflictosHorario($datos, $idHorarioExcluir = null) {
         $conn = Conexion::Conectar();
         
-        // 🔥 SOLO VALIDAR CONFLICTOS DE INSTRUCTOR ENTRE FICHAS DIFERENTES
+        // SOLO VALIDAR CONFLICTOS DE INSTRUCTOR ENTRE FICHAS DIFERENTES
         if (!empty($datos['idFuncionario']) && !empty($datos['idFicha'])) {
             $sqlInstructor = "
                 SELECT 

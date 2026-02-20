@@ -408,7 +408,7 @@
     ambientes.forEach((amb) => {
       const option = document.createElement("option");
       option.value = amb.idAmbiente;
-      option.textContent = `${amb.codigo} - Número: ${amb.numero}`;
+      option.textContent = `${amb.codigo} - Número: ${amb.numero} - Area: ${amb.nombreArea}`;
       select.appendChild(option);
     });
 
@@ -429,9 +429,8 @@
     }
   }
 
-  // =========================
+
   // 11) CARGAR PROGRAMAS
-  // =========================
   function cargarProgramas() {
     fetch("controlador/fichaControlador.php", {
       method: "POST",
@@ -494,9 +493,8 @@
     }
   }
 
-  // =========================
+
   // 12) CALCULAR FECHA FIN
-  // =========================
   function calcularFechaFin() {
     const fechaInicio = document.getElementById("fecha_inicio")?.value;
 

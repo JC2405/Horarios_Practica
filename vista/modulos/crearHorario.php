@@ -1,17 +1,212 @@
 <?php
 /**
  * crearHorario.php
- *
- * Layout 3×2:
- *  Fila 1: [Sede]      [Ficha (Jornada · Código · Tipo Prog)]   [Hora inicio/fin]
- *  Fila 2: [Ambiente]  [Instructor + búsqueda por nombre]        [Fecha inicio/fin]
- *
- * FIX 1: Ambiente muestra el área en el texto del option
- * FIX 2: Tipo programa se auto-rellena al seleccionar ficha
- * FIX 3: Instructor se filtra por área del ambiente + búsqueda libre por nombre
+ * - Tabla listado con botón ojo → modal FullCalendar
+ * - Panel crear (grid 3x2)
+ * - Panel editar
+ * - Modal visualización con FullCalendar
  */
 ?>
+
+<!-- FullCalendar CSS -->
+<link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.20/index.global.min.css' rel='stylesheet' />
 <link rel="stylesheet" href="vista/css/horario.css">
+
+<style>
+/* ── Botón ojo ── */
+.btn-ver {
+  background: linear-gradient(135deg, #7c6bff 0%, #9d8fff 100%);
+  border: none;
+  color: #fff;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all .22s ease;
+  box-shadow: 0 3px 10px rgba(124,107,255,.3);
+}
+.btn-ver:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(124,107,255,.45);
+  background: linear-gradient(135deg, #6b5ce7 0%, #8a7aee 100%);
+  color: #fff;
+}
+
+/* ── Modal ── */
+#modalVerHorario .modal-dialog { max-width: 860px; }
+#modalVerHorario .modal-content {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(124,107,255,.2);
+}
+#modalVerHorario .modal-header {
+  background: linear-gradient(135deg, #7c6bff 0%, #9d8fff 100%);
+  border: none;
+  padding: 18px 24px;
+}
+#modalVerHorario .modal-title {
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#modalVerHorario .btn-close { filter: brightness(0) invert(1); opacity: .85; }
+
+/* ── Info chips ── */
+.cal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.cal-info-chip {
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.cal-info-chip .chip-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .6px;
+  color: #8b7bef;
+  margin-bottom: 3px;
+}
+.cal-info-chip .chip-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e1b4b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── FullCalendar wrapper ── */
+#horarioCalendar {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e8e4ff;
+}
+#horarioCalendar .fc-toolbar-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: #1e1b4b !important;
+}
+#horarioCalendar .fc-button-primary {
+  background: linear-gradient(135deg, #7c6bff, #9d8fff) !important;
+  border: none !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(124,107,255,.25) !important;
+  transition: all .2s !important;
+}
+#horarioCalendar .fc-button-primary:hover {
+  background: linear-gradient(135deg, #6b5ce7, #8a7aee) !important;
+  transform: translateY(-1px) !important;
+}
+#horarioCalendar .fc-button-primary:not(:disabled).fc-button-active {
+  background: #5b4fcc !important;
+}
+#horarioCalendar .fc-col-header-cell {
+  background: #f5f3ff;
+  font-size: 11px;
+  font-weight: 700;
+  color: #6b5ce7;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+#horarioCalendar .fc-daygrid-event {
+  border-radius: 6px !important;
+  border: none !important;
+  padding: 2px 6px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+}
+#horarioCalendar .fc-day-today { background: #faf8ff !important; }
+#horarioCalendar .fc-day-today .fc-daygrid-day-number {
+  background: #7c6bff;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+/* ── Modal footer ── */
+#modalVerHorario .modal-footer { border-top: 1px solid #ede9ff; padding: 14px 20px; }
+.btn-cerrar-modal {
+  background: #fff;
+  border: 2px solid rgba(124,107,255,.4);
+  color: #7c6bff;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 8px 22px;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-cerrar-modal:hover { background: #f5f3ff; border-color: #7c6bff; }
+
+/* ── Paleta morada botones forms ── */
+#formCrearHorario .btn-primary,
+#formEditarHorario .btn-primary,
+.ph-actions .btn-primary {
+  background: linear-gradient(135deg, #7c6bff 0%, #9d8fff 100%) !important;
+  border: none !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(124,107,255,.28);
+  transition: all .25s;
+}
+#formCrearHorario .btn-primary:hover, .ph-actions .btn-primary:hover {
+  background: linear-gradient(135deg, #6b5ce7 0%, #8a7aee 100%) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(124,107,255,.38);
+}
+#formCrearHorario .btn-secondary, .ph-actions .btn-secondary {
+  background: #fff !important;
+  border: 2px solid rgba(124,107,255,.4) !important;
+  color: #7c6bff !important;
+  font-weight: 600;
+  border-radius: 10px;
+}
+#formCrearHorario .btn-secondary:hover, .ph-actions .btn-secondary:hover {
+  background: #f5f3ff !important;
+}
+
+/* ── Hint instructor ── */
+.ph-instructor-hint {
+  display: none; align-items: center; gap: 7px;
+  font-size: 11.5px; font-weight: 500; padding: 6px 12px;
+  border-radius: 8px; margin-bottom: 6px;
+  background: #f0eeff; border: 1px solid #c4b5fd; color: #5b3fd8;
+}
+.ph-instructor-hint.ph-hint-warn { background:#fffbeb; border-color:#fcd34d; color:#92400e; }
+.ph-instructor-search { margin-bottom: 6px; }
+.ph-search-input {
+  width: 100%; font-size: 12.5px !important; padding: 7px 12px !important;
+  border-radius: 8px; border: 1px solid #e5e7eb !important;
+  transition: border-color .2s, box-shadow .2s;
+}
+.ph-search-input:focus {
+  border-color: #7c6bff !important;
+  box-shadow: 0 0 0 3px rgba(124,107,255,.12) !important;
+  outline: none;
+}
+</style>
 
 <div class="horario-wrap">
 
@@ -20,7 +215,6 @@
   ══════════════════════════════════════════════════ -->
   <div id="panelTablaHorario">
 
-    <!-- HEADER LISTADO -->
     <div class="ph-header">
       <div class="ph-header-left">
         <div class="ph-icon"><i class="bi bi-calendar-week-fill"></i></div>
@@ -34,9 +228,8 @@
       </button>
     </div>
 
-    <!-- TABLA 7 columnas -->
     <div class="ph-table-card">
-      <table id="tablaHorarios" class="table table-hover w-100">
+      <table id="tablaHorarios" class="w-100">
         <thead>
           <tr>
             <th><i class="bi bi-building me-1"></i>Sede</th>
@@ -60,7 +253,6 @@
   ══════════════════════════════════════════════════ -->
   <div id="panelFormularioHorario" style="display:none;">
 
-    <!-- HEADER CREAR -->
     <div class="ph-crear-header">
       <button type="button" id="btnRegresarTablaHorario" class="ph-btn-back">
         <i class="bi bi-arrow-left"></i> Regresar
@@ -77,12 +269,9 @@
     <div class="ph-form-card">
       <form id="formCrearHorario" novalidate>
 
-        <!-- ═══════════ GRID 3×2 ═══════════ -->
         <div class="ph-grid">
 
-          <!-- ── FILA 1 ── -->
-
-          <!-- 1/A  SEDE -->
+          <!-- SEDE -->
           <div class="ph-block">
             <div class="ph-block-label"><i class="bi bi-building"></i> SEDE</div>
             <select id="selectSedeHorario" class="ph-sel" required>
@@ -90,7 +279,7 @@
             </select>
           </div>
 
-          <!-- 1/B  FICHA -->
+          <!-- FICHA -->
           <div class="ph-block ph-block-ficha">
             <div class="ph-block-label"><i class="bi bi-file-earmark-person"></i> FICHA</div>
             <div class="ph-ficha-row">
@@ -101,7 +290,6 @@
                   <option value="MAÑANA">🌅 Mañana</option>
                   <option value="TARDE">☀️ Tarde</option>
                   <option value="NOCHE">🌙 Noche</option>
-                  <option value="SABADO">📅 Sábado</option>
                 </select>
               </div>
               <div class="ph-ficha-col ph-ficha-grow">
@@ -113,7 +301,7 @@
             </div>
           </div>
 
-          <!-- 1/C  HORA INICIO / FIN -->
+          <!-- HORA -->
           <div class="ph-block">
             <div class="ph-block-label"><i class="bi bi-clock"></i> HORA INICIO / FIN</div>
             <div class="ph-stack">
@@ -128,9 +316,7 @@
             </div>
           </div>
 
-          <!-- ── FILA 2 ── -->
-
-          <!-- 2/A  AMBIENTE (FIX 1: muestra área en el texto) -->
+          <!-- AMBIENTE -->
           <div class="ph-block">
             <div class="ph-block-label"><i class="bi bi-door-open"></i> AMBIENTE</div>
             <select id="selectAmbienteHorario" class="ph-sel" disabled required>
@@ -138,29 +324,21 @@
             </select>
           </div>
 
-          <!-- 2/B  INSTRUCTOR (FIX 3: filtrado por área + búsqueda) -->
+          <!-- INSTRUCTOR -->
           <div class="ph-block ph-block-ficha">
             <div class="ph-block-label"><i class="bi bi-person-badge"></i> INSTRUCTOR</div>
-
-            <!-- Hint de área activa -->
-            <div id="instructorAreaHint" class="ph-instructor-hint" style="display:none;"></div>
-
-            <!-- Búsqueda por nombre -->
+            <div id="instructorAreaHint" class="ph-instructor-hint"></div>
             <div class="ph-instructor-search">
-              <input
-                type="text"
-                id="inputBuscarInstructor"
+              <input type="text" id="inputBuscarInstructor"
                 class="ph-sel ph-search-input"
                 placeholder="Buscar instructor por nombre...">
             </div>
-
-            <!-- Select de instructor -->
             <select id="selectInstructorHorario" class="ph-sel" required>
               <option value="">— Seleccione instructor —</option>
             </select>
           </div>
 
-          <!-- 2/C  FECHA INICIO / FIN -->
+          <!-- FECHA -->
           <div class="ph-block">
             <div class="ph-block-label"><i class="bi bi-calendar-range"></i> FECHA INICIO / FIN</div>
             <div class="ph-stack">
@@ -177,8 +355,7 @@
 
         </div><!-- /ph-grid -->
 
-
-        <!-- ═══════════ CALENDARIO SEMANAL ═══════════ -->
+        <!-- CALENDARIO SEMANAL -->
         <div class="ph-calendario">
           <div class="ph-cal-header">
             <span class="ph-cal-title"><i class="bi bi-grid-3x2-gap"></i> Días de la semana</span>
@@ -190,7 +367,7 @@
                 <tr>
                   <?php
                   $dias  = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-                  $abrev = ['Lun',  'Mar',   'Mié',      'Jue',   'Vie',    'Sáb'];
+                  $abrev = ['Lun','Mar','Mié','Jue','Vie','Sáb'];
                   foreach ($dias as $i => $dia): ?>
                   <th class="dia-header" data-dia="<?= $i+1 ?>">
                     <div class="dia-header-inner">
@@ -222,7 +399,6 @@
           </div>
         </div>
 
-        <!-- Acciones -->
         <div class="ph-actions">
           <button type="button" id="btnCancelarHorario" class="btn btn-secondary">
             <i class="bi bi-x-lg"></i> Cancelar
@@ -233,7 +409,7 @@
         </div>
 
       </form>
-    </div><!-- /ph-form-card -->
+    </div>
   </div><!-- /panelFormularioHorario -->
 
 
@@ -258,7 +434,6 @@
     <div class="ph-form-card">
       <form id="formEditarHorario" novalidate>
         <input type="hidden" id="idHorarioEdit">
-
         <div class="row g-3">
           <div class="col-md-6">
             <label class="form-label fw-bold">Ambiente</label>
@@ -297,7 +472,6 @@
             </div>
           </div>
         </div>
-
         <div class="ph-actions">
           <button type="button" id="btnCancelarEditarHorario" class="btn btn-secondary">
             <i class="bi bi-x-lg"></i> Cancelar
@@ -312,6 +486,71 @@
   </div><!-- /panelEditarHorario -->
 
 </div><!-- /horario-wrap -->
+
+
+<!-- ════════════════════════════════════════════════════════════
+     MODAL: VER HORARIO EN FULLCALENDAR
+════════════════════════════════════════════════════════════ -->
+<div class="modal fade" id="modalVerHorario" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-calendar3"></i> Vista de Horario en Calendario
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body p-4">
+
+        <!-- Chips de información -->
+        <div class="cal-info-grid">
+          <div class="cal-info-chip">
+            <div class="chip-label"><i class="bi bi-file-earmark-text me-1"></i>Ficha</div>
+            <div class="chip-value" id="calModal_ficha">—</div>
+          </div>
+          <div class="cal-info-chip">
+            <div class="chip-label"><i class="bi bi-person-badge me-1"></i>Instructor</div>
+            <div class="chip-value" id="calModal_instructor">—</div>
+          </div>
+          <div class="cal-info-chip">
+            <div class="chip-label"><i class="bi bi-building me-1"></i>Sede</div>
+            <div class="chip-value" id="calModal_sede">—</div>
+          </div>
+          <div class="cal-info-chip">
+            <div class="chip-label"><i class="bi bi-diagram-3 me-1"></i>Área</div>
+            <div class="chip-value" id="calModal_area">—</div>
+          </div>
+          <div class="cal-info-chip">
+            <div class="chip-label"><i class="bi bi-clock me-1"></i>Horario</div>
+            <div class="chip-value" id="calModal_hora">—</div>
+          </div>
+          <div class="cal-info-chip">
+            <div class="chip-label"><i class="bi bi-calendar-range me-1"></i>Vigencia</div>
+            <div class="chip-value" id="calModal_fechas">—</div>
+          </div>
+        </div>
+
+        <!-- FullCalendar se renderiza aquí -->
+        <div id="horarioCalendar"></div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cerrar-modal" data-bs-dismiss="modal">
+          <i class="bi bi-x-lg me-1"></i> Cerrar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FullCalendar scripts (core + daygrid + timegrid) -->
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.20/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.20/index.global.min.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.20/index.global.min.js'></script>
 
 <script src="vista/js/cl_ambiente.js"></script>
 <script src="vista/js/horario.js"></script>

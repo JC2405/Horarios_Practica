@@ -62,12 +62,16 @@
             try {
                 $objRespuesta = Conexion::Conectar()->prepare(
                     "SELECT 
-                        idAmbiente,
-                        codigo,
-                        numero
-                    FROM ambiente
-                    WHERE idSede = :idSede
-                    ORDER BY codigo ASC"
+                        a.idAmbiente,
+                        a.codigo,
+                        a.numero,
+                        ar.idArea,
+                        ar.nombreArea
+                    FROM ambiente a
+                    INNER JOIN area ar 
+                        ON a.idArea = ar.idArea
+                    WHERE a.idSede = :idSede
+                    ORDER BY a.codigo ASC"
                 );
 
                 $objRespuesta->bindParam(":idSede", $idSede, PDO::PARAM_INT);
@@ -202,7 +206,7 @@
             );
         }
         
-        // ✅ Si no hay conflicto, proceder con la inserción normal
+
         $objRespuesta = $conexion->prepare(
             "INSERT INTO ficha (codigoFicha, idPrograma, idAmbiente, estado, jornada, fechaInicio, fechaFin)
             VALUES (:codigoFicha, :idPrograma, :idAmbiente, :estado, :jornada, :fechaInicio, :fechaFin)"

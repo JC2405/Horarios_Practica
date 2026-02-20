@@ -634,3 +634,77 @@
 .ph-btn-back:hover i {
   transform: translateX(-3px);
 }
+
+
+/* =====================================================
+   RESET TOTAL PARA TABLA HORARIOS (ANULA BOOTSTRAP)
+   ===================================================== */
+/* Anular DataTables */
+
+#tablaHorarios.table {
+  background: #ffffff !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: none !important;
+}
+
+/* Quitar fondo gris que mete bootstrap */
+#tablaHorarios.table > :not(caption) > * > * {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+}
+
+/* =====================================================
+   CABECERA
+   ===================================================== */
+
+#tablaHorarios.table thead {
+  background: #ffffff !important;
+}
+
+#tablaHorarios.table thead th {
+  background: #ffffff !important;
+  color: #7c6bff !important;
+  font-weight: 800 !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  padding: 16px !important;
+  border-bottom: 2px solid rgba(124,107,255,.20) !important;
+  border-top: none !important;
+}
+
+/* Iconos del header */
+#tablaHorarios.table thead th i {
+  color: #9d8fff !important;
+}
+
+/* =====================================================
+   BODY
+   ===================================================== */
+
+#tablaHorarios.table tbody td {
+  background: #ffffff !important;
+  color: #000000 !important;
+  padding: 14px 16px !important;
+  font-weight: 500;
+}
+
+/* Filas alternadas suaves */
+#tablaHorarios.table tbody tr:nth-child(even) td {
+  background: #fafafa !important;
+}
+
+/* Hover limpio (anula table-hover) */
+#tablaHorarios.table.table-hover tbody tr:hover > * {
+  background-color: #f5f3ff !important;
+  color: #000000 !important;
+}
+
+/* Quitar bordes laterales */
+#tablaHorarios.table th,
+#tablaHorarios.table td {
+  border-right: none !important;
+  border-left: none !important;
+}

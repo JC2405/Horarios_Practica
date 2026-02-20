@@ -233,21 +233,35 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     calendarInstance = new FullCalendar.Calendar(calEl, {
-      initialView:  'dayGridMonth',
-      locale:       'es',
-      initialDate:  data.fechaInicio || undefined,
-      headerToolbar: {
-        left:   'prev,next today',
-        center: 'title',
-        right:  'dayGridMonth,timeGridWeek',
-      },
-      buttonText: { today:'Hoy', month:'Mes', week:'Semana' },
-      height:   500,
-      events:   events,
-      eventContent: function(arg) {
-        return { html: `<div class="fc-event-inner"><i class="bi bi-clock"></i> ${arg.event.title}</div>` };
-      },
-    });
+  initialView:       'timeGridWeek',
+  locale:            'es',
+  initialDate:       data.fechaInicio || undefined,
+  headerToolbar: {
+    left:   'prev,next today',
+    center: 'title',
+    right:  ''
+  },
+  buttonText:        { today: 'Hoy' },
+  height:            560,
+  allDaySlot:        false,
+  slotMinTime:       '05:00:00',
+  slotMaxTime:       '23:00:00',
+  slotDuration:      '00:30:00',
+  slotLabelInterval: '01:00:00',
+  expandRows:        true,
+  nowIndicator:      true,
+  events:            events,
+  eventContent: function(arg) {
+    const start = arg.event.startStr?.slice(11,16) || '';
+    const end   = arg.event.endStr?.slice(11,16)   || '';
+    return {
+      html: `<div class="fc-ev-inner">
+               <div class="fc-ev-hora"><i class="bi bi-clock-fill"></i> ${start} – ${end}</div>
+               <div class="fc-ev-name">${arg.event.title}</div>
+             </div>`
+    };
+  },
+});
 
     calendarInstance.render();
   }

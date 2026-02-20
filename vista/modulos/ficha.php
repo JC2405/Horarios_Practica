@@ -2,7 +2,7 @@
       PANEL DE TABLA FICHAS
       ======================================== -->
   <div id="panelTablaFichas" class="panel-tabla-fichas">
-    <link href="vista/css/tablaFicha.css" rel="stylesheet">  
+    <link href="vista/css/styles.css" rel="stylesheet">  
     <div class="container">
       <div class="header-section-modern">
 

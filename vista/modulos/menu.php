@@ -43,7 +43,7 @@ $menus = [
       'icon' => 'bx bx-time',
       'items' => [
         ['label' => 'Horario Titulada', 'href' => 'crearHorario'],
-        ['label' => 'Horarios', 'href' => 'sedeVista'],
+        ['label' => 'Horarios Politica', 'href' => 'sedeVista'],
 
       ]
     ],

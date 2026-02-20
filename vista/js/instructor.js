@@ -9,45 +9,7 @@ document.addEventListener('DOMContentLoaded', function(){
         new instructor(objData).listarInstructor();
     }
 
-    function cargarAreas(){
-        let fd = new FormData();
-        fd.append("listarArea", "ok");
-        fetch("controlador/areaControlador.php", { method:"POST", body:fd })
-        .then(r => r.json())
-        .then(response => {
-            if(response.codigo == "200"){
-                const selects = ["idAreaInstructor", "idAreaInstructorEdit"];
-                selects.forEach(id => {
-                    const select = document.getElementById(id);
-                    if(!select) return;
-                    select.innerHTML = '<option value="" disabled selected>Seleccione...</option>';
-                    response.listarArea.forEach(a => {
-                        select.innerHTML += `<option value="${a.idArea}">${a.nombreArea}</option>`;
-                    });
-                });
-            }
-        });
-    }
-
-    function cargarTiposContrato(){
-        let fd = new FormData();
-        fd.append("listarTipoContrato", "ok");
-        fetch("controlador/tipoContratoControlador.php", { method:"POST", body:fd })
-        .then(r => r.json())
-        .then(response => {
-            if(response.codigo == "200"){
-                const selects = ["idTipoContratoInstructor", "idTipoContratoInstructorEdit"];
-                selects.forEach(id => {
-                    const select = document.getElementById(id);
-                    if(!select) return;
-                    select.innerHTML = '<option value="" disabled selected>Seleccione...</option>';
-                    response.listarTipoContrato.forEach(t => {
-                        select.innerHTML += `<option value="${t.idTipoContrato}">${t.tipoContrato}</option>`;
-                    });
-                });
-            }
-        });
-    }
+    
 
     document.getElementById("agregarInstructor").addEventListener("click", function(){
         $("#panelListarInstructor").hide();
@@ -55,6 +17,8 @@ document.addEventListener('DOMContentLoaded', function(){
         document.getElementById("formAgregarInstructor").reset();
         $("#formAgregarInstructor").removeClass("was-validated");
     });
+
+
 
     $("#btnCancelarInstructor, #btnRegresarTablaInstructor").on("click", function(e){
         e.preventDefault();
@@ -64,6 +28,8 @@ document.addEventListener('DOMContentLoaded', function(){
         $("#formAgregarInstructor").removeClass("was-validated");
     });
 
+
+    
     $("#btnCancelarEditarInstructor, #btnRegresarTablaInstructorEdit").on("click", function(e){
         e.preventDefault();
         $("#panelFormularioEditarInstructor").hide();

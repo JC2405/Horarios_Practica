@@ -48,14 +48,7 @@
     const btnCrearFicha = document.getElementById("btnCrearFicha");
     const btnVolverTabla = document.getElementById("btnVolverTabla");
 
-    // Validaciones rápidas por si el HTML no está (evita que "explote")
-    if (!panelTabla || !panelCrear || !btnCrearFicha || !btnVolverTabla) {
-      console.error("❌ No se encontraron elementos del DOM para paneles. Revisa IDs:", {
-        panelTabla, panelCrear, btnCrearFicha, btnVolverTabla
-      });
-      return;
-    }
-
+  
     // Botón: Crear Ficha (Mostrar formulario)
     btnCrearFicha.addEventListener("click", function () {
       panelTabla.style.display = "none";

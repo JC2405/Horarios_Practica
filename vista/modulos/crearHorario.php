@@ -1,12 +1,4 @@
-<?php
-/**
- * crearHorario.php
- * - Tabla listado con botón ojo → modal FullCalendar
- * - Panel crear (grid 3x2)
- * - Panel editar
- * - Modal visualización con FullCalendar
- */
-?>
+
 
 <!-- FullCalendar CSS -->
 <link href='https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.20/index.global.min.css' rel='stylesheet' />

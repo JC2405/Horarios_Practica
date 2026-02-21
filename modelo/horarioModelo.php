@@ -4,6 +4,58 @@
 
     class horarioModelo {
 
+
+          public static function mdlListarHorariosPorFicha($idFicha) {
+            try {
+                $stmt = Conexion::Conectar()->prepare(
+                    "SELECT
+                        h.idHorario,
+                        h.idFicha,
+                        h.idFuncionario,
+                        h.hora_inicioClase,
+                        h.hora_finClase,
+                        h.fecha_inicioHorario,
+                        h.fecha_finHorario,
+                        func.nombre                                                             AS instructorNombre,
+                        ar.nombreArea                                                           AS areaNombre,
+                        CONCAT(a.codigo, ' - No.', a.numero)                                   AS ambienteNombre,
+                        GROUP_CONCAT(DISTINCT d.diasSemanales ORDER BY d.idDia SEPARATOR ',')   AS diasNombres
+                    FROM horario h
+                    LEFT JOIN funcionario  func ON h.idFuncionario = func.idFuncionario
+                    LEFT JOIN ambiente     a    ON h.idAmbiente    = a.idAmbiente
+                    LEFT JOIN area         ar   ON a.idArea        = ar.idArea
+                    LEFT JOIN horariodia   hd   ON h.idHorario     = hd.id_horarios
+                    LEFT JOIN dia          d    ON hd.id_dias      = d.idDia
+                    WHERE h.idFicha = :idFicha
+                    GROUP BY
+                        h.idHorario,
+                        h.idFicha,
+                        h.idFuncionario,
+                        h.hora_inicioClase,
+                        h.hora_finClase,
+                        h.fecha_inicioHorario,
+                        h.fecha_finHorario,
+                        func.nombre,
+                        ar.nombreArea,
+                        a.codigo,
+                        a.numero
+                    ORDER BY h.hora_inicioClase ASC"
+                );
+                $stmt->execute(array(':idFicha' => $idFicha));
+                return array(
+                    "codigo"   => "200",
+                    "horarios" => $stmt->fetchAll(PDO::FETCH_ASSOC),
+                    "total"    => $stmt->rowCount()
+                );
+            } catch (Exception $e) {
+                return array("codigo" => "400", "mensaje" => $e->getMessage());
+            }
+        }
+
+
+
+
+
         /* ══════════════════════════════════════════════════════════
         VALIDACIÓN 1: Cruce de horario del instructor
         El instructor NO puede tener clase en los mismos días

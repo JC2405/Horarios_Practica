@@ -10,7 +10,15 @@ include_once "../modelo/horarioModelo.php";
  * El controlador solo recibe el request, arma los datos y delega al modelo.
  */
 
+
+
 class horarioControlador {
+
+    public function ctrListarHorariosPorFicha($idFicha) {
+        $resultado = horarioModelo::mdlListarHorariosPorFicha($idFicha);
+        echo json_encode($resultado);
+    }
+    
 
     public function ctrListarHorarios() {
         $resultado = horarioModelo::mdlListarHorarios();
@@ -130,4 +138,9 @@ if (isset($_POST["guardarHorariosCompleto"])) {
 if (isset($_POST["obtenerHorariosPorSede"])) {
     $ctrl = new horarioControlador();
     $ctrl->ctrObtenerHorariosPorSede($_POST['idSede']);
+}
+
+if (isset($_POST["listarHorariosPorFicha"])) {
+    $ctrl = new horarioControlador();
+    $ctrl->ctrListarHorariosPorFicha($_POST['idFicha']);
 }

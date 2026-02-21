@@ -331,6 +331,7 @@
 
         <!-- FullCalendar se renderiza aquí -->
         <div id="horarioCalendar"></div>
+        <div id="calLeyendaInstructores"></div>  
 
       </div>
 

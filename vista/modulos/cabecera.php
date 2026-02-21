@@ -42,14 +42,14 @@
     <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
 
     <!-- 5. Tus CLASES (objetos, métodos) -->
-    <script src="vista/js/cl_programa.js"></script>
-    <script src="vista/js/cl_sede.js"></script>
-    <script src="vista/js/cl_tipoPrograma.js"></script>
-    <script src="vista/js/cl_ambiente.js"></script>
-    <script src="vista/js/cl_ficha.js"></script>
-    <script src="vista/js/cl_area.js"></script>
-    <script src="vista/js/cl_tipoContrato.js"></script>
-    <script src="vista/js/cl_instructor.js"></script>
+    <script src="assets/js/cl_programa.js"></script>
+    <script src="assets/js/cl_sede.js"></script>
+    <script src="assets/js/cl_tipoPrograma.js"></script>
+    <script src="assets/js/cl_ambiente.js"></script>
+    <script src="assets/js/cl_ficha.js"></script>
+    <script src="assets/js/cl_area.js"></script>
+    <script src="assets/js/cl_tipoContrato.js"></script>
+    <script src="assets/js/cl_instructor.js"></script>
 
     <!-- 6. Tus SCRIPTS de inicialización (ÚLTIMO) -->
     <script src="vista/js/nav.js"></script>

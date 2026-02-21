@@ -16,6 +16,12 @@ document.addEventListener('DOMContentLoaded', function () {
     'Jueves':4,'Viernes':5,'Sábado':6,'Sabado':6
   };
 
+  // Paleta de colores para distinguir instructores en el calendario
+  const COLORES_INSTRUCTORES = [
+    '#7c6bff','#f59e0b','#10b981','#ef4444',
+    '#3b82f6','#8b5cf6','#ec4899','#14b8a6','#f97316'
+  ];
+
   listarHorarios();
   cargarDiasDB();
   cargarInstructoresTodos();
@@ -123,23 +129,20 @@ document.addEventListener('DOMContentLoaded', function () {
     e.preventDefault(); editarHorario(getDiasEditSeleccionados());
   });
 
-  /* ── CLICK VER (ojo) ── */
+  /* ══════════════════════════════════════════════════
+     CLICK VER (ojo) — ahora pasa idFicha
+  ══════════════════════════════════════════════════ */
   $(document).on('click', '.btnVerHorario', function (e) {
     e.preventDefault(); e.stopPropagation();
-    abrirModalCalendario({
-      id:          $(this).data('id'),
-      ficha:       $(this).data('ficha')        || '—',
-      instructor:  $(this).data('instructor')   || '—',
-      sede:        $(this).data('sede')          || '—',
-      area:        $(this).data('area')          || '—',
-      jornada:     $(this).data('jornada')       || '—',
-      tipo:        $(this).data('tipo')          || '—',
-      horaInicio:  $(this).data('hora-inicio')   || '',
-      horaFin:     $(this).data('hora-fin')      || '',
-      fechaInicio: $(this).data('fecha-inicio')  || '',
-      fechaFin:    $(this).data('fecha-fin')     || '',
-      diasNombres: String($(this).data('dias-nombres') || ''),
-    });
+
+    const idFicha   = $(this).data('id-ficha');
+    const ficha     = $(this).data('ficha')       || '—';
+    const sede      = $(this).data('sede')         || '—';
+    const area      = $(this).data('area')         || '—';
+    const jornada   = $(this).data('jornada')      || '—';
+    const tipo      = $(this).data('tipo')         || '—';
+
+    abrirModalCalendarioPorFicha(idFicha, { ficha, sede, area, jornada, tipo });
   });
 
   /* ── CLICK EDITAR ── */
@@ -181,93 +184,173 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ══════════════════════════════════════════════════
-     MODAL FULLCALENDAR
+     MODAL — ABRIR POR FICHA
   ══════════════════════════════════════════════════ */
-  function abrirModalCalendario(data) {
+  function abrirModalCalendarioPorFicha(idFicha, info) {
+    // Rellenar chips de información
     const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    setTxt('calModal_ficha',      data.ficha);
-    setTxt('calModal_instructor', data.instructor);
-    setTxt('calModal_sede',       data.sede);
-    setTxt('calModal_area',       data.area);
-    setTxt('calModal_jornada',    data.jornada);
-    setTxt('calModal_tipo',       data.tipo);
-    setTxt('calModal_hora',       data.horaInicio && data.horaFin ? `${data.horaInicio} – ${data.horaFin}` : '—');
-    setTxt('calModal_fechas',     data.fechaInicio ? `${data.fechaInicio}  →  ${data.fechaFin || '∞'}` : '—');
+    setTxt('calModal_ficha',      info.ficha);
+    setTxt('calModal_sede',       info.sede);
+    setTxt('calModal_area',       info.area);
+    setTxt('calModal_jornada',    info.jornada);
+    setTxt('calModal_tipo',       info.tipo);
+    setTxt('calModal_instructor', '— Múltiples —');
+    setTxt('calModal_hora',       '— Ver calendario —');
+    setTxt('calModal_fechas',     '— Ver calendario —');
+
+    // Mostrar loading en el calendario
+    const calEl = document.getElementById('horarioCalendar');
+    if (calEl) calEl.innerHTML = '<div class="cal-loading"><i class="bi bi-hourglass-split"></i> Cargando horarios...</div>';
 
     const modalEl = document.getElementById('modalVerHorario');
     const modal   = bootstrap.Modal.getOrCreateInstance(modalEl);
     modal.show();
 
-    // Inicializar calendario cuando el modal termine de abrirse
     modalEl.addEventListener('shown.bs.modal', function handler() {
       modalEl.removeEventListener('shown.bs.modal', handler);
-      inicializarFullCalendar(data);
+      cargarHorariosPorFicha(idFicha);
     });
   }
 
-  function inicializarFullCalendar(data) {
+  /* ══════════════════════════════════════════════════
+     CONSULTAR TODOS LOS HORARIOS DE UNA FICHA
+  ══════════════════════════════════════════════════ */
+  function cargarHorariosPorFicha(idFicha) {
+    const fd = new FormData();
+    fd.append('listarHorariosPorFicha', 'ok');
+    fd.append('idFicha', idFicha);
+
+    fetch('controlador/horarioControlador.php', { method: 'POST', body: fd })
+      .then(r => r.json())
+      .then(resp => {
+        if (resp.codigo !== '200' || !resp.horarios || resp.horarios.length === 0) {
+          const calEl = document.getElementById('horarioCalendar');
+          if (calEl) calEl.innerHTML = '<div class="cal-empty"><i class="bi bi-calendar-x"></i><p>Sin horarios registrados para esta ficha</p></div>';
+          return;
+        }
+        inicializarCalendarioConHorarios(resp.horarios);
+      })
+      .catch(err => {
+        console.error('cargarHorariosPorFicha:', err);
+        const calEl = document.getElementById('horarioCalendar');
+        if (calEl) calEl.innerHTML = '<div class="cal-empty"><i class="bi bi-exclamation-circle"></i><p>Error al cargar horarios</p></div>';
+      });
+  }
+
+  /* ══════════════════════════════════════════════════
+     INICIALIZAR FULLCALENDAR CON MÚLTIPLES HORARIOS
+  ══════════════════════════════════════════════════ */
+  function inicializarCalendarioConHorarios(horarios) {
     const calEl = document.getElementById('horarioCalendar');
     if (!calEl) return;
+    calEl.innerHTML = ''; // limpiar loading
 
     if (calendarInstance) { calendarInstance.destroy(); calendarInstance = null; }
 
-    // Convertir nombres de días a daysOfWeek de FullCalendar
-    const diasArr = data.diasNombres ? data.diasNombres.split(',').map(d => d.trim()).filter(Boolean) : [];
-    const daysOfWeek = [...new Set(diasArr.map(d => DIA_TO_DOW[d]).filter(d => d !== undefined))];
+    // Asignar color único por instructor
+    const mapaColores = {};
+    let colorIdx = 0;
 
     const events = [];
-    if (daysOfWeek.length > 0) {
+
+    horarios.forEach(item => {
+      const keyInstructor = String(item.idFuncionario || item.instructorNombre || 'sin');
+      if (!mapaColores[keyInstructor]) {
+        mapaColores[keyInstructor] = COLORES_INSTRUCTORES[colorIdx % COLORES_INSTRUCTORES.length];
+        colorIdx++;
+      }
+
+      const diasArr = (item.diasNombres || '').split(',').map(d => d.trim()).filter(Boolean);
+      const daysOfWeek = [...new Set(diasArr.map(d => DIA_TO_DOW[d]).filter(d => d !== undefined))];
+
       daysOfWeek.forEach(dow => {
         const ev = {
-          title:      `${data.ficha}`,
+          title:      item.instructorNombre || 'Sin instructor',
           daysOfWeek: [dow],
-          startTime:  data.horaInicio || '08:00',
-          endTime:    data.horaFin    || '10:00',
-          color:      '#7c6bff',
+          startTime:  item.hora_inicioClase || '08:00',
+          endTime:    item.hora_finClase    || '10:00',
+          color:      mapaColores[keyInstructor],
           textColor:  '#fff',
+          extendedProps: {
+            instructor: item.instructorNombre || '—',
+            area:       item.areaNombre       || '—',
+            ambiente:   item.ambienteNombre   || '—',
+            horarioId:  item.idHorario,
+          }
         };
-        if (data.fechaInicio) ev.startRecur = data.fechaInicio;
-        if (data.fechaFin)    ev.endRecur   = data.fechaFin;
+        if (item.fecha_inicioHorario) ev.startRecur = item.fecha_inicioHorario;
+        if (item.fecha_finHorario)    ev.endRecur   = item.fecha_finHorario;
         events.push(ev);
       });
-    }
+    });
+
+    // Leyenda de instructores
+    renderLeyendaInstructores(mapaColores, horarios);
 
     calendarInstance = new FullCalendar.Calendar(calEl, {
-  initialView:       'timeGridWeek',
-  locale:            'es',
-  initialDate:       data.fechaInicio || undefined,
-  headerToolbar: {
-    left:   'prev,next today',
-    center: 'title',
-    right:  ''
-  },
-  buttonText:        { today: 'Hoy' },
-  height:            560,
-  allDaySlot:        false,
-  slotMinTime:       '05:00:00',
-  slotMaxTime:       '23:00:00',
-  slotDuration:      '00:30:00',
-  slotLabelInterval: '01:00:00',
-  expandRows:        true,
-  nowIndicator:      true,
-  events:            events,
-  eventContent: function(arg) {
-    const start = arg.event.startStr?.slice(11,16) || '';
-    const end   = arg.event.endStr?.slice(11,16)   || '';
-    return {
-      html: `<div class="fc-ev-inner">
-               <div class="fc-ev-hora"><i class="bi bi-clock-fill"></i> ${start} – ${end}</div>
-               <div class="fc-ev-name">${arg.event.title}</div>
-             </div>`
-    };
-  },
-});
+      initialView:       'timeGridWeek',
+      locale:            'es',
+      headerToolbar: {
+        left:   'prev,next today',
+        center: 'title',
+        right:  ''
+      },
+      buttonText:        { today: 'Hoy' },
+      height:            520,
+      allDaySlot:        false,
+      slotMinTime:       '05:00:00',
+      slotMaxTime:       '23:00:00',
+      slotDuration:      '00:30:00',
+      slotLabelInterval: '01:00:00',
+      expandRows:        true,
+      nowIndicator:      true,
+      events:            events,
+      eventContent: function(arg) {
+        const start = arg.event.startStr?.slice(11,16) || '';
+        const end   = arg.event.endStr?.slice(11,16)   || '';
+        return {
+          html: `<div class="fc-ev-inner">
+                   <div class="fc-ev-hora"><i class="bi bi-clock-fill"></i> ${start} – ${end}</div>
+                   <div class="fc-ev-name">${arg.event.title}</div>
+                 </div>`
+        };
+      },
+      eventDidMount: function(info) {
+        const p = info.event.extendedProps;
+        info.el.title = `Instructor: ${p.instructor}\nÁrea: ${p.area}\nAmbiente: ${p.ambiente}`;
+      }
+    });
 
     calendarInstance.render();
   }
 
   /* ══════════════════════════════════════════════════
-     LISTAR HORARIOS — con botón ojo
+     LEYENDA DE INSTRUCTORES BAJO EL CALENDARIO
+  ══════════════════════════════════════════════════ */
+  function renderLeyendaInstructores(mapaColores, horarios) {
+    let leyendaEl = document.getElementById('calLeyendaInstructores');
+    if (!leyendaEl) return;
+
+    // Mapa idFuncionario → nombre
+    const mapaNames = {};
+    horarios.forEach(item => {
+      const key = String(item.idFuncionario || item.instructorNombre || 'sin');
+      mapaNames[key] = item.instructorNombre || 'Sin instructor';
+    });
+
+    let html = '<div class="cal-leyenda">';
+    Object.entries(mapaColores).forEach(([key, color]) => {
+      html += `<span class="cal-leyenda-item">
+                 <span class="cal-leyenda-dot" style="background:${color}"></span>
+                 <span class="cal-leyenda-nombre">${mapaNames[key] || key}</span>
+               </span>`;
+    });
+    html += '</div>';
+    leyendaEl.innerHTML = html;
+  }
+
+  /* ══════════════════════════════════════════════════
+     LISTAR HORARIOS — botón ojo con idFicha
   ══════════════════════════════════════════════════ */
   function listarHorarios() {
     const fd = new FormData();
@@ -295,19 +378,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
           const botones = `
             <div class="action-group">
-              <button type="button" class="btn btn-ver btnVerHorario" title="Ver en calendario"
-                data-id="${item.idHorario}"
-                data-ficha="${item.codigoFicha            || '—'}"
-                data-instructor="${item.instructorNombre  || '—'}"
-                data-sede="${item.sedeNombre              || '—'}"
-                data-area="${item.areaNombre              || '—'}"
-                data-jornada="${item.jornada              || '—'}"
-                data-tipo="${item.tipoPrograma || item.tipoprograma || '—'}"
-                data-hora-inicio="${item.hora_inicioClase     || ''}"
-                data-hora-fin="${item.hora_finClase           || ''}"
-                data-fecha-inicio="${item.fecha_inicioHorario || ''}"
-                data-fecha-fin="${item.fecha_finHorario       || ''}"
-                data-dias-nombres="${item.diasNombres         || ''}">
+              <button type="button" class="btn btn-ver btnVerHorario" title="Ver calendario de la ficha"
+                data-id-ficha="${item.idFicha           || ''}"
+                data-ficha="${item.codigoFicha          || '—'}"
+                data-sede="${item.sedeNombre            || '—'}"
+                data-area="${item.areaNombre            || '—'}"
+                data-jornada="${item.jornada            || '—'}"
+                data-tipo="${item.tipoPrograma || item.tipoprograma || '—'}">
                 <i class="bi bi-eye-fill"></i>
               </button>
               <button type="button" class="btn btn-info btnEditarHorario"

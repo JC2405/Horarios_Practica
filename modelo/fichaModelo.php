@@ -4,7 +4,7 @@
     class fichaModelo{
 
 
-        public static function mdlListarMunicipios(){
+     public static function mdlListarMunicipios(){
             $mensaje = array();
 
             try {
@@ -25,7 +25,7 @@
             }
 
             return $mensaje;
-        }
+        } 
 
 
         public static function mdlListarSedesPorMunicipio($idMunicipio){
@@ -122,7 +122,7 @@
 
 
         
-        public static function mdlListarFicha(){
+      public static function mdlListarFicha(){
             $mensaje = array();
 
             try {
@@ -161,6 +161,7 @@
             return $mensaje;
         }
 
+            
 
         public static function mdlRegistrarFicha($codigoFicha, $idPrograma, $idAmbiente, $estado, $jornada, $fechaInicio, $fechaFin){
          $mensaje = array();
@@ -233,6 +234,7 @@
     return $mensaje;
     }
 
+    
 
 
     public static function mdlEditarFicha($idFicha, $idAmbiente, $estado, $fechaInicio, $fechaFin, $jornada){

@@ -50,6 +50,7 @@
     <script src="assets/js/cl_area.js"></script>
     <script src="assets/js/cl_tipoContrato.js"></script>
     <script src="assets/js/cl_instructor.js"></script>
+     <script src="assets/js/cl_horario.js"></script>
 
     <!-- 6. Tus SCRIPTS de inicialización (ÚLTIMO) -->
     <script src="vista/js/nav.js"></script>

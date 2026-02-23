@@ -3,7 +3,9 @@
 
     class fichaModelo{
 
-
+     /* ══════════════════════════════════════════════════════════
+       LISTAR MUNICIPIOS 
+    ══════════════════════════════════════════════════════════ */
      public static function mdlListarMunicipios(){
             $mensaje = array();
 
@@ -28,6 +30,10 @@
         } 
 
 
+
+         /* ══════════════════════════════════════════════════════════
+            MODELO LISTAR SEDES POR MUNICIPIO MEDIANTE EL $idMunicipio 
+          ══════════════════════════════════════════════════════════ */
         public static function mdlListarSedesPorMunicipio($idMunicipio){
             $mensaje = array();
 
@@ -55,7 +61,10 @@
         }
 
 
-        
+
+         /* ══════════════════════════════════════════════════════════
+            MODELO LISTAR AMBIENTES POR SEDE MEDIANTE EL $idSede 
+          ══════════════════════════════════════════════════════════ */
         public static function mdlListarAmbientesPorSede($idSede){
             $mensaje = array();
 
@@ -91,6 +100,10 @@
 
 
     
+
+         /* ══════════════════════════════════════════════════════════
+            MODELO LISTAR LISTAR PROGRAMAAS CON TIPO PROGRAMA  
+          ══════════════════════════════════════════════════════════ */
         public static function mdlListarProgramas(){
             $mensaje = array();
 
@@ -121,7 +134,11 @@
         }
 
 
-        
+
+
+       /* ══════════════════════════════════════════════════════════
+            MODELO LISTAR FICHAS CON INNER JOINS
+          ══════════════════════════════════════════════════════════ */  
       public static function mdlListarFicha(){
             $mensaje = array();
 
@@ -162,16 +179,18 @@
         }
 
             
-
+         /* ══════════════════════════════════════════════════════════
+            MODELO REGISTRAR FICHAS  
+          ══════════════════════════════════════════════════════════ */
         public static function mdlRegistrarFicha($codigoFicha, $idPrograma, $idAmbiente, $estado, $jornada, $fechaInicio, $fechaFin){
          $mensaje = array();
     
             try {
         $conexion = Conexion::Conectar();
         
-        // ✅ VALIDACIÓN CRÍTICA: Verificar conflicto de fechas/jornada en el mismo ambiente
-        $sqlValidacion = "
-            SELECT COUNT(*) as total 
+        //  VALIDACIÓN CRÍTICA: Verificar conflicto de fechas/jornada en el mismo ambiente
+        $sqlValidacion = 
+        "SELECT COUNT(*) as total 
             FROM ficha 
             WHERE idAmbiente = :idAmbiente 
             AND jornada = :jornada
@@ -236,7 +255,9 @@
 
     
 
-
+     /* ══════════════════════════════════════════════════════════
+    MODELO EDITAR FICHA MEDIANTE CALIDACION
+    ══════════════════════════════════════════════════════════ */
     public static function mdlEditarFicha($idFicha, $idAmbiente, $estado, $fechaInicio, $fechaFin, $jornada){
     $mensaje = array();
 
@@ -244,8 +265,8 @@
         $conexion = Conexion::Conectar();
 
         
-        $sqlValidacion = "
-            SELECT COUNT(*) as total 
+        $sqlValidacion = 
+        "SELECT COUNT(*) as total 
             FROM ficha 
             WHERE idAmbiente = :idAmbiente
             AND jornada = :jornada

@@ -4,12 +4,15 @@ include_once "conexion.php";
 
 class instructorModelo {
 
-    // ========== LISTAR TODOS LOS INSTRUCTORES ==========
+     /* ══════════════════════════════════════════════════════════
+       MODELO LISTAR INSTRUCTOR CON INNER JOIN DE AREA GROUP_CONCAT
+       LISTA DE MANERA DONDE SE PUEDEN VER VARIOS TIPOS DE AREAS 
+    ══════════════════════════════════════════════════════════ */
     public static function mdlListarInstructor(){
         try {
             $mensaje = array();
-            $objRespuesta = Conexion::Conectar()->prepare("
-                SELECT
+            $objRespuesta = Conexion::Conectar()->prepare(
+                "SELECT
                     f.idFuncionario,
                     f.nombre,
                     f.correo,
@@ -20,11 +23,11 @@ class instructorModelo {
                     tc.tipoContrato,
                     r.nombreRol
                 FROM funcionario f
-                INNER JOIN funcionariorol fr  ON fr.idFuncionario = f.idFuncionario
-                INNER JOIN rol r              ON r.idRol          = fr.idRol
-                INNER JOIN tipocontrato tc    ON tc.idTipoContrato = f.idTipoContrato
+                INNER JOIN funcionariorol fr ON fr.idFuncionario = f.idFuncionario
+                INNER JOIN rol r ON r.idRol  = fr.idRol
+                INNER JOIN tipocontrato tc ON tc.idTipoContrato = f.idTipoContrato
                 INNER JOIN funcionarioarea fa ON fa.idFuncionario = f.idFuncionario
-                INNER JOIN area a             ON a.idArea         = fa.idArea
+                INNER JOIN area a ON a.idArea = fa.idArea
                 WHERE r.nombreRol = 'instructor'
                 GROUP BY f.idFuncionario
                 ORDER BY f.nombre;
@@ -39,13 +42,17 @@ class instructorModelo {
         return $mensaje;
     }
 
-    // ========== LISTAR INSTRUCTORES POR ÁREA ==========
+    
+     /* ══════════════════════════════════════════════════════════
+       LISTAR INSTRUCTOR DEPENDIENTO EL TIPO DEL AREA GROUP 
+       LISTA SI LLEGADO EL CASO EL INSTRUCTOR TIENE 1 O MAS AREAS
+    ══════════════════════════════════════════════════════════ */
     public static function mdlListarInstructoresPorArea($idArea) {
         try {
             $conn = Conexion::Conectar();
 
-            $stmtDelArea = $conn->prepare("
-                SELECT
+            $stmtDelArea = $conn->prepare(
+                "SELECT
                     f.idFuncionario,
                     f.nombre,
                     MIN(fa.idArea)  AS idArea,
@@ -65,8 +72,8 @@ class instructorModelo {
             $instructoresDelArea = $stmtDelArea->fetchAll(PDO::FETCH_ASSOC);
 
             // Grupo 2: instructores que NO tienen esa área asignada
-            $stmtResto = $conn->prepare("
-                SELECT
+            $stmtResto = $conn->prepare(
+                "SELECT
                     f.idFuncionario,
                     f.nombre,
                     MIN(fa.idArea) AS idArea,
@@ -101,7 +108,11 @@ class instructorModelo {
         }
     }
 
-    // ========== EDITAR INSTRUCTOR ==========
+    
+
+     /* ══════════════════════════════════════════════════════════
+      MODELO EDITAR INSTRUCTOR  
+    ══════════════════════════════════════════════════════════ */
     public static function mdlEditarInstructor($idFuncionario, $nombre, $correo, $telefono, $estado, $idArea, $idTipoContrato){
         $mensaje = array();
         try {
@@ -109,21 +120,21 @@ class instructorModelo {
                 "UPDATE funcionario f
                 INNER JOIN funcionarioarea fa ON fa.idFuncionario = f.idFuncionario
                 SET
-                    f.nombre         = :nombre,
-                    f.correo         = :correo,
-                    f.telefono       = :telefono,
-                    f.estado         = :estado,
-                    f.idTipoContrato = :idTipoContrato,
-                    fa.idArea        = :idArea
-                WHERE f.idFuncionario = :idFuncionario"
+                    f.nombre= :nombre,
+                    f.correo= :correo,
+                    f.telefono= :telefono,
+                    f.estado= :estado,
+                    f.idTipoContrato= :idTipoContrato,
+                    fa.idArea= :idArea
+                WHERE f.idFuncionario= :idFuncionario"
             );
-            $objRespuesta->bindParam(":idFuncionario", $idFuncionario);
-            $objRespuesta->bindParam(":nombre",        $nombre);
-            $objRespuesta->bindParam(":correo",        $correo);
-            $objRespuesta->bindParam(":telefono",      $telefono);
-            $objRespuesta->bindParam(":estado",        $estado);
+            $objRespuesta->bindParam(":idFuncionario",$idFuncionario);
+            $objRespuesta->bindParam(":nombre",$nombre);
+            $objRespuesta->bindParam(":correo",$correo);
+            $objRespuesta->bindParam(":telefono",$telefono);
+            $objRespuesta->bindParam(":estado",$estado);
             $objRespuesta->bindParam(":idTipoContrato",$idTipoContrato);
-            $objRespuesta->bindParam(":idArea",        $idArea);
+            $objRespuesta->bindParam(":idArea",$idArea);
 
             if ($objRespuesta->execute())
                 $mensaje = array("codigo" => "200", "mensaje" => "Instructor actualizado correctamente");
@@ -137,7 +148,11 @@ class instructorModelo {
 
 
 
-    // ========== REGISTRAR INSTRUCTOR ==========
+     /* ══════════════════════════════════════════════════════════
+    MODELO AGREGAR INSTRUCTOR // INSERT DE AGREGAR FUNCIONARIO ROL 
+    ADEMAS DEL AREAfUNCIONARIO PARA REGISTRAR AL INSTRUCTOR 
+    CORRECTAMENTE
+    ══════════════════════════════════════════════════════════ */
     public static function mdlRegistrarInstructor($nombre, $correo, $telefono, $estado, $idArea, $idTipoContrato, $password){
         $mensaje = array();
         try {
@@ -148,25 +163,25 @@ class instructorModelo {
                 INSERT INTO funcionario (nombre, correo, telefono, password, estado, idTipoContrato)
                 VALUES (:nombre, :correo, :telefono, :password, :estado, :idTipoContrato)
             ");
-            $objRespuesta->bindParam(":nombre",        $nombre);
-            $objRespuesta->bindParam(":correo",        $correo);
-            $objRespuesta->bindParam(":telefono",      $telefono);
-            $objRespuesta->bindParam(":password",      $password);
-            $objRespuesta->bindParam(":estado",        $estado);
+            $objRespuesta->bindParam(":nombre",$nombre);
+            $objRespuesta->bindParam(":correo",$correo);
+            $objRespuesta->bindParam(":telefono",$telefono);
+            $objRespuesta->bindParam(":password",$password);
+            $objRespuesta->bindParam(":estado",$estado);
             $objRespuesta->bindParam(":idTipoContrato",$idTipoContrato);
 
             if ($objRespuesta->execute()) {
                 $idFuncionario = $conexion->lastInsertId();
 
                 $objFA = $conexion->prepare("INSERT INTO funcionarioarea (idFuncionario, idArea) VALUES (:idFuncionario, :idArea)");
-                $objFA->bindParam(":idFuncionario", $idFuncionario);
-                $objFA->bindParam(":idArea",        $idArea);
+                $objFA->bindParam(":idFuncionario",$idFuncionario);
+                $objFA->bindParam(":idArea",$idArea);
 
                 if ($objFA->execute()) {
                     $objRol  = $conexion->prepare("INSERT INTO funcionariorol (idFuncionario, idRol) VALUES (:idFuncionario, :idRol)");
                     $idRol   = 2;
-                    $objRol->bindParam(":idFuncionario", $idFuncionario);
-                    $objRol->bindParam(":idRol",         $idRol);
+                    $objRol->bindParam(":idFuncionario",$idFuncionario);
+                    $objRol->bindParam(":idRol",$idRol);
 
                     if ($objRol->execute()) {
                         $conexion->commit();

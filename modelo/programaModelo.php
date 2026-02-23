@@ -5,6 +5,11 @@ include_once "conexion.php";
 
 class programaModelo {
 
+
+
+     /* ══════════════════════════════════════════════════════════
+    MODELO LISTAR PROGRAMA CON INNER JOIN 
+    ══════════════════════════════════════════════════════════ */
     public static function mdlListarPrograma(){
         $mensaje = array();
 
@@ -30,6 +35,11 @@ class programaModelo {
         return $mensaje;
     }
 
+
+
+     /* ══════════════════════════════════════════════════════════
+    MODELO AGREGAR PROGRAMA 
+    ══════════════════════════════════════════════════════════ */
     public static function mdlRegistrarPrograma($nombre, $codigo, $idTipoFormacion, $version, $estado){
     $mensaje = array();
     try {
@@ -53,6 +63,11 @@ class programaModelo {
     }
 
 
+
+
+     /* ══════════════════════════════════════════════════════════
+       MODELO EDITAR PROGRAMA
+    ══════════════════════════════════════════════════════════ */
     public static function mdlEditarPrograma($idPrograma,$nombre, $codigo, $idTipoFormacion, $version, $estado){
 
     $mensaje = array();

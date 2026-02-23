@@ -3,6 +3,10 @@ include_once "conexion.php";
 
 class municipioModelo {
 
+
+   /* ══════════════════════════════════════════════════════════
+    MODELO LISTAR MUNICIPIOS REGISTRADOS SIN DEPARTAMENTOS ("FALTANTE A VER SI SE NECESITA DEPARTAMENTAL")
+    ══════════════════════════════════════════════════════════ */
   public static function mdlListarMunicipios(){
     $mensaje = array();
 

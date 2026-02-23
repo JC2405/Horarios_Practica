@@ -20,7 +20,9 @@ class ambienteModelo {
     }
 
 
-
+ /* ══════════════════════════════════════════════════════════
+            MODELO LISTAR AREAS POR SEDE
+          ══════════════════════════════════════════════════════════ */
     public static function mdlListarAreas(){
         $mensaje = array();
 
@@ -39,6 +41,10 @@ class ambienteModelo {
         return $mensaje;
     }
     
+
+     /* ══════════════════════════════════════════════════════════
+            MODELO LISTAR AMBIENTES POR SEDE 
+          ══════════════════════════════════════════════════════════ */
     public static function mdlListarAmbientesPorSede($idSede) {
     $mensaje = array();
     try {
@@ -75,6 +81,9 @@ class ambienteModelo {
     }
 
     
+     /* ══════════════════════════════════════════════════════════
+            MODELO REGISTRAR AMBIENTE POR SEDE
+          ══════════════════════════════════════════════════════════ */
     public static function mdlRegistrarAmbientePorSede($codigo, $numero, $descripcion, $capacidad, $bloque, $estado, $idSede, $idArea, $tipoAmbiente){
     $mensaje = array();
     try {
@@ -104,6 +113,10 @@ class ambienteModelo {
     }
 
 
+
+     /* ══════════════════════════════════════════════════════════
+            MODELO EDITAR AMBIENTE POR SEDE
+          ══════════════════════════════════════════════════════════ */
     public static function mdlEditarAmbientePorSede($idAmbiente, $codigo, $numero, $descripcion, $capacidad, $bloque, $estado, $idSede, $idArea, $tipoAmbiente){
     $mensaje = array();
     try {

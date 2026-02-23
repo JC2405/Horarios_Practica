@@ -4,6 +4,10 @@ include_once "conexion.php";
 
 class areaModelo {
 
+
+     /* ══════════════════════════════════════════════════════════
+            MODELO LISTAR AREA
+          ══════════════════════════════════════════════════════════ */
     public static function mdlListarArea(){
             $mensaje = array();
             try {
@@ -21,6 +25,11 @@ class areaModelo {
     }
 
 
+
+
+     /* ══════════════════════════════════════════════════════════
+            MODELO REGISTRAR AREA
+          ══════════════════════════════════════════════════════════ */
     public static function mdlRegistrarArea($nombreArea){
         $mensaje = array();
 
@@ -42,6 +51,9 @@ class areaModelo {
     }
 
 
+     /* ══════════════════════════════════════════════════════════
+            MODELO EDITAR AREA
+          ══════════════════════════════════════════════════════════ */
     public static function mdlEditarArea($idArea,$nombreArea){
         $mensaje = array();
 

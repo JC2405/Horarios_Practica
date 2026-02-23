@@ -5,6 +5,11 @@
 
     class tipoProgramaModelo {
 
+
+
+         /* ══════════════════════════════════════════════════════════
+         MODELO LISTAR TIPO DE PROGRAMA 
+        ══════════════════════════════════════════════════════════ */
         public static function mdlListarTipoPrograma(){
             $mensaje = array();
             try {
@@ -21,7 +26,9 @@
         }
 
 
-
+             /* ══════════════════════════════════════════════════════════
+            MODELO REGISTRAR TIPO DE PROGRAMA
+            ══════════════════════════════════════════════════════════ */
             public static function mdlRegistrarTipoPrograma($tipoFormacion,$duracion){
                 $mensaje = array();
 
@@ -42,6 +49,9 @@
             }
 
 
+             /* ══════════════════════════════════════════════════════════
+            EDITAR TIPO DE PROGRAMA
+            ══════════════════════════════════════════════════════════ */
             public static function mdlEditarTipoPrograma($idTipoPrograma, $tipoFormacion, $duracion){
                 $mensaje = array();
 

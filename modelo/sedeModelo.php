@@ -5,6 +5,11 @@ include_once "conexion.php";
 
 class sedeModelo {
 
+
+
+     /* ══════════════════════════════════════════════════════════
+    MODELO LISTAR SEDES CON MUNICIPIO
+    ══════════════════════════════════════════════════════════ */
     public static function mdlListarSedes(){
         $mensaje = array();
 
@@ -31,6 +36,11 @@ class sedeModelo {
     }
 
 
+
+
+     /* ══════════════════════════════════════════════════════════
+    MODELO AGREGAR SEDE CON EL ID 
+    ══════════════════════════════════════════════════════════ */
     public static function mdlRegistrarSede($nombre, $direccion, $descripcion, $estado, $idMunicipio){
 
     $mensaje = array();
@@ -67,7 +77,12 @@ class sedeModelo {
     }
 
 
-    
+
+
+
+     /* ══════════════════════════════════════════════════════════
+    MODELO EDITAR SEDE 
+    ══════════════════════════════════════════════════════════ */
     public static function mdlEditarSede($idSede, $nombre, $direccion, $descripcion, $estado, $idMunicipio){
 
     $mensaje = array();

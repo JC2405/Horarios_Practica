@@ -7,6 +7,10 @@ include_once "conexion.php";
 
 class tipoContratoModelo {
 
+
+     /* ══════════════════════════════════════════════════════════
+    MODELO LISTAR TIPO CONTRATO
+    ══════════════════════════════════════════════════════════ */
     public static function mdlListarTipoContrato(){
     
     $mensaje = array();
@@ -26,6 +30,10 @@ class tipoContratoModelo {
 
 
 
+
+     /* ══════════════════════════════════════════════════════════
+    MODELO AGREGAR TIPO CONTRATO
+    ══════════════════════════════════════════════════════════ */
     public static function mdlAgregarTipoContrato($tipoContrato){
     $mensaje = array();
 
@@ -45,6 +53,11 @@ class tipoContratoModelo {
     }
 
 
+
+
+     /* ══════════════════════════════════════════════════════════
+    MODELO EDITAR TIPO CONTRATO
+    ══════════════════════════════════════════════════════════ */
     public static function mdlEditarTipoContrato($idTipoContrato, $tipoContrato){
         $mensaje = array();
 

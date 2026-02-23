@@ -701,19 +701,135 @@ table.ultra-modern-table th { border-right: none !important; }
 .ph-btn-add:hover { transform: translateY(-2px); box-shadow: 0 14px 28px rgba(124,107,255,.35); }
 
 /* ── Tabla horarios ── */
-.ph-table-card { background: #fff; border-radius: 18px; border: 1px solid rgba(124,107,255,.12); box-shadow: 0 10px 30px rgba(0,0,0,.04); padding: 10px; overflow: hidden; }
+.ph-table-card {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(124,107,255,.12);
+  box-shadow: 0 10px 30px rgba(0,0,0,.04);
+  padding: 10px;
+  overflow: hidden;
+}
 
-#tablaHorarios { width: 100% !important; border-collapse: separate !important; border-spacing: 0 !important; background: #fff !important; font-size: 12.5px !important; margin: 0 !important; border: none !important; }
-#tablaHorarios > :not(caption) > * > * { background-color: transparent !important; border-bottom: none !important; color: inherit !important; }
-#tablaHorarios thead tr { background: #fff !important; }
-#tablaHorarios thead th { background: #fff !important; color: var(--hp) !important; font-size: 10.5px !important; font-weight: 900 !important; text-transform: uppercase; letter-spacing: .08em; padding: 12px 14px !important; border: none !important; border-bottom: 2px solid rgba(124,107,255,.12) !important; white-space: nowrap; vertical-align: middle; }
-#tablaHorarios thead th:first-child { border-top-left-radius: 10px; }
-#tablaHorarios thead th:last-child  { border-top-right-radius: 10px; }
-#tablaHorarios thead th i { color: #9d8fff !important; }
-#tablaHorarios tbody td { background: #fff !important; color: #475569 !important; padding: 11px 14px !important; border: none !important; border-bottom: 1px solid #f1f5f9 !important; vertical-align: middle; font-weight: 500; transition: color .18s, background .18s; }
-#tablaHorarios tbody tr:nth-child(even) td { background: #fbfbff !important; }
-#tablaHorarios tbody tr:hover td { background: #f5f3ff !important; color: var(--hp) !important; cursor: pointer; }
-#tablaHorarios tbody tr:last-child td { border-bottom: none !important; }
+/* =========================
+   TABLA HORARIOS UNIFICADA
+   ========================= */
+
+#tablaHorarios,
+#tablaHorarioPolitica {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: #fff !important;
+  font-size: 12.5px !important;
+  margin: 0 !important;
+  border: none !important;
+}
+
+#tablaHorarios > :not(caption) > * > *,
+#tablaHorarioPolitica > :not(caption) > * > * {
+  background-color: transparent !important;
+  border-bottom: none !important;
+  color: inherit !important;
+}
+
+/* HEAD */
+#tablaHorarios thead tr,
+#tablaHorarioPolitica thead tr {
+  background: #fff !important;
+}
+
+#tablaHorarios thead th,
+#tablaHorarioPolitica thead th {
+  background: #fff !important;
+  color: var(--hp) !important;
+  font-size: 10.5px !important;
+  font-weight: 900 !important;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  padding: 12px 14px !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(124,107,255,.12) !important;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+#tablaHorarios thead th:first-child,
+#tablaHorarioPolitica thead th:first-child {
+  border-top-left-radius: 12px;
+}
+
+#tablaHorarios thead th:last-child,
+#tablaHorarioPolitica thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+#tablaHorarios thead th i,
+#tablaHorarioPolitica thead th i {
+  color: #9d8fff !important;
+}
+
+/* BODY */
+#tablaHorarios tbody td,
+#tablaHorarioPolitica tbody td {
+  background: #fff !important;
+  color: #475569 !important;
+  padding: 11px 14px !important;
+  border: none !important;
+  border-bottom: 1px solid #f1f5f9 !important;
+  vertical-align: middle;
+  font-weight: 500;
+  transition: color .18s, background .18s;
+}
+
+#tablaHorarios tbody tr:nth-child(even) td,
+#tablaHorarioPolitica tbody tr:nth-child(even) td {
+  background: #fbfbff !important;
+}
+
+#tablaHorarios tbody tr:hover td,
+#tablaHorarioPolitica tbody tr:hover td {
+  background: #f5f3ff !important;
+  color: var(--hp) !important;
+  cursor: pointer;
+}
+
+#tablaHorarios tbody tr:last-child td,
+#tablaHorarioPolitica tbody tr:last-child td {
+  border-bottom: none !important;
+} 
+
+/* ===== BOTONES DE ACCIÓN UNIFICADOS ===== */
+.btnVerHorario,
+.btnCrearHorarioPolitica,
+.btnEliminarHorariosFicha,
+.btnEditarHorario,
+.btnEliminarHorario {
+
+  width: 35px !important;
+  height: 35px !important;
+
+  padding: 0 !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  border-radius: 10px !important;
+}
+.action-group {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* espacio entre botones */
+}
+
+/* Tamaño iconos */
+.btnVerHorario i,
+.btnCrearHorarioPolitica i,
+.btnEliminarHorariosFicha i,
+.btnEditarHorario i,
+.btnEliminarHorario i {
+  font-size: 22px !important;
+}
 
 /* ── Header crear/editar ── */
 .ph-crear-header { display: flex; flex-direction: column; gap: 14px; padding: 0 0 20px; border-bottom: 2px solid rgba(124,107,255,.10); margin-bottom: 22px; }
@@ -762,7 +878,7 @@ table.ultra-modern-table th { border-right: none !important; }
 
 .dia-header { background: #fafafe; border-right: 1px solid var(--brd); border-bottom: 2px solid var(--brd); padding: 0; cursor: pointer; transition: background .2s; user-select: none; }
 .dia-header:last-child { border-right: none; }
-.dia-header-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; position: relative; }
+.dia-header-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; }
 .dia-nombre { font-size: 13px; font-weight: 800; color: var(--tx-dark); }
 .dia-abrev  { font-size: 10px; font-weight: 700; color: var(--tx-soft); letter-spacing: .07em; }
 .dia-header.dia-activo { background: linear-gradient(135deg, var(--hp), #9b8dff) !important; }

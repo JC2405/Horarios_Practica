@@ -58,7 +58,7 @@
         <div class="ph-crear-title">
           <div class="ph-icon ph-icon-sm"><i class="bi bi-calendar-plus-fill"></i></div>
           <div>
-            <h2 class="ph-title">Nu evo Horario</h2>
+            <h2 class="ph-title">Nuevo Horario</h2>
             <p class="ph-subtitle">Configura los datos del horario y selecciona los días</p>
           </div>
         </div>
@@ -167,7 +167,7 @@
                     $dias  = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
                     $abrev = ['Lun','Mar','Mié','Jue','Vie','Sáb'];
                     foreach ($dias as $i => $dia): ?>
-                    <th class="dia-header" data-dia="<?= $i+1 ?>">
+                    <th class="dia-header" data-dia="<?= $i+1 ?>" onclick="toggleDia(this)">
                       <div class="dia-header-inner">
                         <span class="dia-nombre"><?= $dia ?></span>
                         <span class="dia-abrev"><?= $abrev[$i] ?></span>
@@ -351,5 +351,4 @@
   <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.20/index.global.min.js'></script>
   <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.20/index.global.min.js'></script>
 
-  <script src="vista/js/cl_ambiente.js"></script>
-  <script src="vista/js/horario.js"></script>
+  

@@ -3,15 +3,7 @@
     // Se incluye el modelo que contiene toda la lógica SQL
     include_once "../modelo/horarioModelo.php";
 
-    /**
-     * horarioControlador.php
-     * ---------------------------------------------------------
-     * REGLA IMPORTANTE:
-     * ❌ No debe existir SQL en este archivo.
-     * ✅ Solo recibe datos (POST), arma estructuras y delega al modelo.
-     * ✅ Devuelve siempre respuesta en formato JSON.
-     * ---------------------------------------------------------
-     */
+ 
 
     class horarioControlador {
 

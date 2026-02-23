@@ -9,7 +9,7 @@ $userAvatar = isset($_SESSION['user_avatar']) ? $_SESSION['user_avatar'] : null;
 $baseUrl = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/';
 ?>
 
-<link rel="stylesheet" href="vista/css/nav.css">
+<link rel="stylesheet" href="vista/css/styles.css">
 
 <script src="../js/nav.js" defer></script>
 

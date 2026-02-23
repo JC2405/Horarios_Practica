@@ -4,6 +4,8 @@ include_once "conexion.php";
 
 class horarioModelo {
 
+
+
     /* ══════════════════════════════════════════════════════════
        LISTAR SOLO FICHAS QUE TIENEN HORARIO
        Basado en la consulta del usuario, filtrado con INNER JOIN
@@ -16,12 +18,12 @@ class horarioModelo {
                     f.idFicha,
                     f.codigoFicha,
                     f.jornada,
-                    p.nombre                                    AS nombrePrograma,
-                    tp.tipoFormacion                            AS tipoPrograma,
-                    MAX(s.nombre)                               AS sedeNombre,
-                    MAX(ar.nombreArea)                          AS areaNombre,
-                    MAX(CONCAT(a.codigo, ' - No.', a.numero))   AS ambienteNombre,
-                    COUNT(h.idHorario)                          AS totalHorarios
+                    p.nombre  AS nombrePrograma,
+                    tp.tipoFormacion AS tipoPrograma,
+                    MAX(s.nombre)AS sedeNombre,
+                    MAX(ar.nombreArea)AS areaNombre,
+                    MAX(CONCAT(a.codigo, ' - No.', a.numero))  AS ambienteNombre,
+                    COUNT(h.idHorario)AS totalHorarios
                 FROM ficha f
                 INNER JOIN horario      h   ON h.idFicha        = f.idFicha
                 LEFT  JOIN programa     p   ON f.idPrograma      = p.idPrograma

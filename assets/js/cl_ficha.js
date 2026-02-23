@@ -5,7 +5,7 @@ class ficha {
     }
 
 
-
+//=============LISTAR FICHA===========
    listarFicha(){
              let objData = new FormData();
              objData.append("listarFicha", this._objData.listarFicha);
@@ -74,7 +74,9 @@ class ficha {
              });
     }
 
-    // LISTAR MUNICIPIOS
+
+
+//============= LISTAR MUNICIPIOS ===================
     listarMunicipios(){
         let objData = new FormData();
         objData.append("listarMunicipios", this._objData.listarMunicipios);
@@ -90,7 +92,10 @@ class ficha {
         });
     }
 
-    // LISTAR SEDES POR MUNICIPIO
+
+
+
+//=================== LISTAR SEDES POR MUNICIPIO==============
     listarSedesPorMunicipio(){
         let objData = new FormData();
         objData.append("listarSedesPorMunicipio", this._objData.listarSedesPorMunicipio);
@@ -107,7 +112,9 @@ class ficha {
         });
     }
 
-    // LISTAR AMBIENTES POR SEDE
+
+
+// ============LISTAR AMBIENTES POR SEDE===============
     listarAmbientesPorSede(){
         let objData = new FormData();
         objData.append("listarAmbientesPorSede", this._objData.listarAmbientesPorSede);
@@ -124,7 +131,10 @@ class ficha {
         });
     }
 
-    // LISTAR PROGRAMAS
+
+
+
+//================LISTAR PROGRAMAS===================
     listarProgramas(){
         let objData = new FormData();
         objData.append("listarProgramas", this._objData.listarProgramas);
@@ -215,6 +225,9 @@ class ficha {
     });
   }
 
+
+
+  //======== EDITAR FICHA ================
  editarFicha(){
   console.log("💾 Ejecutando editarFicha()");
 

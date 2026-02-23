@@ -6,78 +6,78 @@ class Ambiente {
 
     // ========== LISTAR AMBIENTES POR SEDE ==========
     listarAmbientesPorSede(idSede) {
-  let objData = new FormData();
-  objData.append("listarAmbientesPorSede", "ok");
-  objData.append("idSede", idSede);
+        let objData = new FormData();
+        objData.append("listarAmbientesPorSede", "ok");
+        objData.append("idSede", idSede);
 
-  fetch("controlador/ambienteControlador.php", {
-    method: "POST",
-    body: objData
-  })
-    .then(response => response.json())
-    .catch(error => {
-      console.log(error);
-    })
-    .then(response => {
-      console.log("📦 Respuesta ambientes:", response);
-
-      if (response["codigo"] == "200") {
-        let dataSet = [];
-
-       response["ambientes"].forEach(item => {
-    let objBotones = '<div class="btn-group" role="group">';
-    objBotones += `
-        <button type="button" class="btn btn-info btnEditarAmbiente"
-            data-id="${item.idAmbiente}"
-            data-codigo="${item.codigo}"
-            data-numero="${item.numero}"
-            data-capacidad="${item.capacidad}"
-            data-bloque="${item.bloque}"
-            data-estado="${item.estado}"
-            data-descripcion="${item.descripcion || ''}"
-            data-idarea="${item.idArea || ''}"
-            data-nombreArea="${item.nombreArea || ''}"
-            data-tipoambiente="${item.tipoAmbiente || ''}">
-            <i class="bi bi-pen"></i>
-        </button>
-    `;
-    objBotones += "</div>";
-
-    dataSet.push([
-        item.codigo,
-        item.numero,
-        item.nombreArea,   
-        item.capacidad,
-        item.bloque,               
-        item.tipoAmbiente,
-        item.estado,
-        item.descripcion,
-        objBotones
-          ]);
-      });
-         $("#tablaAmbientesSede").DataTable({
-                     buttons: [{
-                       extend: "colvis",
-                       text: "Columnas"
-                     },
-                     "excel",
-                     "pdf",
-                     "print"
-                     ],
-                     dom: "Bfrtip",
-                     responsive: true,
-                     destroy: true,
-                     data: dataSet, 
-                  })
-            }
+        fetch("controlador/ambienteControlador.php", {
+          method: "POST",
+          body: objData
         })
-        
-        
+          .then(response => response.json())
+          .catch(error => {
+            console.log(error);
+          })
+          .then(response => {
+            console.log("📦 Respuesta ambientes:", response);
+          
+            if (response["codigo"] == "200") {
+              let dataSet = [];
+            
+             response["ambientes"].forEach(item => {
+          let objBotones = '<div class="btn-group" role="group">';
+          objBotones += `
+              <button type="button" class="btn btn-info btnEditarAmbiente"
+                  data-id="${item.idAmbiente}"
+                  data-codigo="${item.codigo}"
+                  data-numero="${item.numero}"
+                  data-capacidad="${item.capacidad}"
+                  data-bloque="${item.bloque}"
+                  data-estado="${item.estado}"
+                  data-descripcion="${item.descripcion || ''}"
+                  data-idarea="${item.idArea || ''}"
+                  data-nombreArea="${item.nombreArea || ''}"
+                  data-tipoambiente="${item.tipoAmbiente || ''}">
+                  <i class="bi bi-pen"></i>
+              </button>
+          `;
+          objBotones += "</div>";
+            
+          dataSet.push([
+              item.codigo,
+              item.numero,
+              item.nombreArea,   
+              item.capacidad,
+              item.bloque,               
+              item.tipoAmbiente,
+              item.estado,
+              item.descripcion,
+              objBotones
+                ]);
+            });
+               $("#tablaAmbientesSede").DataTable({
+                           buttons: [{
+                             extend: "colvis",
+                             text: "Columnas"
+                           },
+                           "excel",
+                           "pdf",
+                           "print"
+                           ],
+                           dom: "Bfrtip",
+                           responsive: true,
+                           destroy: true,
+                           data: dataSet, 
+                        })
+                  }
+              })
+
+
     }
 
 
       
-    // Listar Areas 
+    // ===========LISTAR AREAS========================= 
     listarAreas(){
       let objData = new FormData();
       objData.append("listarAreas",this._objData.listarAreas);
@@ -155,6 +155,7 @@ class Ambiente {
     }
 
 
+    // ==========EDITAR AMBIENTE POR SEDE======================
       editarAmbientePorSede() {
      const formData = new FormData();
     formData.append("editarAmbientePorSede", "ok");
@@ -169,7 +170,7 @@ class Ambiente {
     formData.append("tipoAmbiente",document.getElementById("tipoAmbienteEdit").value);   // NUEVO
     formData.append("idSede",       document.getElementById("idSedeActualAmbientes").value);
 
-    // importante para tu PHP (como lo hicimos)
+ 
     formData.append("idSede", document.getElementById("idSedeActualAmbientes").value);
 
     fetch("controlador/ambienteControlador.php", {
@@ -202,6 +203,6 @@ class Ambiente {
         console.error("Error en la petición:", error);
         Swal.fire({ icon: "error", title: "Error", text: "Hubo un problema al actualizar" });
       });
-  }
+    }
 
 }

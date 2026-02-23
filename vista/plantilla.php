@@ -14,13 +14,13 @@
       if (
           $_GET["ruta"] == "area" ||
           $_GET["ruta"] == "ficha" ||
-          $_GET["ruta"] == "crearHorario" ||
+          $_GET["ruta"] == "horarioTitulada" ||
           $_GET["ruta"] == "programa" ||
           $_GET["ruta"] == "sede" ||
           $_GET["ruta"] == "tipoPrograma" ||
           $_GET["ruta"] == "tipoContrato" ||
           $_GET["ruta"] == "instructor" || 
-          $_GET["ruta"] == "" ||
+          $_GET["ruta"] == "horarioPolitica" ||
           $_GET["ruta"] == "" ||
           $_GET["ruta"] == "" ||
           $_GET["ruta"] == ""

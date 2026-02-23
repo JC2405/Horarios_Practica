@@ -29,9 +29,6 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
 
-
-
-
   //BOTÓN: Nuevo Ambiente 
   $(document).on("click", "#btnNuevoAmbiente", function (e) {
      cargarAreas();
@@ -80,8 +77,6 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
 
-
-
   // SUBMIT AGREGAR 
   const formAgregar = document.getElementById("formAgregarAmbientePorSede");
   if (formAgregar) {
@@ -97,9 +92,6 @@ document.addEventListener('DOMContentLoaded',function () {
       }
     }, false);
   }
-
-
-
 
 
 
@@ -154,10 +146,6 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
 
-
-
-
-
 //CARGAR AREAS EDITAR(AMBIENTE)
   function cargarAreasEdit(idAreaActual){
   const select = document.getElementById("selectAreasEdit");
@@ -204,8 +192,6 @@ document.addEventListener('DOMContentLoaded',function () {
 
 
 
-
-
   // ──────────────────────────────────────────────
   // HELPER: normalizar tipoAmbiente
   // Acepta cualquier capitalización y retorna el
@@ -217,10 +203,8 @@ document.addEventListener('DOMContentLoaded',function () {
     if (v === 'formacion' || v === 'formación') return 'Formacion';
     if (v === 'bilinguismo' || v === 'bilingüismo') return 'Bilinguismo';
     if (v === 'taller') return 'Taller';
-    return ''; // si no coincide, deja vacío (evita valores random)
+    return ''; 
   }
-
-
 
 
 
@@ -239,7 +223,7 @@ document.addEventListener('DOMContentLoaded',function () {
     document.getElementById('estadoEdit').value        = $(this).data('estado');
     document.getElementById('descripcionEdit').value   = $(this).data('descripcion') || '';
 
-    // FIX 4: normalizar tipoAmbiente antes de setearlo
+
     const tipoRaw = $(this).data('tipoambiente') || '';
     const tipoNormalizado = normalizarTipoAmbiente(tipoRaw);
     document.getElementById('tipoAmbienteEdit').value = tipoNormalizado;

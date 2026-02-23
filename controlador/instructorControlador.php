@@ -43,13 +43,11 @@ class instructorControlador{
         $objRespuesta->ctrListarInstructor();
     }
 
-    // NUEVO: llamado desde horario.js al seleccionar un ambiente con área
+ //llamado desde horario.js al seleccionar un ambiente con área
     if(isset($_POST["listarInstructoresPorArea"])){
         if(!empty($_POST['idArea'])){
             $objControlador = new instructorControlador();
             $objControlador->ctrListarInstructoresPorArea((int)$_POST['idArea']);
-        } else {
-            echo json_encode(["codigo" => "400", "mensaje" => "idArea requerido"]);
         }
     }
 

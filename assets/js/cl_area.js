@@ -5,6 +5,7 @@ class area{
     }
 
 
+//====================LISTAR AREAS ====================    
     listarArea(){
         let objData = new FormData();
         objData.append("listarArea",this._objData.listarArea)
@@ -64,6 +65,8 @@ class area{
     }
 
 
+
+//======================REGISTRAR AREA=================   
     registrarArea(){
         const formData = new FormData();
         formData.append("registrarArea" , "ok");
@@ -98,6 +101,10 @@ class area{
         })
     }
 
+
+
+
+//===================EDITAR AREA=======================
     editarArea(){
         const formData = new FormData();
         formData.append("editarArea" , "ok");

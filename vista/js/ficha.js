@@ -298,7 +298,7 @@
     api(`listarAmbientesPorSede=ok&idSede=${idSede}`)
       .then(r => {
         if(r.codigo==="200"){
-          llenarSelect("selectAmbienteEdit", r.listarAmbientes, "idAmbiente", a=>`${a.codigo} - Número: ${a.numero}`, "Seleccione un ambiente...");
+          llenarSelect("selectAmbienteEdit", r.listarAmbientes, "idAmbiente", a=>`${a.codigo} - Número: ${a.numero}   - Area: ${a.nombreArea}`, "Seleccione un ambiente...");
           if(idAmbienteActual) el("selectAmbienteEdit").value = idAmbienteActual;
         } else { selectError("selectAmbienteEdit","No hay ambientes disponibles"); }
       })

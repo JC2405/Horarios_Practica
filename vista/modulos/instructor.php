@@ -98,7 +98,7 @@
 
 <!-- FORMULARIO AGREGAR -->
 <div id="panelFormularioInstructor" style="display:none;">
-  <div style="max-width:760px; margin:0 auto;">
+  <div style="max-width:900px; margin:0 auto;">
     <div class="form-card">
       <div class="form-card-header">
         <button id="btnRegresarTablaInstructor" type="button" class="btn-back">
@@ -116,25 +116,25 @@
       <form id="formAgregarInstructor" novalidate>
         <div class="row g-3">
 
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Nombre completo</label>
             <input type="text" id="nombreInstructor" class="form-control-soft w-100" required>
             <div class="invalid-feedback">Campo requerido</div>
           </div>
 
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Correo electrónico</label>
             <input type="email" id="correoInstructor" class="form-control-soft w-100" required>
             <div class="invalid-feedback">Correo válido requerido</div>
           </div>
 
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Teléfono</label>
             <input type="text" id="telefonoInstructor" class="form-control-soft w-100" required>
             <div class="invalid-feedback">Campo requerido</div>
           </div>
 
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Área</label>
             <select id="idAreaInstructor" class="form-control-soft w-100" required>
               <option value="" disabled selected>Cargando...</option>
@@ -142,7 +142,7 @@
             <div class="invalid-feedback">Campo requerido</div>
           </div>
 
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Tipo de Contrato</label>
             <select id="idTipoContratoInstructor" class="form-control-soft w-100" required>
               <option value="" disabled selected>Cargando...</option>
@@ -150,13 +150,13 @@
             <div class="invalid-feedback">Campo requerido</div>
           </div>
 
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Contraseña</label>
             <input type="password" id="passwordInstructor" class="form-control-soft w-100" required>
             <div class="invalid-feedback">Campo requerido</div>
           </div>
 
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Estado</label>
             <select id="estadoInstructor" class="form-control-soft w-100" required>
               <option value="" disabled selected>Seleccione...</option>
@@ -199,22 +199,22 @@
       <form id="formEditarInstructor" novalidate>
         <input type="hidden" id="idInstructorEdit">
         <div class="row g-3">
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Nombre completo</label>
             <input type="text" id="nombreInstructorEdit" class="form-control-soft w-100" required>
             <div class="invalid-feedback">Campo requerido</div>
           </div>
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Correo electrónico</label>
             <input type="email" id="correoInstructorEdit" class="form-control-soft w-100" required>
             <div class="invalid-feedback">Correo válido requerido</div>
           </div>
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Teléfono</label>
             <input type="text" id="telefonoInstructorEdit" class="form-control-soft w-100" required>
             <div class="invalid-feedback">Campo requerido</div>
           </div>
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Estado</label>
             <select id="estadoInstructorEdit" class="form-control-soft w-100" required>
               <option value="" disabled selected>Seleccione...</option>
@@ -223,14 +223,14 @@
             </select>
             <div class="invalid-feedback">Campo requerido</div>
           </div>
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Área</label>
             <select id="idAreaInstructorEdit" class="form-control-soft w-100" required>
               <option value="" disabled selected>Cargando...</option>
             </select>
             <div class="invalid-feedback">Campo requerido</div>
           </div>
-          <div class="col-md-10">
+          <div class="col-md-5">
             <label class="form-label">Tipo de Contrato</label>
             <select id="idTipoContratoInstructorEdit" class="form-control-soft w-100" required>
               <option value="" disabled selected>Cargando...</option>

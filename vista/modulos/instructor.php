@@ -16,7 +16,7 @@
     </div>
   </div>
 
-  <button id="agregarInstructor" class="btn-add" type="button">
+  <button id="agregarInstructorf" class="btn-add" type="button">
     <i class="bi bi-plus-lg"></i>
     Nuevo Instructor
   </button>

@@ -18,11 +18,6 @@
             echo json_encode($resultado);
         }
 
- 
-        public function ctrListarHorarios() {
-            $resultado = horarioModelo::mdlListarHorarios();
-            echo json_encode($resultado);
-        }
 
 
         public function ctrCrearHorario($datos) {
@@ -30,11 +25,6 @@
             echo json_encode($resultado);
         }
 
- 
-        public function ctrActualizarHorario($datos) {
-            $resultado = horarioModelo::mdlActualizarHorario($datos);
-            echo json_encode($resultado);
-        }
 
 
         public function ctrEliminarHorario($idHorario) {
@@ -55,20 +45,10 @@
         }
 
 
-        public function ctrGuardarHorariosCompleto($horariosJSON) {
-            $resultado = horarioModelo::mdlGuardarHorariosCompleto($horariosJSON);
-            echo json_encode($resultado);
-        }
+  
 
-
-        public function ctrObtenerHorariosPorSede($idSede) {
-            $resultado = horarioModelo::mdlObtenerHorariosPorSede($idSede);
-            echo json_encode($resultado);
-        }
     }
 
-
- 
 
 
 
@@ -78,12 +58,6 @@
         $ctrl->ctrListarFichasConHorario();
     }
 
-
-    // ── LISTAR TODOS LOS HORARIOS (uso legacy) ──
-    if (isset($_POST["listarHorarios"])) {
-        $ctrl = new horarioControlador();
-        $ctrl->ctrListarHorarios();
-    }
 
 
     // ── LISTAR HORARIOS POR FICHA (modal calendario / eliminar) ──
@@ -118,30 +92,6 @@
         $ctrl->ctrCrearHorario($datos);
     }
 
-
-    // ── ACTUALIZAR HORARIO ──
-    if (isset($_POST["actualizarHorario"])) {
-
-        $dias = isset($_POST['dias']) ? $_POST['dias'] : [];
-
-        if (is_string($dias)) $dias = json_decode($dias, true);
-
-        $datos = array(
-            'idHorario'           => $_POST['idHorario'],
-            'idAmbiente'          => $_POST['idAmbiente']          ?: null,
-            'idFuncionario'       => $_POST['idFuncionario']       ?? null,
-            'hora_inicioClase'    => $_POST['hora_inicioClase'],
-            'hora_finClase'       => $_POST['hora_finClase'],
-            'fecha_inicioHorario' => $_POST['fecha_inicioHorario'] ?: null,
-            'fecha_finHorario'    => $_POST['fecha_finHorario']    ?: null,
-            'dias'                => $dias,
-        );
-
-        $ctrl = new horarioControlador();
-        $ctrl->ctrActualizarHorario($datos);
-    }
-
-
   
     if (isset($_POST["eliminarHorario"])) {
         $ctrl = new horarioControlador();
@@ -164,13 +114,3 @@
 
 
 
-    if (isset($_POST["guardarHorariosCompleto"])) {
-        $ctrl = new horarioControlador();
-        $ctrl->ctrGuardarHorariosCompleto($_POST['horarios']);
-    }
-
-
-    if (isset($_POST["obtenerHorariosPorSede"])) {
-        $ctrl = new horarioControlador();
-        $ctrl->ctrObtenerHorariosPorSede($_POST['idSede']);
-    }

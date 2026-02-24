@@ -40,6 +40,9 @@
     <script src="vista/js/horarioCalendar.js"></script>
 
     <!-- 6b. Clases de negocio -->
+
+      <!-- 7. Nav -->
+   <script src="vista/js/nav.js"></script> 
     <script src="assets/js/cl_programa.js"></script>
     <script src="assets/js/cl_sede.js"></script>
     <script src="assets/js/cl_tipoPrograma.js"></script>
@@ -51,8 +54,7 @@
     <script src="assets/js/cl_horario.js"></script>
     <script src="assets/js/cl_horarioPolitica.js"></script>
 
-    <!-- 7. Nav -->
-    <script src="vista/js/nav.js"></script>
+  
 </head>
 
 <body>

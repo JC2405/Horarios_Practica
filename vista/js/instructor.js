@@ -1,8 +1,11 @@
-document.addEventListener('DOMContentLoaded', function(){
+document.addEventListener('DOMContentLoaded',function(){
+
+     const objInstructor = new instructor({});
 
     listarInstructor();
-    cargarAreas();
-    cargarTiposContrato();
+    objInstructor.cargarAreas();        
+    objInstructor.cargarTiposContrato(); 
+
 
     function listarInstructor(){
         let objData = {listarInstructor : "ok"};
@@ -10,13 +13,14 @@ document.addEventListener('DOMContentLoaded', function(){
     }
 
     
-
-    document.getElementById("agregarInstructor").addEventListener("click", function(){
+      $(document).on("click","#agregarInstructorf",function(){
+        console.log("xd")
         $("#panelListarInstructor").hide();
         $("#panelFormularioInstructor").show();
         document.getElementById("formAgregarInstructor").reset();
         $("#formAgregarInstructor").removeClass("was-validated");
     });
+  
 
 
 

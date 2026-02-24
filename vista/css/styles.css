@@ -826,7 +826,6 @@ table.ultra-modern-table th { border-right: none !important; }
 .btnVerHorario i,
 .btnCrearHorarioPolitica i,
 .btnEliminarHorariosFicha i,
-.btnEditarHorario i,
 .btnEliminarHorario i {
   font-size: 22px !important;
 }
@@ -906,7 +905,6 @@ table.ultra-modern-table th { border-right: none !important; }
 /* ── Acciones form horario ── */
 .ph-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--brd); }
 #formCrearHorario .btn-primary,
-#formEditarHorario .btn-primary,
 .ph-actions .btn-primary {
   background: linear-gradient(135deg, var(--primary), #9d8fff) !important;
   border: none !important; color: #fff !important; font-weight: 600;

@@ -414,6 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
 });
+
 function toggleDia(el) {
   el.classList.toggle('dia-activo');
 

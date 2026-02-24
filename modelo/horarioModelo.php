@@ -50,7 +50,7 @@ class horarioModelo {
     }
 
     /* ══════════════════════════════════════════════════════════
-       LISTAR HORARIOS POR FICHA (modal calendario + modal eliminar)
+       LISTAR HORARIOS POR FICHA (modal calendario con modal eliminar)
     ══════════════════════════════════════════════════════════ */
     public static function mdlListarHorariosPorFicha($idFicha) {
         try {
@@ -226,83 +226,6 @@ class horarioModelo {
         }
     }
 
-    /* ══════════════════════════════════════════════════════════
-       LISTAR HORARIOS (legacy, usado por horario.js clase)
-    ══════════════════════════════════════════════════════════ */
-    public static function mdlListarHorarios() {
-        try {
-            $stmt = Conexion::Conectar()->prepare(
-                "SELECT
-                    h.idHorario, h.hora_inicioClase, h.hora_finClase,
-                    h.fecha_inicioHorario, h.fecha_finHorario,
-                    h.idFuncionario, h.idAmbiente, h.idFicha,
-                    func.nombre                                                              AS instructorNombre,
-                    a.codigo                                                                 AS ambienteCodigo,
-                    s.idSede, s.nombre                                                       AS sedeNombre,
-                    ar.nombreArea                                                            AS areaNombre,
-                    fi.codigoFicha, fi.jornada,
-                    p.nombre                                                                 AS programaNombre,
-                    tp.tipoFormacion                                                         AS tipoPrograma,
-                    GROUP_CONCAT(DISTINCT d.idDia        ORDER BY d.idDia SEPARATOR ',')    AS dias,
-                    GROUP_CONCAT(DISTINCT d.diasSemanales ORDER BY d.idDia SEPARATOR ',')   AS diasNombres
-                FROM horario h
-                LEFT JOIN funcionario  func ON h.idFuncionario   = func.idFuncionario
-                LEFT JOIN ambiente     a    ON h.idAmbiente      = a.idAmbiente
-                LEFT JOIN sede         s    ON a.idSede          = s.idSede
-                LEFT JOIN area         ar   ON a.idArea          = ar.idArea
-                LEFT JOIN ficha        fi   ON h.idFicha         = fi.idFicha
-                LEFT JOIN programa     p    ON fi.idPrograma     = p.idPrograma
-                LEFT JOIN tipoprograma tp   ON p.idTipoFormacion = tp.idTipoPrograma
-                LEFT JOIN horariodia   hd   ON h.idHorario       = hd.id_horarios
-                LEFT JOIN dia          d    ON hd.id_dias        = d.idDia
-                GROUP BY h.idHorario
-                ORDER BY s.nombre, h.hora_inicioClase, func.nombre"
-            );
-            $stmt->execute();
-            return array("codigo" => "200", "horarios" => $stmt->fetchAll(PDO::FETCH_ASSOC));
-        } catch (Exception $e) {
-            return array("codigo" => "400", "mensaje" => $e->getMessage());
-        }
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       ACTUALIZAR HORARIO
-    ══════════════════════════════════════════════════════════ */
-    public static function mdlActualizarHorario($datos) {
-        $conn = Conexion::Conectar();
-        try {
-            $v1 = self::validarConflictoInstructor($datos, $datos['idHorario']);
-            if ($v1['codigo'] !== "200") return $v1;
-            $v2 = self::validarConflictoAmbiente($datos, $datos['idHorario']);
-            if ($v2['codigo'] !== "200") return $v2;
-
-            $conn->beginTransaction();
-            $conn->prepare(
-                "UPDATE horario SET idAmbiente=:idAmbiente, hora_inicioClase=:hora_inicioClase,
-                 hora_finClase=:hora_finClase, fecha_inicioHorario=:fecha_inicioHorario,
-                 fecha_finHorario=:fecha_finHorario WHERE idHorario=:idHorario"
-            )->execute(array(
-                ':idAmbiente'          => !empty($datos['idAmbiente'])          ? $datos['idAmbiente']          : null,
-                ':hora_inicioClase'    => $datos['hora_inicioClase'],
-                ':hora_finClase'       => $datos['hora_finClase'],
-                ':fecha_inicioHorario' => !empty($datos['fecha_inicioHorario']) ? $datos['fecha_inicioHorario'] : null,
-                ':fecha_finHorario'    => !empty($datos['fecha_finHorario'])    ? $datos['fecha_finHorario']    : null,
-                ':idHorario'           => $datos['idHorario'],
-            ));
-
-            if (isset($datos['dias']) && is_array($datos['dias'])) {
-                $conn->prepare("DELETE FROM horariodia WHERE id_horarios = :id")->execute(array(':id' => $datos['idHorario']));
-                $stmtDias = $conn->prepare("INSERT INTO horariodia (id_horarios, id_dias) VALUES (:idHorario, :idDia)");
-                foreach ($datos['dias'] as $idDia)
-                    $stmtDias->execute(array(':idHorario' => $datos['idHorario'], ':idDia' => $idDia));
-            }
-            $conn->commit();
-            return array("codigo" => "200", "mensaje" => "Horario actualizado correctamente");
-        } catch (Exception $e) {
-            if ($conn->inTransaction()) $conn->rollBack();
-            return array("codigo" => "400", "mensaje" => $e->getMessage());
-        }
-    }
 
     /* ══════════════════════════════════════════════════════════
        ELIMINAR HORARIO
@@ -351,64 +274,5 @@ class horarioModelo {
         }
     }
 
-    /* ══════════════════════════════════════════════════════════
-       GUARDAR HORARIOS COMPLETO (batch)
-    ══════════════════════════════════════════════════════════ */
-    public static function mdlGuardarHorariosCompleto($horariosJSON) {
-        $conn = Conexion::Conectar();
-        try {
-            $horarios = json_decode($horariosJSON, true);
-            if (!$horarios || !is_array($horarios))
-                return array("success" => false, "message" => "Datos de horarios inválidos");
-
-            $conn->beginTransaction();
-            $guardados = 0; $errores = array();
-            foreach ($horarios as $horario) {
-                try {
-                    $stmtCheck = $conn->prepare("SELECT idHorario FROM horario WHERE idAmbiente=:idAmbiente AND idFranja=:idFranja AND (fecha_finHorario IS NULL OR fecha_finHorario >= CURDATE())");
-                    $stmtCheck->execute(array(':idAmbiente' => $horario['idAmbiente'], ':idFranja' => $horario['idFranja']));
-                    $existente = $stmtCheck->fetch(PDO::FETCH_ASSOC);
-                    if ($existente) {
-                        $conn->prepare("UPDATE horario SET idFuncionario=:idFuncionario, idFicha=:idFicha WHERE idHorario=:idHorario")
-                            ->execute(array(':idFuncionario' => $horario['idFuncionario'], ':idFicha' => $horario['idFicha'], ':idHorario' => $existente['idHorario']));
-                    } else {
-                        $conn->prepare("INSERT INTO horario (idFuncionario, idAmbiente, idFicha, idFranja, fecha_inicioHorario) VALUES (:idFuncionario, :idAmbiente, :idFicha, :idFranja, CURDATE())")
-                            ->execute(array(':idFuncionario' => $horario['idFuncionario'], ':idAmbiente' => $horario['idAmbiente'], ':idFicha' => $horario['idFicha'], ':idFranja' => $horario['idFranja']));
-                    }
-                    $guardados++;
-                } catch (Exception $e) {
-                    $errores[] = "Error en ambiente {$horario['idAmbiente']}: " . $e->getMessage();
-                }
-            }
-            $conn->commit();
-            return array("success" => true, "guardados" => $guardados, "errores" => $errores, "message" => "Se guardaron $guardados horarios correctamente");
-        } catch (Exception $e) {
-            if ($conn->inTransaction()) $conn->rollBack();
-            return array("success" => false, "message" => "Error al guardar horarios: " . $e->getMessage());
-        }
-    }
-
-    /* ══════════════════════════════════════════════════════════
-       OBTENER HORARIOS POR SEDE
-    ══════════════════════════════════════════════════════════ */
-    public static function mdlObtenerHorariosPorSede($idSede) {
-        try {
-            $stmt = Conexion::Conectar()->prepare(
-                "SELECT h.idHorario, h.idFuncionario, h.idAmbiente, h.idFicha, h.idFranja,
-                        f.nombre AS nombreInstructor, a.codigo AS codigoAmbiente, a.numero AS numeroAmbiente,
-                        fi.codigoFicha, fr.nombre AS nombreFranja, fr.hora_inicio, fr.hora_fin
-                 FROM horario h
-                 INNER JOIN ambiente a ON h.idAmbiente = a.idAmbiente
-                 LEFT JOIN funcionario f ON h.idFuncionario = f.idFuncionario
-                 LEFT JOIN ficha fi ON h.idFicha = fi.idFicha
-                 LEFT JOIN franja fr ON h.idFranja = fr.idFranja
-                 WHERE a.idSede = :idSede AND (h.fecha_finHorario IS NULL OR h.fecha_finHorario >= CURDATE())
-                 ORDER BY a.codigo, fr.idFranja"
-            );
-            $stmt->execute(array(':idSede' => $idSede));
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (Exception $e) {
-            return array("success" => false, "message" => $e->getMessage());
-        }
-    }
+ 
 }

@@ -20,52 +20,25 @@ class horario {
         .then(response => response.json())
         .catch(error => console.error(error))
         .then(response => {
-            if (!response || response.codigo !== "200") {
-                const tbody = document.getElementById("tbodyHorarios");
-                if (tbody) tbody.innerHTML = `<tr><td colspan="7">${this._emptyState()}</td></tr>`;
-                return;
-            }
+        
 
-            if ($.fn.DataTable.isDataTable("#tablaHorarios")) {
-                $("#tablaHorarios").DataTable().clear().destroy();
-            }
+            console.log(response);
 
             const dataSet = [];
 
-            (response.horarios || []).forEach(item => {
-                const nombre    = item.instructorNombre || "—";
-                const iniciales = nombre !== "—"
-                    ? nombre.trim().split(" ").map(w => w[0]).slice(0, 2).join("").toUpperCase()
-                    : "?";
-
-                const instructorHtml = `
-                    <div class="instructor-cell">
-                        <div class="instructor-avatar">${iniciales}</div>
-                        <span style="font-size:12px;font-weight:600;">${nombre}</span>
-                    </div>`;
 
                 const botones = `
                     <div class="action-group">
                         <button type="button" class="btn btn-ver btnVerHorario" title="Ver calendario de la ficha"
-                            data-id-ficha="${item.idFicha            || ""}"
-                            data-ficha="${item.codigoFicha           || "—"}"
-                            data-sede="${item.sedeNombre             || "—"}"
-                            data-area="${item.areaNombre             || "—"}"
-                            data-jornada="${item.jornada             || "—"}"
+                            data-id-ficha="${item.idFicha}"
+                            data-ficha="${item.codigoFicha}"
+                            data-sede="${item.sedeNombre}"
+                            data-area="${item.areaNombre}"
+                            data-jornada="${item.jornada}"
                             data-tipo="${item.tipoPrograma || item.tipoprograma || "—"}">
                             <i class="bi bi-eye-fill"></i>
                         </button>
-                        <button type="button" class="btn btn-info btnEditarHorario"
-                            data-id="${item.idHorario}"
-                            data-hora-inicio="${item.hora_inicioClase     || ""}"
-                            data-hora-fin="${item.hora_finClase           || ""}"
-                            data-fecha-inicio="${item.fecha_inicioHorario || ""}"
-                            data-fecha-fin="${item.fecha_finHorario       || ""}"
-                            data-id-ambiente="${item.idAmbiente           || ""}"
-                            data-id-sede="${item.idSede                   || ""}"
-                            data-dias="${item.dias                        || ""}">
-                            <i class="bi bi-pen"></i>
-                        </button>
+                        
                         <button type="button" class="btn btn-danger btnEliminarHorario" data-id="${item.idHorario}">
                             <i class="bi bi-trash"></i>
                         </button>
@@ -76,8 +49,7 @@ class horario {
                     item.areaNombre || item.area || "—",
                     `<strong>${item.codigoFicha || "—"}</strong>`,
                     this._inferirJornadaBadge(item.hora_inicioClase),
-                    item.tipoPrograma || item.tipoprograma || "—",
-                    instructorHtml,
+                    item.tipoPrograma || item.tipoprograma || "/",
                     botones
                 ]);
             });
@@ -94,7 +66,7 @@ class horario {
                     paginate: { next: "Sig.", previous: "Ant." }
                 }
             });
-        });
+        
     }
 
     
@@ -153,42 +125,6 @@ class horario {
             if (response.codigo === "200") {
                 Swal.fire({ icon: "success", title: "¡Horario creado!", text: response.mensaje, timer: 1800, showConfirmButton: false });
                 document.dispatchEvent(new CustomEvent("horarioCreado"));
-            } else {
-                Swal.fire({ icon: "error", title: "Error", html: response.mensaje, confirmButtonColor: "#7c6bff" });
-            }
-        })
-        .catch(error => {
-            Swal.close();
-            Swal.fire({ icon: "error", title: "Error de conexión", text: String(error) });
-        });
-    }
-
-    /* ══════════════════════════════════════════════════
-       ACTUALIZAR HORARIO
-    ══════════════════════════════════════════════════ */
-    actualizarHorario(datos, diasSeleccionados) {
-        Swal.fire({ title: "Guardando...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-        const formData = new FormData();
-        formData.append("actualizarHorario",   "ok");
-        formData.append("idHorario",           datos.idHorario);
-        formData.append("idAmbiente",          datos.idAmbiente);
-        formData.append("hora_inicioClase",    datos.hora_inicioClase);
-        formData.append("hora_finClase",       datos.hora_finClase);
-        formData.append("fecha_inicioHorario", datos.fecha_inicioHorario);
-        formData.append("fecha_finHorario",    datos.fecha_finHorario);
-        diasSeleccionados.forEach(id => formData.append("dias[]", id));
-
-        fetch("controlador/horarioControlador.php", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.json())
-        .then(response => {
-            Swal.close();
-            if (response.codigo === "200") {
-                Swal.fire({ icon: "success", title: "Actualizado", timer: 1600, showConfirmButton: false });
-                document.dispatchEvent(new CustomEvent("horarioActualizado"));
             } else {
                 Swal.fire({ icon: "error", title: "Error", html: response.mensaje, confirmButtonColor: "#7c6bff" });
             }

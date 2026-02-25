@@ -1,25 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* ══════════════════════════════════════════════════
-     ESTADO
-  ══════════════════════════════════════════════════ */
+    //   ESTADO
   let todasLasFichas       = [];
   let todosLosInstructores = [];
   const COL_DIA = { 1:null, 2:null, 3:null, 4:null, 5:null, 6:null };
   const DIAS_MAP = { 'Lunes':1,'Martes':2,'Miércoles':3,'Miercoles':3,'Jueves':4,'Viernes':5,'Sábado':6,'Sabado':6 };
 
-  /* ══════════════════════════════════════════════════
-     INIT
-  ══════════════════════════════════════════════════ */
+
   listarHorarios();
   cargarDiasDB();
   cargarSedes();
   cargarTodasLasFichas();
   cargarInstructoresTodos();
 
-  /* ══════════════════════════════════════════════════
-     PANELES
-  ══════════════════════════════════════════════════ */
+
+//     PANELES
+
   const mostrarPanel = id =>
     ['panelTablaHorario','panelFormularioHorario'].forEach(p => {
       const el = document.getElementById(p);
@@ -33,9 +29,8 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById(id)?.addEventListener('click', () => mostrarPanel('panelTablaHorario'))
   );
 
-  /* ══════════════════════════════════════════════════
-     EVENTOS — FORMULARIO
-  ══════════════════════════════════════════════════ */
+ // FORMULARIO
+ 
   document.getElementById('selectSedeHorario')?.addEventListener('change', function () {
     resetSelect('selectAmbienteHorario', '— Seleccione ambiente —');
     resetSelect('selectFichaHorario',    '— Seleccione sede primero —');
@@ -88,9 +83,9 @@ document.addEventListener('DOMContentLoaded', function () {
     crearHorario(dias);
   });
 
-  /* ══════════════════════════════════════════════════
-     DELEGACIÓN — TABLA
-  ══════════════════════════════════════════════════ */
+  
+  //   DELEGACIÓN — TABLA
+  
   $(document).on('click', '.btnVerHorario', function (e) {
     e.preventDefault();
     HorarioCalendar.abrirModal($(this).data('id-ficha'), {
@@ -132,9 +127,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 
-  /* ══════════════════════════════════════════════════
-     LISTAR HORARIOS (tabla principal)
-  ══════════════════════════════════════════════════ */
+
+//     LISTAR HORARIOS (tabla principal)
+
   function listarHorarios() {
     postJSON('horarioControlador.php', { listarFichasConHorario:'ok' }).then(resp => {
       if (!resp || resp.codigo !== '200') return;
@@ -177,9 +172,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ══════════════════════════════════════════════════
-     MODAL ELIMINAR
-  ══════════════════════════════════════════════════ */
+
+//  MODAL ELIMINAR
+
   function abrirModalEliminar(idFicha, codigoFicha) {
     if (!document.getElementById('modalEliminarHorarios')) {
       document.body.insertAdjacentHTML('beforeend', `
@@ -219,9 +214,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ══════════════════════════════════════════════════
-     CREAR HORARIO
-  ══════════════════════════════════════════════════ */
+
+//     CREAR HORARIO
+
   function crearHorario(dias) {
     Swal.fire({ title:'Guardando...', allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
     const g  = id => document.getElementById(id)?.value || '';
@@ -248,9 +243,9 @@ document.addEventListener('DOMContentLoaded', function () {
       .catch(err => { Swal.close(); Swal.fire({ icon:'error', title:'Error de conexión', text:String(err) }); });
   }
 
-  /* ══════════════════════════════════════════════════
-     INSTRUCTORES
-  ══════════════════════════════════════════════════ */
+
+//     INSTRUCTORES
+  
   function cargarInstructoresTodos() {
     postJSON('instructorControlador.php', { listarInstructor:'ok' }).then(resp => {
       if (resp.codigo === '200') { todosLosInstructores = resp.listarInstructor || []; renderInstructoresLista(todosLosInstructores); }
@@ -288,9 +283,9 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   const ocultarHint = () => { const el = document.getElementById('instructorAreaHint'); if (el) el.style.display = 'none'; };
 
-  /* ══════════════════════════════════════════════════
-     SEDES / AMBIENTES / FICHAS / DÍAS
-  ══════════════════════════════════════════════════ */
+ 
+ //    SEDES / AMBIENTES / FICHAS / DÍAS
+ 
   function cargarSedes() {
     postJSON('sedeControlador.php', { listarSede:'ok' }).then(resp => {
       if (resp.codigo === '200')
@@ -345,9 +340,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ══════════════════════════════════════════════════
-     PREVIEW CALENDARIO FORM
-  ══════════════════════════════════════════════════ */
+//     PREVIEW CALENDARIO FORM
+
   function actualizarPreview() {
     const g = id => document.getElementById(id);
     const horaInicio = g('horaInicioHorario')?.value || '';
@@ -372,9 +366,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  /* ══════════════════════════════════════════════════
-     HELPERS
-  ══════════════════════════════════════════════════ */
+
+//     HELPERS
+  
   function postJSON(controlador, data) {
     const fd = new FormData();
     Object.entries(data).forEach(([k,v]) => fd.append(k, v));

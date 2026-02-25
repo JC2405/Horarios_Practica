@@ -77,7 +77,48 @@
               </select>
             </div>
 
-            <!-- FICHA -->
+
+            <!-- AMBIENTE -->
+            <div class="ph-block">
+              <div class="ph-block-label"><i class="bi bi-door-open"></i> AMBIENTE</div>
+              <select id="selectAmbienteHorario" class="ph-sel" disabled required>
+                <option value="">— Seleccione sede primero —</option>
+              </select>
+            </div>    
+           
+
+            <!-- FECHA -->  
+             <div class="ph-block">
+              <div class="ph-block-label"><i class="bi bi-calendar-range"></i> FECHA INICIO / FIN</div>
+              <div class="ph-stack">
+                <div class="ph-stack-item">
+                  <span class="ph-sublabel">INICIO</span>
+                  <input type="date" id="fechaInicioHorario" class="ph-sel">
+                </div>
+                <div class="ph-stack-item">
+                  <span class="ph-sublabel">FIN</span>
+                  <input type="date" id="fechaFinHorario" class="ph-sel">
+                </div>
+              </div>
+            </div>
+
+
+             <!-- INSTRUCTOR -->
+            <div class="ph-block ph-block-ficha">
+              <div class="ph-block-label"><i class="bi bi-person-badge"></i> INSTRUCTOR</div>
+              <div id="instructorAreaHint" class="ph-instructor-hint"></div>
+              <div class="ph-instructor-search">
+                <input type="text" id="inputBuscarInstructor"
+                  class="ph-sel ph-search-input"
+                  placeholder="Buscar instructor por nombre...">
+              </div>
+              <select id="selectInstructorHorario" class="ph-sel" required>
+                <option value="">— Seleccione instructor —</option>
+              </select>
+            </div>    
+            
+
+             <!-- FICHA -->
             <div class="ph-block ph-block-ficha">
               <div class="ph-block-label"><i class="bi bi-file-earmark-person"></i> FICHA</div>
               <div class="ph-ficha-row">
@@ -99,7 +140,10 @@
               </div>
             </div>
 
-            <!-- HORA -->
+
+
+            
+           <!-- HORA -->
             <div class="ph-block">
               <div class="ph-block-label"><i class="bi bi-clock"></i> HORA INICIO / FIN</div>
               <div class="ph-stack">
@@ -114,44 +158,10 @@
               </div>
             </div>
 
-            <!-- AMBIENTE -->
-            <div class="ph-block">
-              <div class="ph-block-label"><i class="bi bi-door-open"></i> AMBIENTE</div>
-              <select id="selectAmbienteHorario" class="ph-sel" disabled required>
-                <option value="">— Seleccione sede primero —</option>
-              </select>
-            </div>
-
-            <!-- INSTRUCTOR -->
-            <div class="ph-block ph-block-ficha">
-              <div class="ph-block-label"><i class="bi bi-person-badge"></i> INSTRUCTOR</div>
-              <div id="instructorAreaHint" class="ph-instructor-hint"></div>
-              <div class="ph-instructor-search">
-                <input type="text" id="inputBuscarInstructor"
-                  class="ph-sel ph-search-input"
-                  placeholder="Buscar instructor por nombre...">
-              </div>
-              <select id="selectInstructorHorario" class="ph-sel" required>
-                <option value="">— Seleccione instructor —</option>
-              </select>
-            </div>
-
-            <!-- FECHA -->
-            <div class="ph-block">
-              <div class="ph-block-label"><i class="bi bi-calendar-range"></i> FECHA INICIO / FIN</div>
-              <div class="ph-stack">
-                <div class="ph-stack-item">
-                  <span class="ph-sublabel">INICIO</span>
-                  <input type="date" id="fechaInicioHorario" class="ph-sel">
-                </div>
-                <div class="ph-stack-item">
-                  <span class="ph-sublabel">FIN</span>
-                  <input type="date" id="fechaFinHorario" class="ph-sel">
-                </div>
-              </div>
-            </div>
-
           </div><!-- /ph-grid -->
+
+
+
 
           <!-- CALENDARIO SEMANAL -->
           <div class="ph-calendario">

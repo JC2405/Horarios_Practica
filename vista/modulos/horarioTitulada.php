@@ -78,13 +78,39 @@
             </div>
 
 
-            <!-- AMBIENTE -->
-            <div class="ph-block">
-              <div class="ph-block-label"><i class="bi bi-door-open"></i> AMBIENTE</div>
-              <select id="selectAmbienteHorario" class="ph-sel" disabled required>
-                <option value="">— Seleccione sede primero —</option>
-              </select>
-            </div>    
+           <!-- ══════════════════════════════════════════════
+               MODALIDAD / AMBIENTE  (bloque combinado)
+          ══════════════════════════════════════════════ -->
+          <div class="ph-block">
+            <div class="ph-block-label"><i class="bi bi-door-open"></i> MODALIDAD / AMBIENTE</div>
+
+            <!-- Fila: select modalidad | select ambiente -->
+            <div class="ph-ficha-row" style="gap:10px; align-items:flex-end;">
+
+              <!-- MODALIDAD -->
+              <div style="min-width:160px;">
+                <span class="ph-sublabel">MODALIDAD</span>
+                <select id="selectModalidadHorario" class="ph-sel" required>
+                  <option value="">— Modalidad —</option>
+                  <option value="presencial">🏫 Presencial</option>
+                  <option value="virtual">💻 Virtual</option>
+                </select>
+              </div>
+
+              <!-- AMBIENTE (se deshabilita/oculta si es virtual) -->
+              <div class="ph-ficha-grow" id="wrapAmbienteHorario">
+                <span class="ph-sublabel">AMBIENTE</span>
+                <select id="selectAmbienteHorario" class="ph-sel" disabled>
+                  <option value="">— Seleccione sede primero —</option>
+                </select>
+                <!-- Aviso cuando es virtual -->
+                <small id="hintAmbienteVirtual" class="text-muted" style="display:none; font-size:11px;">
+                  <i class="bi bi-info-circle"></i> Clase virtual — sin ambiente físico
+                </small>
+              </div>
+
+            </div>
+          </div> 
            
 
             <!-- FECHA -->  

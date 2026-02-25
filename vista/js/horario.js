@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
     fichas.forEach(f => {
       const o = document.createElement('option');
       o.value = f.idFicha;
-      o.textContent = `${f.codigoFicha} — ${f.programa||f.programaNombre||''}`;
+      o.textContent = `${f.codigoFicha} — ${f.programa||f.programaNombre||''} — ${f.modalidad_formacionFicha}`;
       o.dataset.tipoprograma = f.tipoPrograma||f.tipoprograma||f.tipoFormacion||'';
       o.dataset.jornada = f.jornada || '';
       sel.appendChild(o);

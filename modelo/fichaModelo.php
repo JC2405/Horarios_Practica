@@ -155,7 +155,8 @@
                 f.estado,
                 f.jornada,
                 f.fechaInicio,
-                f.fechaFin
+                f.fechaFin,
+                f.modalidad_formacionFicha
             FROM ficha f
             INNER JOIN programa p 
                 ON f.idPrograma = p.idPrograma
